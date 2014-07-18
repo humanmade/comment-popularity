@@ -1,11 +1,23 @@
 <?php
 
+/**
+ * Class HMN_Comment_Popularity
+ */
 class HMN_Comment_Popularity {
 
+	/**
+	 * Plugin version number.
+	 */
 	const VERSION = '1.0';
 
+	/**
+	 * @var the single class instance.
+	 */
 	private static $instance;
 
+	/**
+	 * Creates a new HMN_Comment_Popularity object, and registers with WP hooks.
+	 */
 	private function __construct() {
 		add_action( 'show_user_profile', array( $this, 'render_user_karma_field' ) );
 		add_action( 'edit_user_profile', array( $this, 'render_user_karma_field' ) );
@@ -20,12 +32,20 @@ class HMN_Comment_Popularity {
 		add_action( 'wp_ajax_comment_vote', array( $this, 'comment_vote' ) );
 	}
 
+	/**
+	 *
+	 */
 	private function __clone() {
 	}
 
+	/**
+	 * Provides access to the class instance
+	 *
+	 * @return HMN_Comment_Popularity
+	 */
 	public static function get_instance() {
 
-		if ( !self::$instance instanceof HMN_Comment_Popularity ) {
+		if ( ! self::$instance instanceof HMN_Comment_Popularity ) {
 			self::$instance = new HMN_Comment_Popularity();
 
 		}
@@ -33,6 +53,9 @@ class HMN_Comment_Popularity {
 		return self::$instance;
 	}
 
+	/**
+	 * Load the Javascripts
+	 */
 	public function enqueue_scripts() {
 
 		wp_register_script( 'comment-popularity', plugins_url( '../assets/js/voting.js', __FILE__ ), array(), self::VERSION );
@@ -40,6 +63,11 @@ class HMN_Comment_Popularity {
 		wp_enqueue_script( 'comment-popularity' );
 	}
 
+	/**
+	 * Renders the HTML for voting on comments
+	 *
+	 * @param $comment_id
+	 */
 	public function render_ui( $comment_id ) {
 
 		$karma_count = $this->get_karma_count( $comment_id );
@@ -53,6 +81,13 @@ class HMN_Comment_Popularity {
 		echo $form;
 	}
 
+	/**
+	 * Retrieves the value for the comment karma data.
+	 *
+	 * @param $comment_id
+	 *
+	 * @return int
+	 */
 	protected function get_karma_count( $comment_id ) {
 
 		// get_comment_meta will return an empty string if key is not set
@@ -64,6 +99,14 @@ class HMN_Comment_Popularity {
 
 	}
 
+	/**
+	 * Updates the karma value in the database.
+	 *
+	 * @param $vote
+	 * @param $comment_id
+	 *
+	 * @return int
+	 */
 	public function update_karma_count( $vote, $comment_id ) {
 
 		$comment_karma = $this->get_karma_count( $comment_id );
@@ -79,6 +122,13 @@ class HMN_Comment_Popularity {
 		return $karma_value;
 	}
 
+	/**
+	 * Fetches the karma for the current user from the database.
+	 *
+	 * @param $user_id
+	 *
+	 * @return int
+	 */
 	public function get_user_karma( $user_id ) {
 
 		// get user meta for karma
@@ -88,6 +138,11 @@ class HMN_Comment_Popularity {
 		return $user_karma;
 	}
 
+	/**
+	 * Renders the HTML form element for setting the user karma value.
+	 *
+	 * @param $user
+	 */
 	public function render_user_karma_field( $user ) {
 		?>
 
@@ -113,9 +168,14 @@ class HMN_Comment_Popularity {
 	<?php
 	}
 
+	/**
+	 * Saves the custom user meta data.
+	 *
+	 * @param $user_id
+	 */
 	public function save_user_meta( $user_id ) {
 
-		if ( !current_user_can( 'edit_user', $user_id ) ) {
+		if ( ! current_user_can( 'edit_user', $user_id ) ) {
 			return false;
 		}
 
@@ -125,9 +185,15 @@ class HMN_Comment_Popularity {
 
 	}
 
+	/**
+	 * Sets the comment karma
+	 *
+	 * @param $comment_id
+	 * @param $comment
+	 */
 	public function set_comment_karma( $comment_id, $comment ) {
 
-		if ( !is_user_logged_in() ) {
+		if ( ! is_user_logged_in() ) {
 			return;
 		}
 
@@ -141,6 +207,9 @@ class HMN_Comment_Popularity {
 
 	}
 
+	/**
+	 * Handles the voting ajax request.
+	 */
 	public function comment_vote() {
 
 		if ( ! in_array( $_POST['vote'], array( -1, 1 ) ) )
