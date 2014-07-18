@@ -151,7 +151,12 @@ class HMN_Comment_Popularity {
 
 		$karma_count = $this->update_karma_count( $vote, $comment_id );
 
-		wp_send_json_success( $karma_count );
+		$return = array(
+			'karma'      => $karma_count,
+			'comment_id' => $comment_id,
+		);
+
+		wp_send_json_success( $return );
 	}
 
 }

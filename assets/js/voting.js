@@ -16,7 +16,7 @@
 
 			$.post( edd_scripts.ajaxurl, {action: 'comment_vote', vote: value, comment_id: comment_id}, function( data ){
 				// update karma
-				$('span.comment-karma').text(data.data);
+				$( 'div#comment-' + data.data.comment_id + ' span.comment-karma' ).text( data.data.karma );
 			});
 		});
 
