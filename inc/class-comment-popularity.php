@@ -123,6 +123,7 @@ class HMN_Comment_Popularity {
 		if ( $karma_value > 0 ) {
 			update_comment_meta( $comment_id, 'hmn_karma_count', $karma_value );
 		} else {
+			$karma_value = 0;
 			update_comment_meta( $comment_id, 'hmn_karma_count', 0 );
 		}
 
@@ -221,8 +222,9 @@ class HMN_Comment_Popularity {
 
 		check_ajax_referer( 'hmn_vote_submit', 'hmn_vote_nonce' );
 
-		if ( ! in_array( $_POST['vote'], array( -1, 1 ) ) )
-			die; // wp_send_json_error?
+		if ( ! in_array( (int)$_POST['vote'], array( -1, 1 ) ) ) {
+			die;
+		} // wp_send_json_error?
 
 		$vote       = intval( $_POST['vote'] );
 		$comment_id = absint( $_POST['comment_id'] );
