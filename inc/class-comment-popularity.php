@@ -19,17 +19,19 @@ class HMN_Comment_Popularity {
 	 * Creates a new HMN_Comment_Popularity object, and registers with WP hooks.
 	 */
 	private function __construct() {
+
 		add_action( 'show_user_profile', array( $this, 'render_user_karma_field' ) );
 		add_action( 'edit_user_profile', array( $this, 'render_user_karma_field' ) );
 
 		add_action( 'personal_options_update', array( $this, 'save_user_meta' ) );
 		add_action( 'edit_user_profile_update', array( $this, 'save_user_meta' ) );
 
-		add_action( 'wp_insert_comment', array( $this, 'set_comment_karma' ), 10, 2 );
+		add_action( 'wp_insert_comment', array( $this, 'set_comment_weight' ), 10, 2 );
 
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 
 		add_action( 'wp_ajax_comment_vote', array( $this, 'comment_vote' ) );
+
 	}
 
 	/**
@@ -57,8 +59,7 @@ class HMN_Comment_Popularity {
 	 */
 	public function enqueue_scripts() {
 
-		wp_register_script( 'comment-popularity', plugins_url( '../assets/js/voting.js', __FILE__ ), array(), self::VERSION );
-
+		wp_register_script( 'comment-popularity', plugins_url( '../assets/js/voting.js', __FILE__ ), array( 'jquery' ), self::VERSION );
 
 		$args = array(
 			'hmn_vote_nonce' => wp_create_nonce( 'hmn_vote_submit' ),
@@ -68,6 +69,7 @@ class HMN_Comment_Popularity {
 		wp_localize_script( 'comment-popularity', 'comment_popularity', $args );
 
 		wp_enqueue_script( 'comment-popularity' );
+
 	}
 
 	/**
@@ -77,57 +79,54 @@ class HMN_Comment_Popularity {
 	 */
 	public function render_ui( $comment_id ) {
 
-		$karma_count = $this->get_karma_count( $comment_id );
+		$comment_weight = $this->get_comment_weight( $comment_id );
 
-		$form = '<div class="karma">';
-		$form .= '<span><a data-comment-id="' . esc_attr( $comment_id ) . '" class="add-karma" href="#">▲</a></span>';
-		$form .= '<span class="comment-karma">' . esc_html( $karma_count ) . '</span>';
-		$form .= '<span><a data-comment-id="' . esc_attr( $comment_id ) . '" class="remove-karma" href="#">▼</a></span>';
+		$form = '<div class="comment-weight-container">';
+		$form .= '<span><a data-comment-id="' . esc_attr( $comment_id ) . '" class="vote-up" href="#">▲</a></span>';
+		$form .= '<span class="comment-weight">' . esc_html( $comment_weight ) . '</span>';
+		$form .= '<span><a data-comment-id="' . esc_attr( $comment_id ) . '" class="vote-down" href="#">▼</a></span>';
 		$form .= '</div>';
 
 		echo $form;
 	}
 
 	/**
-	 * Retrieves the value for the comment karma data.
+	 * Retrieves the value for the comment weight data.
 	 *
 	 * @param $comment_id
 	 *
 	 * @return int
 	 */
-	protected function get_karma_count( $comment_id ) {
+	protected function get_comment_weight( $comment_id ) {
 
-		// get_comment_meta will return an empty string if key is not set
-		if ( 0 == strlen( $karma_count = get_comment_meta( $comment_id, 'hmn_karma_count', true ) ) ) {
-			$karma_count = 0;
-		}
+		$comment = get_comment( $comment_id );
 
-		return (int) $karma_count;
+		return $comment->comment_karma;
 
 	}
 
 	/**
-	 * Updates the karma value in the database.
+	 * Updates the comment weight value in the database.
 	 *
 	 * @param $vote
 	 * @param $comment_id
 	 *
 	 * @return int
 	 */
-	public function update_karma_count( $vote, $comment_id ) {
+	public function update_comment_weight( $vote, $comment_id ) {
 
-		$comment_karma = $this->get_karma_count( $comment_id );
+		$comment_arr = get_comment( $comment_id, ARRAY_A );
 
-		$karma_value = $comment_karma + $vote;
+		$weight_value = $comment_arr['comment_karma'] + $vote;
 
-		if ( $karma_value > 0 ) {
-			update_comment_meta( $comment_id, 'hmn_karma_count', $karma_value );
-		} else {
-			$karma_value = 0;
-			update_comment_meta( $comment_id, 'hmn_karma_count', 0 );
-		}
+		if ( $weight_value <= 0 )
+			$weight_value = 0;
 
-		return $karma_value;
+		$comment_arr['comment_karma'] = $weight_value;
+
+		$ret = wp_update_comment( $comment_arr );
+
+		return $ret;
 	}
 
 	/**
@@ -170,7 +169,6 @@ class HMN_Comment_Popularity {
 
 			</tr>
 
-
 		</table>
 
 	<?php
@@ -194,12 +192,12 @@ class HMN_Comment_Popularity {
 	}
 
 	/**
-	 * Sets the comment karma
+	 * Sets the initial comment karma.
 	 *
 	 * @param $comment_id
 	 * @param $comment
 	 */
-	public function set_comment_karma( $comment_id, $comment ) {
+	public function set_comment_weight( $comment_id, $comment ) {
 
 		if ( ! is_user_logged_in() ) {
 			return;
@@ -210,10 +208,67 @@ class HMN_Comment_Popularity {
 		$user_karma = (int) get_user_meta( $user_id, 'hmn_user_karma', true );
 
 		if ( 0 < $user_karma ) {
-			$this->update_karma_count( $user_karma, $comment_id );
+			$this->update_comment_weight( $user_karma, $comment_id );
 		}
 
 	}
+
+	/**
+	 * Updates the comment author karma when a comment is upvoted.
+	 *
+	 * @param $comment_id
+	 *
+	 * @return bool|int
+	 */
+	public function update_user_karma( $comment_id ) {
+
+		$email = get_comment_author_email( $comment_id );
+
+		$user = get_user_by( 'email', $email );
+
+		if ( false !== $user ) {
+
+			//comment author is a registered user! Update karma
+			$user_karma = (int) get_user_meta( $user->ID, 'hmn_user_karma', true );
+
+			$user_karma += 1;
+
+			update_user_meta( $user->ID, 'hmn_user_karma', $user_karma );
+
+			return $user_karma;
+		}
+
+		return false;
+	}
+
+	public function get_comment_author_karma( $email ) {
+
+		$author = get_user_by( 'email', $email );
+
+		return get_user_meta( $author->ID, 'hmn_user_karma', true );
+	}
+
+	public function get_comments_sorted_by_weight( $args = array(), $comments = null ) {
+
+		$defaults = array( 'echo' => false );
+
+		$args = array_merge( $defaults, $args );
+
+		if ( null == $comments ) {
+
+			global $wp_query;
+
+			$comments = $wp_query->comments;
+
+		}
+
+		uasort( $comments, function( $a, $b ){
+			return $b->comment_karma > $a->comment_karma;
+		});
+
+		return wp_list_comments( $args, $comments );
+	}
+
 
 	/**
 	 * Handles the voting ajax request.
@@ -229,10 +284,14 @@ class HMN_Comment_Popularity {
 		$vote       = intval( $_POST['vote'] );
 		$comment_id = absint( $_POST['comment_id'] );
 
-		$karma_count = $this->update_karma_count( $vote, $comment_id );
+		$this->update_comment_weight( $vote, $comment_id );
+
+		// update comment author karma if it's an upvote.
+		if ( 0 < $vote )
+			$this->update_user_karma( $comment_id );
 
 		$return = array(
-			'karma'      => $karma_count,
+			'weight'      => $this->get_comment_weight( $comment_id ),
 			'comment_id' => $comment_id,
 		);
 

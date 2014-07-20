@@ -13,3 +13,5 @@ defined( 'ABSPATH' ) || exit;
 require_once trailingslashit( __DIR__ ) . 'inc/class-comment-popularity.php';
 
 add_action( 'plugins_loaded', array( 'HMN_Comment_Popularity', 'get_instance' ) );
+
+include_once trailingslashit( __DIR__ ) . 'inc/helpers.php';
