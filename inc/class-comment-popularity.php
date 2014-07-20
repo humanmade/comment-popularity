@@ -33,10 +33,9 @@ class HMN_Comment_Popularity {
 	}
 
 	/**
-	 *
+	 * Disallow object cloning
 	 */
-	private function __clone() {
-	}
+	private function __clone() {}
 
 	/**
 	 * Provides access to the class instance
