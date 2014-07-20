@@ -57,7 +57,7 @@ class HMN_Comment_Popularity {
 	 */
 	public function enqueue_scripts() {
 
-		wp_register_script( 'comment-popularity', plugins_url( '../assets/js/voting.js', __FILE__ ), array(), self::VERSION );
+		wp_register_script( 'comment-popularity', plugins_url( '../assets/js/voting.js', __FILE__ ), array( 'jquery' ), self::VERSION );
 
 
 		$args = array(
