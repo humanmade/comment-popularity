@@ -37,6 +37,8 @@ class HMN_Comment_Popularity {
 
 		add_filter( 'manage_edit-comments_sortable_columns', array( $this, 'make_weight_column_sortable' ) );
 
+		add_action( 'admin_init', array( $this, 'register_plugin_settings' ) );
+
 	}
 
 	/**
@@ -75,6 +77,43 @@ class HMN_Comment_Popularity {
 
 		wp_enqueue_script( 'comment-popularity' );
 
+	}
+
+	/**
+	 * Adds a setting field on the Discusion admin page.
+	 */
+	public function register_plugin_settings() {
+
+		register_setting( 'discussion', 'comment_popularity_prefs', array( $this, 'validate_settings' ) );
+
+		add_settings_field( 'hmn_cp_expert_karma_field', __( 'Default karma value for expert users', 'comment-popularity' ), array( $this, 'render_expert_karma_input' ), 'discussion', 'default', array( 'label_for' => 'hmn_cp_expert_karma_field' ) );
+	}
+
+	/**
+	 * Callback to render the option HTML input on the settings page.
+	 */
+	public function render_expert_karma_input() {
+
+		$prefs = get_option( 'comment_popularity_prefs', array( 'default_expert_karma' => 0 ) );
+
+		$default_expert_karma = array_key_exists( 'default_expert_karma', $prefs ) ? $prefs['default_expert_karma'] : 0;
+
+		echo '<input class="small-text" id="default_expert_karma" name="comment_popularity_prefs[default_expert_karma]" placeholder="Enter value" type="number" min="0" max="" step="1" value="' . esc_attr( $default_expert_karma ) . '" />';
+
+	}
+
+	/**
+	 * Sanitize the user input.
+	 *
+	 * @param $input
+	 *
+	 * @return mixed
+	 */
+	public function validate_settings( $input ) {
+
+		$valid['default_expert_karma'] = absint( $input['default_expert_karma'] );
+
+		return $valid;
 	}
 
 	/**
@@ -156,6 +195,15 @@ class HMN_Comment_Popularity {
 	 * @param $user
 	 */
 	public function render_user_karma_field( $user ) {
+
+		$prefs = get_option( 'comment_popularity_prefs', array( 'default_expert_karma' => 0 ) );
+
+		$default_karma = $prefs['default_expert_karma'];
+
+		$current_karma = get_the_author_meta( 'hmn_user_karma', $user->ID );
+
+		$user_karma = ( empty( $current_karma ) ) ? $default_karma : $current_karma;
+
 		?>
 
 		<h3>User Karma points</h3>
@@ -168,7 +216,7 @@ class HMN_Comment_Popularity {
 
 				<td>
 
-					<input name="hmn_user_karma" type="number" step="1" min="0" id="hmn_user_karma" value="<?php echo esc_attr( get_the_author_meta( 'hmn_user_karma', $user->ID ) ); ?>" class="small-text">
+					<input name="hmn_user_karma" type="number" step="1" min="0" id="hmn_user_karma" value="<?php echo esc_attr( $user_karma ); ?>" class="small-text">
 
 				</td>
 
@@ -248,7 +296,7 @@ class HMN_Comment_Popularity {
 
 	/**
 	 * Fetch the comment author karma from the options.
-	 * 
+	 *
 	 * @param $email
 	 *
 	 * @return mixed
