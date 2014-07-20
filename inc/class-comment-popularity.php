@@ -59,6 +59,14 @@ class HMN_Comment_Popularity {
 
 		wp_register_script( 'comment-popularity', plugins_url( '../assets/js/voting.js', __FILE__ ), array(), self::VERSION );
 
+
+		$args = array(
+			'hmn_vote_nonce' => wp_create_nonce( 'hmn_vote_submit' ),
+			'ajaxurl'        => admin_url( 'admin-ajax.php' ),
+		);
+
+		wp_localize_script( 'comment-popularity', 'comment_popularity', $args );
+
 		wp_enqueue_script( 'comment-popularity' );
 	}
 
@@ -72,9 +80,9 @@ class HMN_Comment_Popularity {
 		$karma_count = $this->get_karma_count( $comment_id );
 
 		$form = '<div class="karma">';
-		$form .= '<span><a data-comment-id="' . $comment_id . '" class="add-karma" href="#">▲</a></span>';
-		$form .= '<span class="comment-karma">' . $karma_count . '</span>';
-		$form .= '<span><a data-comment-id="' . $comment_id . '" class="remove-karma" href="#">▼</a></span>';
+		$form .= '<span><a data-comment-id="' . esc_attr( $comment_id ) . '" class="add-karma" href="#">▲</a></span>';
+		$form .= '<span class="comment-karma">' . esc_html( $karma_count ) . '</span>';
+		$form .= '<span><a data-comment-id="' . esc_attr( $comment_id ) . '" class="remove-karma" href="#">▼</a></span>';
 		$form .= '</div>';
 
 		echo $form;
@@ -210,6 +218,8 @@ class HMN_Comment_Popularity {
 	 * Handles the voting ajax request.
 	 */
 	public function comment_vote() {
+
+		check_ajax_referer( 'hmn_vote_submit', 'hmn_vote_nonce' );
 
 		if ( ! in_array( $_POST['vote'], array( -1, 1 ) ) )
 			die; // wp_send_json_error?
