@@ -19,6 +19,7 @@ class HMN_Comment_Popularity {
 	 * Creates a new HMN_Comment_Popularity object, and registers with WP hooks.
 	 */
 	private function __construct() {
+
 		add_action( 'show_user_profile', array( $this, 'render_user_karma_field' ) );
 		add_action( 'edit_user_profile', array( $this, 'render_user_karma_field' ) );
 
@@ -30,6 +31,7 @@ class HMN_Comment_Popularity {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 
 		add_action( 'wp_ajax_comment_vote', array( $this, 'comment_vote' ) );
+
 	}
 
 	/**
@@ -58,7 +60,6 @@ class HMN_Comment_Popularity {
 	public function enqueue_scripts() {
 
 		wp_register_script( 'comment-popularity', plugins_url( '../assets/js/voting.js', __FILE__ ), array( 'jquery' ), self::VERSION );
-
 
 		$args = array(
 			'hmn_vote_nonce' => wp_create_nonce( 'hmn_vote_submit' ),
@@ -191,7 +192,7 @@ class HMN_Comment_Popularity {
 	}
 
 	/**
-	 * Sets the comment karma
+	 * Sets the initial comment karma.
 	 *
 	 * @param $comment_id
 	 * @param $comment
@@ -246,6 +247,28 @@ class HMN_Comment_Popularity {
 
 		return get_user_meta( $author->ID, 'hmn_user_karma', true );
 	}
+
+	public function get_comments_sorted_by_weight( $args = array(), $comments = null ) {
+
+		$defaults = array( 'echo' => false );
+
+		$args = array_merge( $defaults, $args );
+
+		if ( null == $comments ) {
+
+			global $wp_query;
+
+			$comments = $wp_query->comments;
+
+		}
+
+		uasort( $comments, function( $a, $b ){
+			return $b->comment_karma > $a->comment_karma;
+		});
+
+		return wp_list_comments( $args, $comments );
+	}
+
 
 	/**
 	 * Handles the voting ajax request.
