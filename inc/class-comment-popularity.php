@@ -215,6 +215,41 @@ class HMN_Comment_Popularity {
 	}
 
 	/**
+	 * Updates the comment author karma when a comment is upvoted.
+	 *
+	 * @param $comment_id
+	 *
+	 * @return bool|int
+	 */
+	public function update_user_karma( $comment_id ) {
+
+		$email = get_comment_author_email( $comment_id );
+
+		$user = get_user_by( 'email', $email );
+
+		if ( false !== $user ) {
+
+			//comment author is a registered user! Update karma
+			$user_karma = (int) get_user_meta( $user->ID, 'hmn_user_karma', true );
+
+			$user_karma += 1;
+
+			update_user_meta( $user->ID, 'hmn_user_karma', $user_karma );
+
+			return $user_karma;
+		}
+
+		return false;
+	}
+
+	public function get_comment_author_karma( $email ) {
+
+		$author = get_user_by( 'email', $email );
+
+		return get_user_meta( $author->ID, 'hmn_user_karma', true );
+	}
+
+	/**
 	 * Handles the voting ajax request.
 	 */
 	public function comment_vote() {
