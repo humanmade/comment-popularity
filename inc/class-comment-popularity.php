@@ -246,6 +246,13 @@ class HMN_Comment_Popularity {
 		return false;
 	}
 
+	/**
+	 * Fetch the comment author karma from the options.
+	 * 
+	 * @param $email
+	 *
+	 * @return mixed
+	 */
 	public function get_comment_author_karma( $email ) {
 
 		$author = get_user_by( 'email', $email );
@@ -253,6 +260,14 @@ class HMN_Comment_Popularity {
 		return get_user_meta( $author->ID, 'hmn_user_karma', true );
 	}
 
+	/**
+	 * Sorts the comments by weight and returns them.
+	 *
+	 * @param array $args
+	 * @param null  $comments
+	 *
+	 * @return string
+	 */
 	public function get_comments_sorted_by_weight( $args = array(), $comments = null ) {
 
 		$defaults = array( 'echo' => false );
@@ -274,6 +289,13 @@ class HMN_Comment_Popularity {
 		return wp_list_comments( $args, $comments );
 	}
 
+	/**
+	 * Add comment karma column to the admin view.
+	 *
+	 * @param $columns
+	 *
+	 * @return array
+	 */
 	public function add_comment_columns( $columns )
 	{
 		return array_merge( $columns, array(
@@ -281,6 +303,12 @@ class HMN_Comment_Popularity {
 		) );
 	}
 
+	/**
+	 * Populate the custom comment list table view with karma.
+	 *
+	 * @param $column
+	 * @param $comment_ID
+	 */
 	public function populate_comment_column( $column, $comment_ID )
 	{
 		$comment = get_comment( $comment_ID );
@@ -288,6 +316,13 @@ class HMN_Comment_Popularity {
 		echo intval( $comment->comment_karma );
 	}
 
+	/**
+	 * Add ability to sort by comment karma on the edit comments admin view.
+	 *
+	 * @param $columns
+	 *
+	 * @return mixed
+	 */
 	public function make_weight_column_sortable( $columns ) {
 
 		$columns['comment_karma'] = 'comment_karma';
