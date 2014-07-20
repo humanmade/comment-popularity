@@ -14,7 +14,7 @@
 				value = -1;
 			}
 
-			$.post( edd_scripts.ajaxurl, {action: 'comment_vote', vote: value, comment_id: comment_id}, function( data ){
+			$.post( comment_popularity.ajaxurl, {action: 'comment_vote', vote: value, comment_id: comment_id, hmn_vote_nonce: comment_popularity.hmn_vote_nonce}, function( data ){
 				// update karma
 				$( 'div#comment-' + data.data.comment_id + ' span.comment-karma' ).text( data.data.karma );
 			});
