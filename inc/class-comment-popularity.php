@@ -189,6 +189,11 @@ class HMN_Comment_Popularity {
 		return $user_karma;
 	}
 
+	public function get_user_expert_status( $user_id ) {
+
+		return (bool) get_user_meta( $user_id, 'hmn_user_expert_status', true );
+	}
+
 	/**
 	 * Renders the HTML form element for setting the user karma value.
 	 *
@@ -204,15 +209,38 @@ class HMN_Comment_Popularity {
 
 		$user_karma = ( empty( $current_karma ) ) ? $default_karma : $current_karma;
 
+		$user_expert_status = get_the_author_meta( 'hmn_user_expert_status', $user->ID );
+
 		?>
 
-		<h3>User Karma points</h3>
+		<h3><?php esc_html_e( 'Comment popularity settings', 'comment-popularity' ); ?></h3>
 
 		<table class="form-table">
 
 			<tr>
 
-				<th><label for="hmn_user_karma">Karma</label></th>
+				<th>
+
+					<label for="hmn_user_expert_status"><?php esc_html_e( 'Expert Commenter', 'comment-popularity' ); ?></label>
+
+				</th>
+
+				<td>
+
+					<input id="hmn_user_expert_status" name="hmn_user_expert_status" type="hidden" value="0" />
+					<input id="hmn_user_expert_status" name="hmn_user_expert_status" type="checkbox" value="1" <?php checked( $user_expert_status ); ?> />
+
+				</td>
+
+			</tr>
+
+			<tr>
+
+				<th>
+
+					<label for="hmn_user_karma"><?php esc_html_e( 'Karma', 'comment-popularity' ); ?></label>
+
+				</th>
 
 				<td>
 
@@ -240,7 +268,11 @@ class HMN_Comment_Popularity {
 
 		$user_karma = absint( $_POST['hmn_user_karma'] );
 
+		$user_expert_status = (bool)$_POST['hmn_user_expert_status'];
+
 		update_user_meta( $user_id, 'hmn_user_karma', $user_karma );
+
+		update_user_meta( $user_id, 'hmn_user_expert_status', $user_expert_status );
 
 	}
 
@@ -258,9 +290,11 @@ class HMN_Comment_Popularity {
 
 		$user_id = get_current_user_id();
 
-		$user_karma = (int) get_user_meta( $user_id, 'hmn_user_karma', true );
+		$is_expert = $this->get_user_expert_status( $user_id );
 
-		if ( 0 < $user_karma ) {
+		$user_karma = $this->get_user_karma( $user_id );
+
+		if ( $is_expert && ( 0 < $user_karma ) ) {
 			$this->update_comment_weight( $user_karma, $comment_id );
 		}
 
