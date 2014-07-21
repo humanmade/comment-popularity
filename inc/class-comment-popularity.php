@@ -190,6 +190,8 @@ class HMN_Comment_Popularity {
 	}
 
 	/**
+	 * Determine if a user has been granted expert status.
+	 *
 	 * @param $user_id
 	 *
 	 * @return bool
