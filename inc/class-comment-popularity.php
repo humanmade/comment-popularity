@@ -189,6 +189,13 @@ class HMN_Comment_Popularity {
 		return $user_karma;
 	}
 
+	/**
+	 * Determine if a user has been granted expert status.
+	 *
+	 * @param $user_id
+	 *
+	 * @return bool
+	 */
 	public function get_user_expert_status( $user_id ) {
 
 		return (bool) get_user_meta( $user_id, 'hmn_user_expert_status', true );
@@ -414,6 +421,49 @@ class HMN_Comment_Popularity {
 	}
 
 	/**
+	 * Determine if the user can vote.
+	 *
+	 * @param $user_id
+	 * @param $comment_id
+	 *
+	 * @return bool
+	 */
+	public function user_can_vote( $user_id, $comment_id ) {
+
+		$comments_voted_on = get_user_meta( $user_id, 'comments_voted_on', true );
+
+		if ( ! empty( $comments_voted_on[ 'comment_id_' . $comment_id ] ) ) {
+
+			$last_voted = $comments_voted_on[ 'comment_id_' . $comment_id ];
+
+			$current_time = time();
+
+			if ( ( $current_time - $last_voted ) > ( 15 * MINUTE_IN_SECONDS ) ) {
+				return true; // user can vote, has been over 15 minutes since last vote.
+			} else {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Save the user's vote to user meta.
+	 *
+	 * @param $user_id
+	 * @param $comment_id
+	 */
+	public function user_has_voted( $user_id, $comment_id ) {
+
+		$comments_voted_on = get_user_meta( $user_id, 'comments_voted_on', true );
+
+		$comments_voted_on[ 'comment_id_' . $comment_id ] = time();
+
+		update_user_meta( $user_id, 'comments_voted_on', $comments_voted_on );
+	}
+
+	/**
 	 * Handles the voting ajax request.
 	 */
 	public function comment_vote() {
@@ -427,11 +477,27 @@ class HMN_Comment_Popularity {
 		$vote       = intval( $_POST['vote'] );
 		$comment_id = absint( $_POST['comment_id'] );
 
+
+		$user_id = get_current_user_id();
+
+		if ( ! $this->user_can_vote( $user_id, $comment_id ) ) {
+
+			$return = array(
+				'error_message' => __( 'You cannot vote on this comment at this time', 'comment-popularity' ),
+				'comment_id'    => $comment_id,
+			);
+
+			wp_send_json_error( $return );
+
+		}
+
 		$this->update_comment_weight( $vote, $comment_id );
 
 		// update comment author karma if it's an upvote.
 		if ( 0 < $vote )
 			$this->update_user_karma( $comment_id );
+
+		$this->user_has_voted( $user_id, $comment_id );
 
 		$return = array(
 			'weight'      => $this->get_comment_weight( $comment_id ),
