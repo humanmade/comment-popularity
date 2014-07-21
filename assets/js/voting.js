@@ -14,10 +14,20 @@
 				value = -1;
 			}
 
-			$.post( comment_popularity.ajaxurl, {action: 'comment_vote', vote: value, comment_id: comment_id, hmn_vote_nonce: comment_popularity.hmn_vote_nonce}, function( data ){
-				// update karma
-				$( 'div#comment-' + data.data.comment_id + ' span.comment-weight' ).text( data.data.weight );
+			var post = $.post( comment_popularity.ajaxurl, {action: 'comment_vote', vote: value, comment_id: comment_id, hmn_vote_nonce: comment_popularity.hmn_vote_nonce} );
+
+			post.done( function( data ) {
+
+				if ( data.success === false ) {
+					alert( data.data.error_message );
+				} else {
+					// update karma
+					$( 'div#comment-' + data.data.comment_id + ' span.comment-weight' ).text( data.data.weight );
+				}
+
+
 			});
+
 		});
 
 	});
