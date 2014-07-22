@@ -487,15 +487,21 @@ class HMN_Comment_Popularity {
 		$vote       = intval( $_POST['vote'] );
 		$comment_id = absint( $_POST['comment_id'] );
 
-
 		$user_id = get_current_user_id();
 
 		if ( ! $this->user_can_vote( $user_id, $comment_id ) ) {
 
-			$return = array(
-				'error_message' => __( 'You cannot vote on this comment at this time', 'comment-popularity' ),
-				'comment_id'    => $comment_id,
-			);
+			if ( ! is_user_logged_in() ) {
+				$return = array(
+					'error_message' => __( 'You must be logged in to vote on comments', 'comment-popularity' ),
+					'comment_id'    => $comment_id,
+				);
+			} else {
+				$return = array(
+					'error_message' => __( 'You cannot vote on this comment at this time', 'comment-popularity' ),
+					'comment_id'    => $comment_id,
+				);
+			}
 
 			wp_send_json_error( $return );
 
