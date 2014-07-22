@@ -126,9 +126,9 @@ class HMN_Comment_Popularity {
 		$comment_weight = $this->get_comment_weight( $comment_id );
 
 		$form = '<div class="comment-weight-container">';
-		$form .= '<span><a data-comment-id="' . esc_attr( $comment_id ) . '" class="vote-up" href="#">▲</a></span>';
+		$form .= '<span><a data-comment-id="' . esc_attr( $comment_id ) . '" class="vote-up" href="#">&#9650;</a></span>';
 		$form .= '<span class="comment-weight">' . esc_html( $comment_weight ) . '</span>';
-		$form .= '<span><a data-comment-id="' . esc_attr( $comment_id ) . '" class="vote-down" href="#">▼</a></span>';
+		$form .= '<span><a data-comment-id="' . esc_attr( $comment_id ) . '" class="vote-down" href="#">&#9660;</a></span>';
 		$form .= '</div>';
 
 		echo $form;
