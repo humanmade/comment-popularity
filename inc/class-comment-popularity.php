@@ -31,6 +31,7 @@ class HMN_Comment_Popularity {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 
 		add_action( 'wp_ajax_comment_vote', array( $this, 'comment_vote' ) );
+		add_action( 'wp_ajax_nopriv_comment_vote', array( $this, 'comment_vote' ) );
 
 		add_filter( 'manage_edit-comments_columns', array( $this, 'add_comment_columns' ) );
 		add_filter( 'manage_comments_custom_column', array( $this, 'populate_comment_column' ), 10, 2 );
