@@ -126,7 +126,12 @@ class HMN_Comment_Popularity {
 
 		$comment_weight = $this->get_comment_weight( $comment_id );
 
-		$form = '<div class="comment-weight-container">';
+		$container_classes = array( 'comment-weight-container' );
+		if ( ! $this->user_can_vote( get_current_user_id(), $comment_id ) ) {
+			$container_classes[] = 'voting-disabled';
+		}
+
+		$form = sprintf( '<div class="%s">', implode( ' ', $container_classes ) );
 		$form .= '<span><a data-comment-id="' . esc_attr( $comment_id ) . '" class="vote-up" href="#">▲</a></span>';
 		$form .= '<span class="comment-weight">' . esc_html( $comment_weight ) . '</span>';
 		$form .= '<span><a data-comment-id="' . esc_attr( $comment_id ) . '" class="vote-down" href="#">▼</a></span>';
