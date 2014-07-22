@@ -297,11 +297,11 @@ class HMN_Comment_Popularity {
 	 */
 	public function set_comment_weight( $comment_id, $comment ) {
 
-		if ( ! is_user_logged_in() ) {
+		$user_id = get_current_user_id();
+
+		if ( ! $this->user_can_vote( $user_id, $comment_id ) ) {
 			return;
 		}
-
-		$user_id = get_current_user_id();
 
 		$is_expert = $this->get_user_expert_status( $user_id );
 
