@@ -438,6 +438,10 @@ class HMN_Comment_Popularity {
 
 		$comments_voted_on = get_user_meta( $user_id, 'comments_voted_on', true );
 
+		if ( ! is_user_logged_in() ) {
+			return false;
+		}
+
 		if ( ! empty( $comments_voted_on[ 'comment_id_' . $comment_id ] ) ) {
 
 			$last_voted = $comments_voted_on[ 'comment_id_' . $comment_id ];
