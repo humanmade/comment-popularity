@@ -1,20 +1,21 @@
 <?php
 
-if ( ! defined( 'WP_UNINSTALL_PLUGIN') )
+if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
+}
 
 // Remove plugin settings
 delete_option( 'comment_popularity_prefs' );
 
 // Remove User meta
-$args = array (
-	'meta_query'     => array(
+$args = array(
+	'meta_query' => array(
 		array(
-			'key'       => 'hmn_user_expert_status',
-			'compare'   => 'EXISTS',
+			'key'     => 'hmn_user_expert_status',
+			'compare' => 'EXISTS',
 		),
 	),
-	'fields'         => 'all',
+	'fields'     => 'all',
 );
 
 // Delete user expert status
@@ -24,20 +25,20 @@ if ( ! empty( $user_query->results ) ) {
 
 	foreach ( $user_query->results as $user ) {
 
-		delete_user_meta( $user->ID,  'hmn_user_expert_status' );
+		delete_user_meta( $user->ID, 'hmn_user_expert_status' );
 
 	}
 
 }
 
-$args = array (
-	'meta_query'     => array(
+$args = array(
+	'meta_query' => array(
 		array(
-			'key'       => 'hmn_user_karma',
-			'compare'   => 'EXISTS',
+			'key'     => 'hmn_user_karma',
+			'compare' => 'EXISTS',
 		),
 	),
-	'fields'         => 'all',
+	'fields'     => 'all',
 );
 
 $user_query = new WP_User_Query( $args );
@@ -46,14 +47,14 @@ if ( ! empty( $user_query->results ) ) {
 
 	foreach ( $user_query->results as $user ) {
 
-		delete_user_meta( $user->ID,  'hmn_user_karma' );
+		delete_user_meta( $user->ID, 'hmn_user_karma' );
 
 	}
 
 }
 
 // Delete comment meta.
-$args = array (
+$args = array(
 	'karma' => '',
 );
 
