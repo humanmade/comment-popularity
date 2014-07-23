@@ -31,6 +31,7 @@ class HMN_Comment_Popularity {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 
 		add_action( 'wp_ajax_comment_vote', array( $this, 'comment_vote' ) );
+		add_action( 'wp_ajax_nopriv_comment_vote', array( $this, 'comment_vote' ) );
 
 		add_filter( 'manage_edit-comments_columns', array( $this, 'add_comment_columns' ) );
 		add_filter( 'manage_comments_custom_column', array( $this, 'populate_comment_column' ), 10, 2 );
@@ -125,8 +126,13 @@ class HMN_Comment_Popularity {
 
 		$comment_weight = $this->get_comment_weight( $comment_id );
 
-		$form = '<div class="comment-weight-container">';
-		$form .= '<span><a data-comment-id="' . esc_attr( $comment_id ) . '" class="vote-up" href="#">&#9650;</a></span>';
+		$container_classes = array( 'comment-weight-container' );
+		if ( ! $this->user_can_vote( get_current_user_id(), $comment_id ) ) {
+			$container_classes[] = 'voting-disabled';
+		}
+
+		$form = sprintf( '<div class="%s">', implode( ' ', $container_classes ) );
+		$form .= '<span><a data-comment-id="' . esc_attr( $comment_id ) . '" class="vote-up" href="#">▲</a></span>';
 		$form .= '<span class="comment-weight">' . esc_html( $comment_weight ) . '</span>';
 		$form .= '<span><a data-comment-id="' . esc_attr( $comment_id ) . '" class="vote-down" href="#">&#9660;</a></span>';
 		$form .= '</div>';
@@ -291,11 +297,11 @@ class HMN_Comment_Popularity {
 	 */
 	public function set_comment_weight( $comment_id, $comment ) {
 
-		if ( ! is_user_logged_in() ) {
+		$user_id = get_current_user_id();
+
+		if ( ! $this->user_can_vote( $user_id, $comment_id ) ) {
 			return;
 		}
-
-		$user_id = get_current_user_id();
 
 		$is_expert = $this->get_user_expert_status( $user_id );
 
@@ -432,6 +438,10 @@ class HMN_Comment_Popularity {
 
 		$comments_voted_on = get_user_meta( $user_id, 'comments_voted_on', true );
 
+		if ( ! is_user_logged_in() ) {
+			return false;
+		}
+
 		if ( ! empty( $comments_voted_on[ 'comment_id_' . $comment_id ] ) ) {
 
 			$last_voted = $comments_voted_on[ 'comment_id_' . $comment_id ];
@@ -477,15 +487,21 @@ class HMN_Comment_Popularity {
 		$vote       = intval( $_POST['vote'] );
 		$comment_id = absint( $_POST['comment_id'] );
 
-
 		$user_id = get_current_user_id();
 
 		if ( ! $this->user_can_vote( $user_id, $comment_id ) ) {
 
-			$return = array(
-				'error_message' => __( 'You cannot vote on this comment at this time', 'comment-popularity' ),
-				'comment_id'    => $comment_id,
-			);
+			if ( ! is_user_logged_in() ) {
+				$return = array(
+					'error_message' => __( 'You must be logged in to vote on comments', 'comment-popularity' ),
+					'comment_id'    => $comment_id,
+				);
+			} else {
+				$return = array(
+					'error_message' => __( 'You cannot vote on this comment at this time', 'comment-popularity' ),
+					'comment_id'    => $comment_id,
+				);
+			}
 
 			wp_send_json_error( $return );
 
