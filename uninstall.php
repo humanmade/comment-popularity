@@ -17,14 +17,14 @@ $args = array (
 	'fields'         => 'all',
 );
 
-// The User Query
+// Delete user expert status
 $user_query = new WP_User_Query( $args );
 
 if ( ! empty( $user_query->results ) ) {
 
 	foreach ( $user_query->results as $user ) {
 
-		delete_user_meta( $user_id,  'hmn_user_expert_status' );
+		delete_user_meta( $user->ID,  'hmn_user_expert_status' );
 
 	}
 
@@ -40,15 +40,28 @@ $args = array (
 	'fields'         => 'all',
 );
 
-// The User Query
 $user_query = new WP_User_Query( $args );
 
 if ( ! empty( $user_query->results ) ) {
 
 	foreach ( $user_query->results as $user ) {
 
-		delete_user_meta( $user_id,  'hmn_user_karma' );
+		delete_user_meta( $user->ID,  'hmn_user_karma' );
 
 	}
 
 }
+
+// Delete comment meta.
+$args = array (
+	'karma' => '',
+);
+
+// Select all comments with karma > 0, and reset value to zero.
+global $wpdb;
+
+$wpdb->query(
+	$wpdb->prepare(
+		"UPDATE wp_comments SET comment_karma=0 WHERE comment_karma > %d", 0
+	)
+);
