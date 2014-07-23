@@ -132,9 +132,9 @@ class HMN_Comment_Popularity {
 		}
 
 		$form = sprintf( '<div class="%s">', implode( ' ', $container_classes ) );
-		$form .= '<span><a data-comment-id="' . esc_attr( $comment_id ) . '" class="vote-up" href="#">▲</a></span>';
+		$form .= '<span><a data-comment-id="' . esc_attr( $comment_id ) . '" class="vote-up" href="#">&#9650;</a></span>';
 		$form .= '<span class="comment-weight">' . esc_html( $comment_weight ) . '</span>';
-		$form .= '<span><a data-comment-id="' . esc_attr( $comment_id ) . '" class="vote-down" href="#">▼</a></span>';
+		$form .= '<span><a data-comment-id="' . esc_attr( $comment_id ) . '" class="vote-down" href="#">&#9660;</a></span>';
 		$form .= '</div>';
 
 		echo $form;
