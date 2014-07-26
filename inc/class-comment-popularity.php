@@ -15,8 +15,18 @@ class HMN_Comment_Popularity {
 	 */
 	private static $instance;
 
+	/**
+	 * Time needed between 2 votes by user on same comment.
+	 *
+	 * @var mixed|void
+	 */
 	protected $interval;
 
+	/**
+	 * Roles to which custom capabilities will be added.
+	 *
+	 * @var mixed|void
+	 */
 	protected $roles;
 
 	/**
