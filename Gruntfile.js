@@ -6,7 +6,9 @@ module.exports = function (grunt) {
 		makepot: {
 			target: {
 				options: {
-					type: 'wp-plugin'
+					type: 'wp-plugin',
+					domainPath: 'languages',
+					exclude: ['node_modules/.*']
 				}
 			}
 		}
