@@ -40,6 +40,7 @@ class HMN_Comment_Popularity {
 
 		add_action( 'admin_init', array( $this, 'register_plugin_settings' ) );
 
+		add_action( 'init', array( $this, 'load_textdomain' ) );
 	}
 
 	/**
