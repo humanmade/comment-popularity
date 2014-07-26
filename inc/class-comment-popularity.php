@@ -99,7 +99,7 @@ class HMN_Comment_Popularity {
 
 		$default_expert_karma = array_key_exists( 'default_expert_karma', $prefs ) ? $prefs['default_expert_karma'] : 0;
 
-		echo '<input class="small-text" id="default_expert_karma" name="comment_popularity_prefs[default_expert_karma]" placeholder="Enter value" type="number" min="0" max="" step="1" value="' . esc_attr( $default_expert_karma ) . '" />';
+		echo '<input class="small-text" id="default_expert_karma" name="comment_popularity_prefs[default_expert_karma]" placeholder="' . esc_attr_e( 'Enter value', 'comment-popularity' ) . '" type="number" min="0" max="" step="1" value="' . esc_attr( $default_expert_karma ) . '" />';
 
 	}
 
@@ -394,7 +394,7 @@ class HMN_Comment_Popularity {
 	public function add_comment_columns( $columns )
 	{
 		return array_merge( $columns, array(
-			'comment_karma' => 'Weight',
+			'comment_karma' => __( 'Weight', 'comment-popularity' ),
 		) );
 	}
 
