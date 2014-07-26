@@ -1,0 +1,67 @@
+# Copyright (C) 2014 Human Made Limited
+# This file is distributed under the GPL-2.0+.
+msgid ""
+msgstr ""
+"Project-Id-Version: Comment Popularity 1.0.0\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/support/plugin/comment-"
+"popularity\n"
+"POT-Creation-Date: 2014-07-26 16:52:47+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2014-07-26 19:23+0100\n"
+"Last-Translator: Human Made Limited <hello@hmn.md>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"X-Generator: Poedit 1.5.7\n"
+
+#: inc/class-comment-popularity.php:90
+msgid "Default karma value for expert users"
+msgstr "Valeur par defaut pour le karma des utilisateurs experts"
+
+#: inc/class-comment-popularity.php:102
+msgid "Enter value"
+msgstr "Saisir une valeur"
+
+#: inc/class-comment-popularity.php:229
+msgid "Comment popularity settings"
+msgstr "Reglages de Comment Popularity"
+
+#: inc/class-comment-popularity.php:237
+msgid "Expert Commenter"
+msgstr "Participant expert"
+
+#: inc/class-comment-popularity.php:254
+msgid "Karma"
+msgstr "Karma"
+
+#: inc/class-comment-popularity.php:397
+msgid "Weight"
+msgstr "Poids"
+
+#: inc/class-comment-popularity.php:496
+msgid "You must be logged in to vote on comments"
+msgstr "Vous devez etre identifie pour voter sur les commentaires"
+
+#: inc/class-comment-popularity.php:501
+msgid "You cannot vote on this comment at this time"
+msgstr "Vous ne pouvez pas voter maintenant"
+
+#. Plugin Name of the plugin/theme
+msgid "Comment Popularity"
+msgstr "Comment Popularity"
+
+#. Plugin URI of the plugin/theme
+msgid "https://github.com/humanmade/comment-popularity"
+msgstr "https://github.com/humanmade/comment-popularity"
+
+#. Description of the plugin/theme
+msgid "Allow visitors to vote on comments."
+msgstr "Permettez aux visiteurs de voter sur les commentaires."
+
+#. Author of the plugin/theme
+msgid "Human Made Limited"
+msgstr "Human Made Limited"
+
+#. Author URI of the plugin/theme
+msgid "http://humanmade.co.uk"
+msgstr "http://humanmade.co.uk"
