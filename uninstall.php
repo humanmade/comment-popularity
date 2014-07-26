@@ -68,8 +68,21 @@ $wpdb->query(
 );
 
 // Remove custom capabilities
-$role = get_role( 'administrator' );
+$cp_plugin = HMN_Comment_Popularity::get_instance();
 
-if ( ! empty( $role ) ) {
-	$role->remove_cap( 'manage_user_karma_settings' );
+$roles = $cp_plugin->get_roles();
+
+foreach ( $roles as $role ) {
+
+	$role = get_role( $role );
+
+	if ( ! empty( $role ) ) {
+
+		if ( 'administrator' === $role ) {
+			$role->remove_cap( 'manage_user_karma_settings' );
+		}
+
+		$role->remove_cap( 'vote_on_comments' );
+	}
+
 }
