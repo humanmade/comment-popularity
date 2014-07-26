@@ -15,10 +15,20 @@ class HMN_Comment_Popularity {
 	 */
 	private static $instance;
 
+	protected $interval;
+
+	protected $roles;
+
 	/**
 	 * Creates a new HMN_Comment_Popularity object, and registers with WP hooks.
 	 */
 	private function __construct() {
+
+		$this->interval = apply_filters( 'hmn_cp_interval', 15 * MINUTE_IN_SECONDS );
+
+		$roles = array( 'administrator', 'editor', 'author', 'contributor' );
+
+		$this->roles = apply_filters( 'hmn_cp_roles', $roles );
 
 		add_action( 'show_user_profile', array( $this, 'render_user_karma_field' ) );
 		add_action( 'edit_user_profile', array( $this, 'render_user_karma_field' ) );
@@ -44,19 +54,35 @@ class HMN_Comment_Popularity {
 
 	}
 
+	/**
+	 * Returns the plugin roles array.
+	 *
+	 * @return mixed|void
+	 */
+	public function get_roles() {
+		return $this->roles;
+	}
+
+	/**
+	 * Add custom capabilities to allowed roles.
+	 */
 	public function set_permissions() {
 
-		$admin_role = get_role( 'administrator' );
+		foreach ( $this->roles as $role ) {
 
-		if ( ! empty( $admin_role ) ) {
-			$admin_role->add_cap( 'manage_user_karma_settings' );
+			$role = get_role( $role );
+
+			if ( ! empty( $role ) ) {
+
+				if ( 'administrator' === $role ) {
+					$role->add_cap( 'manage_user_karma_settings' );
+				}
+
+				$role->add_cap( 'vote_on_comments' );
+			}
+
 		}
 
-		$contributor_role = get_role( 'contributor' );
-
-		if ( ! empty( $contributor_role ) ) {
-			$contributor_role->add_cap( 'vote_on_comments' );
-		}
 	}
 
 	/**
@@ -477,10 +503,12 @@ class HMN_Comment_Popularity {
 
 			$current_time = current_time( 'timestamp' );
 
-			if ( ( $current_time - $last_voted ) > ( 15 * MINUTE_IN_SECONDS ) ) {
+			$elapsed_time = $current_time - $last_voted;
+
+			if ( $elapsed_time > $this->interval ) {
 				return true; // user can vote, has been over 15 minutes since last vote.
 			} else {
-				return new WP_Error( 'voting_flood', __( 'You cannot vote again so soon on this comment, please wait ' . human_time_diff( $current_time, $last_voted ) . ' minutes', 'comment-popularity' ) );
+				return new WP_Error( 'voting_flood', __( 'You cannot vote again so soon on this comment, please wait ' . human_time_diff( $last_voted + $this->interval, $current_time ), 'comment-popularity' ) );
 			}
 		}
 
