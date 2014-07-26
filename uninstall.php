@@ -66,3 +66,10 @@ $wpdb->query(
 		"UPDATE wp_comments SET comment_karma=0 WHERE comment_karma > %d", 0
 	)
 );
+
+// Remove custom capabilities
+$role = get_role( 'administrator' );
+
+if ( ! empty( $role ) ) {
+	$role->remove_cap( 'manage_user_karma_settings' );
+}
