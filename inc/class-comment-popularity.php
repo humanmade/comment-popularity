@@ -94,6 +94,16 @@ class HMN_Comment_Popularity {
 
 		}
 
+		// Allow all user roles to vote.
+		global $wp_roles;
+
+		foreach ( $wp_roles->role_objects as $role ) {
+
+			if ( ! empty( $role ) ) {
+				$role->add_cap( 'vote_on_comments' );
+			}
+		}
+
 	}
 
 	/**
