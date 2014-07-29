@@ -23,11 +23,11 @@ class HMN_Comment_Popularity {
 	protected $interval;
 
 	/**
-	 * Roles to which custom capabilities will be added.
+	 * User roles allowed to manage karma settings.
 	 *
 	 * @var mixed|void
 	 */
-	protected $roles;
+	protected $admin_roles;
 
 	/**
 	 * Creates a new HMN_Comment_Popularity object, and registers with WP hooks.
@@ -36,9 +36,7 @@ class HMN_Comment_Popularity {
 
 		$this->interval = apply_filters( 'hmn_cp_interval', 15 * MINUTE_IN_SECONDS );
 
-		$roles = array( 'administrator', 'editor', 'author', 'contributor' );
-
-		$this->roles = apply_filters( 'hmn_cp_roles', $roles );
+		$this->admin_roles = apply_filters( 'hmn_cp_roles', array( 'administrator', 'editor' ) );
 
 		add_action( 'show_user_profile', array( $this, 'render_user_karma_field' ) );
 		add_action( 'edit_user_profile', array( $this, 'render_user_karma_field' ) );
@@ -71,7 +69,7 @@ class HMN_Comment_Popularity {
 	 * @return mixed|void
 	 */
 	public function get_roles() {
-		return $this->roles;
+		return $this->admin_roles;
 	}
 
 	/**
@@ -79,17 +77,14 @@ class HMN_Comment_Popularity {
 	 */
 	public function set_permissions() {
 
-		foreach ( $this->roles as $role ) {
+		foreach ( $this->admin_roles as $role ) {
 
 			$role = get_role( $role );
 
 			if ( ! empty( $role ) ) {
 
-				if ( 'administrator' === $role ) {
-					$role->add_cap( 'manage_user_karma_settings' );
-				}
+				$role->add_cap( 'manage_user_karma_settings' );
 
-				$role->add_cap( 'vote_on_comments' );
 			}
 
 		}
