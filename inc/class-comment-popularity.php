@@ -20,9 +20,27 @@ class HMN_Comment_Popularity {
 	protected $twig = null;
 
 	/**
+	 * Time needed between 2 votes by user on same comment.
+	 *
+	 * @var mixed|void
+	 */
+	protected $interval;
+
+	/**
+	 * User roles allowed to manage karma settings.
+	 *
+	 * @var mixed|void
+	 */
+	protected $admin_roles;
+
+	/**
 	 * Creates a new HMN_Comment_Popularity object, and registers with WP hooks.
 	 */
 	private function __construct() {
+
+		$this->interval = apply_filters( 'hmn_cp_interval', 15 * MINUTE_IN_SECONDS );
+
+		$this->admin_roles = apply_filters( 'hmn_cp_roles', array( 'administrator', 'editor' ) );
 
 		add_action( 'show_user_profile', array( $this, 'render_user_karma_field' ) );
 		add_action( 'edit_user_profile', array( $this, 'render_user_karma_field' ) );
@@ -43,10 +61,10 @@ class HMN_Comment_Popularity {
 		add_filter( 'manage_edit-comments_sortable_columns', array( $this, 'make_weight_column_sortable' ) );
 
 		add_action( 'admin_init', array( $this, 'register_plugin_settings' ) );
-
 		add_action( 'init', array( $this, 'load_textdomain' ) );
 
 		$this->init_twig();
+		$this->set_permissions();
 	}
 
 	public function init_twig() {
@@ -55,6 +73,44 @@ class HMN_Comment_Popularity {
 
 		$loader = new Twig_Loader_Filesystem( $template_path );
 		$this->twig = new Twig_Environment( $loader );
+
+	}
+
+	/**
+	 * Returns the plugin roles array.
+	 *
+	 * @return mixed|void
+	 */
+	public function get_roles() {
+		return $this->admin_roles;
+	}
+
+	/**
+	 * Add custom capabilities to allowed roles.
+	 */
+	public function set_permissions() {
+
+		foreach ( $this->admin_roles as $role ) {
+
+			$role = get_role( $role );
+
+			if ( ! empty( $role ) ) {
+
+				$role->add_cap( 'manage_user_karma_settings' );
+
+			}
+
+		}
+
+		// Allow all user roles to vote.
+		global $wp_roles;
+
+		foreach ( $wp_roles->role_objects as $role ) {
+
+			if ( ! empty( $role ) ) {
+				$role->add_cap( 'vote_on_comments' );
+			}
+		}
 
 	}
 
@@ -228,6 +284,10 @@ class HMN_Comment_Popularity {
 	 */
 	public function render_user_karma_field( $user ) {
 
+		if ( ! current_user_can( 'manage_user_karma_settings' ) ) {
+			return;
+		}
+
 		$prefs = get_option( 'comment_popularity_prefs', array( 'default_expert_karma' => 0 ) );
 
 		$default_karma = $prefs['default_expert_karma'];
@@ -288,6 +348,10 @@ class HMN_Comment_Popularity {
 	 * @param $user_id
 	 */
 	public function save_user_meta( $user_id ) {
+
+		if ( ! current_user_can( 'manage_user_karma_settings' ) ) {
+			return;
+		}
 
 		if ( ! current_user_can( 'edit_user', $user_id ) ) {
 			return false;
@@ -450,22 +514,28 @@ class HMN_Comment_Popularity {
 	 */
 	public function user_can_vote( $user_id, $comment_id ) {
 
+		if ( ! current_user_can( 'vote_on_comments' ) ) {
+			return new WP_Error( 'insufficient_permissions', __( 'You lack sufficient permissions to vote on comments', 'comment-popularity' ) );
+		}
+
 		$comments_voted_on = get_user_meta( $user_id, 'comments_voted_on', true );
 
 		if ( ! is_user_logged_in() ) {
-			return false;
+			return new WP_Error( 'not_logged_in', __( 'You must be logged in to vote on comments', 'comment-popularity' ) );
 		}
 
 		if ( ! empty( $comments_voted_on[ 'comment_id_' . $comment_id ] ) ) {
 
 			$last_voted = $comments_voted_on[ 'comment_id_' . $comment_id ];
 
-			$current_time = time();
+			$current_time = current_time( 'timestamp' );
 
-			if ( ( $current_time - $last_voted ) > ( 15 * MINUTE_IN_SECONDS ) ) {
+			$elapsed_time = $current_time - $last_voted;
+
+			if ( $elapsed_time > $this->interval ) {
 				return true; // user can vote, has been over 15 minutes since last vote.
 			} else {
-				return false;
+				return new WP_Error( 'voting_flood', __( 'You cannot vote again so soon on this comment, please wait ' . human_time_diff( $last_voted + $this->interval, $current_time ), 'comment-popularity' ) );
 			}
 		}
 
@@ -478,7 +548,7 @@ class HMN_Comment_Popularity {
 	 * @param $user_id
 	 * @param $comment_id
 	 */
-	public function user_has_voted( $user_id, $comment_id ) {
+	public function update_comments_voted_on_for_user( $user_id, $comment_id ) {
 
 		$comments_voted_on = get_user_meta( $user_id, 'comments_voted_on', true );
 
@@ -503,19 +573,17 @@ class HMN_Comment_Popularity {
 
 		$user_id = get_current_user_id();
 
-		if ( ! $this->user_can_vote( $user_id, $comment_id ) ) {
+		$user_can_vote = $this->user_can_vote( $user_id, $comment_id );
 
-			if ( ! is_user_logged_in() ) {
-				$return = array(
-					'error_message' => __( 'You must be logged in to vote on comments', 'comment-popularity' ),
-					'comment_id'    => $comment_id,
-				);
-			} else {
-				$return = array(
-					'error_message' => __( 'You cannot vote on this comment at this time', 'comment-popularity' ),
-					'comment_id'    => $comment_id,
-				);
-			}
+		if ( is_wp_error( $user_can_vote ) ) {
+
+			$error_code = $user_can_vote->get_error_code();
+			$error_msg = $user_can_vote->get_error_message( $error_code );
+
+			$return = array(
+				'error_message' => $error_msg,
+				'comment_id'    => $comment_id,
+			);
 
 			wp_send_json_error( $return );
 
@@ -527,7 +595,7 @@ class HMN_Comment_Popularity {
 		if ( 0 < $vote )
 			$this->update_user_karma( $comment_id );
 
-		$this->user_has_voted( $user_id, $comment_id );
+		$this->update_comments_voted_on_for_user( $user_id, $comment_id );
 
 		$return = array(
 			'weight'      => $this->get_comment_weight( $comment_id ),
