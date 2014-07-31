@@ -22,7 +22,7 @@
 					alert( data.data.error_message );
 				} else {
 					// update karma
-					$( 'div#comment-' + data.data.comment_id + ' span.comment-weight' ).text( data.data.weight );
+					$( '#comment-weight-value-' + data.data.comment_id ).text( data.data.weight );
 				}
 
 
