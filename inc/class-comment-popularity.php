@@ -519,34 +519,38 @@ class HMN_Comment_Popularity {
 			return new WP_Error( 'insufficient_permissions', __( 'You lack sufficient permissions to vote on comments', 'comment-popularity' ) );
 		}
 
-		$comments_voted_on = get_user_meta( $user_id, 'comments_voted_on', true );
-
 		if ( ! is_user_logged_in() ) {
 			return new WP_Error( 'not_logged_in', __( 'You must be logged in to vote on comments', 'comment-popularity' ) );
 		}
 
-		if ( ! empty( $comments_voted_on[ 'comment_id_' . $comment_id ] ) ) {
+		$comments_voted_on = get_user_meta( $user_id, 'comments_voted_on', true );
 
-			$last_action = $comments_voted_on[ 'comment_id_' . $comment_id ]['last_action'];
-
-			if ( $last_action === $action ) {
-				return new WP_Error( 'same_action', sprintf( __( 'You already %sd this comment', 'comment-popularity' ), $action ) );
-			}
-
-			$last_voted = $comments_voted_on[ 'comment_id_' . $comment_id ]['vote_time'];
-
-			$current_time = current_time( 'timestamp' );
-
-			$elapsed_time = $current_time - $last_voted;
-
-			if ( $elapsed_time > $this->interval ) {
-				return true; // user can vote, has been over 15 minutes since last vote.
-			} else {
-				return new WP_Error( 'voting_flood', __( 'You cannot vote again so soon on this comment, please wait ' . human_time_diff( $last_voted + $this->interval, $current_time ), 'comment-popularity' ) );
-			}
+		// User has not yet voted on this comment
+		if ( empty( $comments_voted_on[ 'comment_id_' . $comment_id ] ) ) {
+			return array();
 		}
 
-		return true;
+		// Is user trying to vote twice on same comment?
+		$last_action = $comments_voted_on[ 'comment_id_' . $comment_id ]['last_action'];
+
+		if ( $last_action === $action ) {
+			return new WP_Error( 'same_action', sprintf( __( 'You already %sd this comment', 'comment-popularity' ), $action ) );
+		}
+
+		// Is user trying to vote too fast?
+		$last_voted = $comments_voted_on[ 'comment_id_' . $comment_id ]['vote_time'];
+
+		$current_time = current_time( 'timestamp' );
+
+		$elapsed_time = $current_time - $last_voted;
+
+		if ( $elapsed_time > $this->interval ) {
+			return true; // user can vote, has been over 15 minutes since last vote.
+		} else {
+			return new WP_Error( 'voting_flood', __( 'You cannot vote again so soon on this comment, please wait ' . human_time_diff( $last_voted + $this->interval, $current_time ), 'comment-popularity' ) );
+		}
+
+		return $comments_voted_on;
 	}
 
 	/**
@@ -559,10 +563,12 @@ class HMN_Comment_Popularity {
 
 		$comments_voted_on = get_user_meta( $user_id, 'comments_voted_on', true );
 
-		$comments_voted_on[ 'comment_id_' . $comment_id ]['vote_time'] = time();
+		$comments_voted_on[ 'comment_id_' . $comment_id ]['vote_time'] = current_time( 'timestamp' );
 		$comments_voted_on[ 'comment_id_' . $comment_id ]['last_action'] = $action;
 
 		update_user_meta( $user_id, 'comments_voted_on', $comments_voted_on );
+
+		return $comments_voted_on[ 'comment_id_' . $comment_id ];
 	}
 
 	/**
