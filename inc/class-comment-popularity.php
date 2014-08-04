@@ -186,6 +186,7 @@ class HMN_Comment_Popularity {
 		$comment_weight = $this->get_comment_weight( $comment_id );
 
 		$container_classes = array( 'comment-weight-container' );
+
 		if ( ! $this->user_can_vote( get_current_user_id(), $comment_id ) ) {
 			$container_classes[] = 'voting-disabled';
 		}
@@ -501,7 +502,7 @@ class HMN_Comment_Popularity {
 	 *
 	 * @return bool
 	 */
-	public function user_can_vote( $user_id, $comment_id, $action ) {
+	public function user_can_vote( $user_id, $comment_id, $action = '' ) {
 
 		if ( ! current_user_can( 'vote_on_comments' ) ) {
 			return new WP_Error( 'insufficient_permissions', __( 'You lack sufficient permissions to vote on comments', 'comment-popularity' ) );
