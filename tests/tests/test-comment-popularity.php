@@ -89,4 +89,20 @@ Class Test_HMN_Comment_Popularity extends HMN_Comment_PopularityTestCase {
 		$this->assertEquals( 'voting_flood', $ret->get_error_code() );
 	}
 
+	public function test_upvote_comment() {
+
+		$vote_time = current_time( 'timestamp' );
+
+		$action = 'upvote';
+
+		$result = $this->instance->update_comments_voted_on_for_user( $this->test_user_id, $this->test_comment_id, $action );
+
+		$expected = array(
+				'vote_time' => $vote_time,
+				'last_action' => $action
+		);
+
+		$this->assertEquals( $expected, $result );
+	}
+
 }
