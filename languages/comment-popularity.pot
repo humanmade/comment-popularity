@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Comment Popularity 1.0.0\n"
 "Report-Msgid-Bugs-To: "
 "http://wordpress.org/support/plugin/comment-popularity\n"
-"POT-Creation-Date: 2014-07-26 16:52:47+00:00\n"
+"POT-Creation-Date: 2014-08-04 14:39:10+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -14,36 +14,36 @@ msgstr ""
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "X-Generator: grunt-wp-i18n 0.4.6\n"
 
-#: inc/class-comment-popularity.php:90
+#: inc/class-comment-popularity.php:149
 msgid "Default karma value for expert users"
 msgstr ""
 
-#: inc/class-comment-popularity.php:102
+#: inc/class-comment-popularity.php:161
 msgid "Enter value"
 msgstr ""
 
-#: inc/class-comment-popularity.php:229
+#: inc/class-comment-popularity.php:292
 msgid "Comment popularity settings"
 msgstr ""
 
-#: inc/class-comment-popularity.php:237
+#: inc/class-comment-popularity.php:300
 msgid "Expert Commenter"
 msgstr ""
 
-#: inc/class-comment-popularity.php:254
+#: inc/class-comment-popularity.php:317
 msgid "Karma"
 msgstr ""
 
-#: inc/class-comment-popularity.php:397
+#: inc/class-comment-popularity.php:464
 msgid "Weight"
 msgstr ""
 
-#: inc/class-comment-popularity.php:496
-msgid "You must be logged in to vote on comments"
+#: inc/class-comment-popularity.php:507
+msgid "You lack sufficient permissions to vote on comments"
 msgstr ""
 
-#: inc/class-comment-popularity.php:501
-msgid "You cannot vote on this comment at this time"
+#: inc/class-comment-popularity.php:513
+msgid "You must be logged in to vote on comments"
 msgstr ""
 
 #. Plugin Name of the plugin/theme
