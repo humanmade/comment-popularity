@@ -518,7 +518,7 @@ class HMN_Comment_Popularity {
 			$last_action = $comments_voted_on[ 'comment_id_' . $comment_id ]['last_action'];
 
 			if ( $last_action === $action ) {
-				return new WP_Error( 'same_action', sprintf( __( 'You already %sd that', 'comment-popularity' ), $action ) );
+				return new WP_Error( 'same_action', sprintf( __( 'You already %sd this comment', 'comment-popularity' ), $action ) );
 			}
 
 			$last_voted = $comments_voted_on[ 'comment_id_' . $comment_id ]['vote_time'];
