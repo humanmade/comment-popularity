@@ -1,4 +1,6 @@
 <?php
+// Load our dependencies
+require_once plugin_dir_path( __FILE__ ) . '/lib/autoload.php';
 
 /**
  * Class HMN_Comment_Popularity
@@ -14,6 +16,8 @@ class HMN_Comment_Popularity {
 	 * @var the single class instance.
 	 */
 	private static $instance;
+
+	protected $twig = null;
 
 	/**
 	 * Time needed between 2 votes by user on same comment.
@@ -59,7 +63,16 @@ class HMN_Comment_Popularity {
 		add_action( 'admin_init', array( $this, 'register_plugin_settings' ) );
 		add_action( 'init', array( $this, 'load_textdomain' ) );
 
+		$this->init_twig();
 		$this->set_permissions();
+	}
+
+	public function init_twig() {
+
+		$template_path = apply_filters( 'hmn_cp_template_path', plugin_dir_path( __FILE__ ) . '/templates' );
+
+		$loader = new Twig_Loader_Filesystem( $template_path );
+		$this->twig = new Twig_Environment( $loader );
 
 	}
 
@@ -183,21 +196,19 @@ class HMN_Comment_Popularity {
 	 */
 	public function render_ui( $comment_id ) {
 
-		$comment_weight = $this->get_comment_weight( $comment_id );
-
 		$container_classes = array( 'comment-weight-container' );
 
 		if ( ! $this->user_can_vote( get_current_user_id(), $comment_id ) ) {
 			$container_classes[] = 'voting-disabled';
 		}
 
-		$form = sprintf( '<div class="%s">', implode( ' ', $container_classes ) );
-		$form .= '<span><a data-comment-id="' . esc_attr( $comment_id ) . '" class="vote-up" href="#">&#9650;</a></span>';
-		$form .= '<span class="comment-weight">' . esc_html( $comment_weight ) . '</span>';
-		$form .= '<span><a data-comment-id="' . esc_attr( $comment_id ) . '" class="vote-down" href="#">&#9660;</a></span>';
-		$form .= '</div>';
+		$vars = array(
+			'container_classes' => $container_classes,
+			'comment_id'        => $comment_id,
+			'comment_weight'    => $this->get_comment_weight( $comment_id )
+		);
 
-		echo $form;
+		echo $this->twig->render( 'voting-system.html', $vars );
 	}
 
 	/**
