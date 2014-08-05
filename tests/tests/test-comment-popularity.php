@@ -29,7 +29,7 @@ Class Test_HMN_Comment_Popularity extends HMN_Comment_PopularityTestCase {
 
 		// set interval to 30 seconds
 		add_filter( 'hmn_cp_interval', function(){
-			return 30;
+			return 5;
 		});
 
 
@@ -74,19 +74,27 @@ Class Test_HMN_Comment_Popularity extends HMN_Comment_PopularityTestCase {
 
 	public function test_too_soon_to_vote_again() {
 
-		// User votes on comment
-		$this->instance->update_comments_voted_on_for_user( $this->test_user_id, $this->test_comment_id, 'upvote' );
+		$this->instance->comment_vote( 1, $this->test_comment_id );
 
-		// Vote again immediately
-		$this->instance->update_comments_voted_on_for_user( $this->test_user_id, $this->test_comment_id, 'downvote' );
+		$ret = $this->instance->comment_vote( -1, $this->test_comment_id );
 
-		$ret = $this->instance->user_can_vote( $this->test_user_id, $this->test_comment_id, 'upvote' );
+		$this->assertEquals( 'voting_flood', $ret['error_code'] );
 
-		// Make sure we have a WP_Error
-		$this->assertInstanceOf( 'WP_Error', $ret );
+	}
 
-		// Make sure it's the correct error code
-		$this->assertEquals( 'voting_flood', $ret->get_error_code() );
+	public function test_has_permission_to_vote() {
+
+	}
+
+	public function test_prevent_same_vote_twice() {
+
+		$this->instance->comment_vote( 1, $this->test_comment_id );
+
+		$ret = $this->instance->comment_vote( 1, $this->test_comment_id );
+
+		sleep( 7 );
+
+		$this->assertEquals( 'same_action', $ret['error_code'] );
 	}
 
 	public function test_upvote_comment() {
@@ -103,6 +111,7 @@ Class Test_HMN_Comment_Popularity extends HMN_Comment_PopularityTestCase {
 		);
 
 		$this->assertEquals( $expected, $result );
+
 	}
 
 }
