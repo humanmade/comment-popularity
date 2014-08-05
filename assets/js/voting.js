@@ -19,7 +19,7 @@
 			post.done( function( data ) {
 
 				if ( data.success === false ) {
-					alert( data.data.error_message );
+					$.growl.error({ message: data.data.error_message });
 				} else {
 					// update karma
 					$( '#comment-weight-value-' + data.data.comment_id ).text( data.data.weight );
