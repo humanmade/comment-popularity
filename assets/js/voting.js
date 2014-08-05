@@ -23,8 +23,8 @@
 				} else {
 					// update karma
 					$( '#comment-weight-value-' + data.data.comment_id ).text( data.data.weight );
+					$.growl.notice({ message: data.data.success_message });
 				}
-
 
 			});
 
