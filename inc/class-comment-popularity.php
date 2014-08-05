@@ -571,19 +571,42 @@ class HMN_Comment_Popularity {
 		return $comments_voted_on[ 'comment_id_' . $comment_id ];
 	}
 
-	/**
-	 * Handles the voting ajax request.
-	 */
-	public function comment_vote() {
+	public function comment_vote_callback() {
 
 		check_ajax_referer( 'hmn_vote_submit', 'hmn_vote_nonce' );
 
 		if ( ! in_array( (int)$_POST['vote'], array( -1, 1 ) ) ) {
-			die;
-		} // wp_send_json_error?
+
+			$return = array(
+				'error_code'    => 'invalid_action',
+				'error_message' => __( 'Invalid action', 'comment-popularity' ),
+				'comment_id'    => $comment_id,
+			);
+
+			wp_send_json_error( $return );
+		}
 
 		$vote       = intval( $_POST['vote'] );
 		$comment_id = absint( $_POST['comment_id'] );
+
+		$result = $this->comment_vote( $vote, $comment_id );
+
+		if ( array_key_exists( 'error_message', $result ) ) {
+
+			wp_send_json_error( $result );
+
+		} else {
+
+			wp_send_json_success( $result );
+
+		}
+
+	}
+
+	/**
+	 * Handles the voting ajax request.
+	 */
+	public function comment_vote( $vote, $comment_id ) {
 
 		$action = ( $vote > 0 ) ? 'upvote' : 'downvote';
 
@@ -597,11 +620,12 @@ class HMN_Comment_Popularity {
 			$error_msg = $user_can_vote->get_error_message( $error_code );
 
 			$return = array(
+				'error_code'    => $error_code,
 				'error_message' => $error_msg,
 				'comment_id'    => $comment_id,
 			);
 
-			wp_send_json_error( $return );
+			return $return;
 
 		}
 
@@ -618,7 +642,7 @@ class HMN_Comment_Popularity {
 			'comment_id' => $comment_id,
 		);
 
-		wp_send_json_success( $return );
+		return $return;
 	}
 
 	/**
