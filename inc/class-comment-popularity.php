@@ -186,6 +186,7 @@ class HMN_Comment_Popularity {
 		$comment_weight = $this->get_comment_weight( $comment_id );
 
 		$container_classes = array( 'comment-weight-container' );
+
 		if ( ! $this->user_can_vote( get_current_user_id(), $comment_id ) ) {
 			$container_classes[] = 'voting-disabled';
 		}
@@ -501,7 +502,7 @@ class HMN_Comment_Popularity {
 	 *
 	 * @return bool
 	 */
-	public function user_can_vote( $user_id, $comment_id ) {
+	public function user_can_vote( $user_id, $comment_id, $action = '' ) {
 
 		if ( ! current_user_can( 'vote_on_comments' ) ) {
 			return new WP_Error( 'insufficient_permissions', __( 'You lack sufficient permissions to vote on comments', 'comment-popularity' ) );
@@ -515,7 +516,13 @@ class HMN_Comment_Popularity {
 
 		if ( ! empty( $comments_voted_on[ 'comment_id_' . $comment_id ] ) ) {
 
-			$last_voted = $comments_voted_on[ 'comment_id_' . $comment_id ];
+			$last_action = $comments_voted_on[ 'comment_id_' . $comment_id ]['last_action'];
+
+			if ( $last_action === $action ) {
+				return new WP_Error( 'same_action', sprintf( __( 'You already %sd this comment', 'comment-popularity' ), $action ) );
+			}
+
+			$last_voted = $comments_voted_on[ 'comment_id_' . $comment_id ]['vote_time'];
 
 			$current_time = current_time( 'timestamp' );
 
@@ -537,11 +544,12 @@ class HMN_Comment_Popularity {
 	 * @param $user_id
 	 * @param $comment_id
 	 */
-	public function update_comments_voted_on_for_user( $user_id, $comment_id ) {
+	public function update_comments_voted_on_for_user( $user_id, $comment_id, $action ) {
 
 		$comments_voted_on = get_user_meta( $user_id, 'comments_voted_on', true );
 
-		$comments_voted_on[ 'comment_id_' . $comment_id ] = time();
+		$comments_voted_on[ 'comment_id_' . $comment_id ]['vote_time'] = time();
+		$comments_voted_on[ 'comment_id_' . $comment_id ]['last_action'] = $action;
 
 		update_user_meta( $user_id, 'comments_voted_on', $comments_voted_on );
 	}
@@ -560,9 +568,11 @@ class HMN_Comment_Popularity {
 		$vote       = intval( $_POST['vote'] );
 		$comment_id = absint( $_POST['comment_id'] );
 
+		$action = ( $vote > 0 ) ? 'upvote' : 'downvote';
+
 		$user_id = get_current_user_id();
 
-		$user_can_vote = $this->user_can_vote( $user_id, $comment_id );
+		$user_can_vote = $this->user_can_vote( $user_id, $comment_id, $action );
 
 		if ( is_wp_error( $user_can_vote ) ) {
 
@@ -584,7 +594,7 @@ class HMN_Comment_Popularity {
 		if ( 0 < $vote )
 			$this->update_user_karma( $comment_id );
 
-		$this->update_comments_voted_on_for_user( $user_id, $comment_id );
+		$this->update_comments_voted_on_for_user( $user_id, $comment_id, $action );
 
 		$return = array(
 			'weight'      => $this->get_comment_weight( $comment_id ),
