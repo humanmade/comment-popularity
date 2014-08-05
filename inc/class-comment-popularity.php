@@ -168,6 +168,11 @@ class HMN_Comment_Popularity {
 
 	}
 
+	/**
+	 * Override comments template with custom one.
+	 *
+	 * @return string
+	 */
 	public function custom_comments_template() {
 
 		global $post;
@@ -182,6 +187,14 @@ class HMN_Comment_Popularity {
 
 	}
 
+	/**
+	 * Template for comments and pingbacks.
+	 * Used as a callback by wp_list_comments() for displaying the comments.
+	 * 
+	 * @param $comment
+	 * @param $args
+	 * @param $depth
+	 */
 	function comment_callback( $comment, $args, $depth ) {
 
 		$GLOBALS['comment'] = $comment;
