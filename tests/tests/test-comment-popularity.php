@@ -1,6 +1,9 @@
 <?php
-
-Class Test_HMN_Comment_Popularity extends HMN_Comment_PopularityTestCase {
+require_once 'testcase.php';
+/**
+ * Class Test_HMN_Comment_Popularity
+ */
+class Test_HMN_Comment_Popularity extends HMN_Comment_PopularityTestCase {
 
 	protected $test_user_id;
 
@@ -81,31 +84,19 @@ Class Test_HMN_Comment_Popularity extends HMN_Comment_PopularityTestCase {
 
 	public function test_too_soon_to_vote_again() {
 
-		$this->plugin->comment_vote( 1, $this->test_comment_id );
+		$this->plugin->comment_vote( 1, $this->test_comment_id, $this->test_user_id );
 
-		$ret = $this->plugin->comment_vote( -1, $this->test_comment_id );
+		$ret = $this->plugin->comment_vote( -1, $this->test_comment_id, $this->test_user_id );
 
 		$this->assertEquals( 'voting_flood', $ret['error_code'] );
 
 	}
 
-	public function test_has_permission_to_vote() {
-
-		$this->remove_cap();
-
-		$ret = $this->plugin->comment_vote( 1, $this->test_comment_id );var_dump($ret);
-
-		$this->assertEquals( 'insufficient_permissions', $ret['error_code'] );
-
-		$this->add_cap();
-
-	}
-
 	public function test_prevent_same_vote_twice() {
 
-		$this->plugin->comment_vote( 1, $this->test_comment_id );
+		$this->plugin->comment_vote( 1, $this->test_comment_id, $this->test_user_id );
 
-		$ret = $this->plugin->comment_vote( 1, $this->test_comment_id );
+		$ret = $this->plugin->comment_vote( 1, $this->test_comment_id, $this->test_user_id );
 
 		sleep( 7 );
 
