@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Bootstrap the plugin unit testing environment.
  *
@@ -13,12 +14,10 @@ $GLOBALS['wp_tests_options'] = array(
 );
 
 // If the develop repo location is defined (as WP_DEVELOP_DIR), use that
-// location. Otherwise, we'll just assume that this plugin is installed in a
-// WordPress develop SVN checkout.
+// location. Otherwise, we'll just assume that it's a Travis CI build
 
 if( false !== getenv( 'WP_DEVELOP_DIR' ) ) {
 	require getenv( 'WP_DEVELOP_DIR' ) . '/tests/phpunit/includes/bootstrap.php';
 } else {
-	$_tests_dir = '/tmp/wordpress-tests-lib';
-	require $_tests_dir . '/includes/bootstrap.php';
+	require '/tmp/wordpress-tests-lib/includes/bootstrap.php';
 }
