@@ -18,6 +18,8 @@ require_once trailingslashit( __DIR__ ) . 'inc/class-comment-popularity.php';
 
 add_action( 'plugins_loaded', array( 'HMN_Comment_Popularity', 'get_instance' ) );
 
+register_activation_hook( __FILE__, array( 'HMN_Comment_Popularity', 'activate' ) );
+
 include_once trailingslashit( __DIR__ ) . 'inc/helpers.php';
 
 if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {

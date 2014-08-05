@@ -12,6 +12,8 @@ class HMN_Comment_Popularity {
 	 */
 	const VERSION = '1.0';
 
+	const MINIMUM_PHP_VERSION = '5.3.2';
+
 	/**
 	 * @var the single class instance.
 	 */
@@ -53,6 +55,14 @@ class HMN_Comment_Popularity {
 
 		$this->init_twig();
 		$this->set_permissions();
+	}
+
+	public function activate() {
+
+		// Check PHP version. We need at least 5.3.2 for Composer.
+		if ( version_compare( PHP_VERSION, '5.3.2', '<' ) ) {
+			deactivate_plugins( basename( __FILE__ ) );
+		}
 	}
 
 	public function init_twig() {
