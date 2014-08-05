@@ -55,4 +55,17 @@ class HMN_Comment_PopularityTestCase extends WP_UnitTestCase {
 		$this->assertFalse( null == $this->plugin );
 	}
 
+	/**
+	 * Check if get instance function return a valid instance of the comment_popularity class
+	 *
+	 * @return void
+	 */
+	public function test_get_instance() {
+
+		$this->instance = HMN_Comment_Popularity::get_instance();
+
+		$this->assertInstanceOf( 'HMN_Comment_Popularity', $this->instance );
+
+	}
+
 }
