@@ -12,13 +12,23 @@ class HMN_Comment_Popularity {
 	 */
 	const VERSION = '1.0';
 
+	/**
+	 * The minimum PHP version compatibility.
+	 */
 	const MINIMUM_PHP_VERSION = '5.3.2';
 
 	/**
+	 * The instance of HMN_Comment_Popularity.
+	 *
 	 * @var the single class instance.
 	 */
 	private static $instance;
 
+	/**
+	 * The instance of Twig_Environment
+	 *
+	 * @var null
+	 */
 	protected $twig = null;
 
 	/**
@@ -57,6 +67,9 @@ class HMN_Comment_Popularity {
 		$this->set_permissions();
 	}
 
+	/**
+	 * Run checks on plugin activation.
+	 */
 	public function activate() {
 
 		// Check PHP version. We need at least 5.3.2 for Composer.
@@ -65,6 +78,9 @@ class HMN_Comment_Popularity {
 		}
 	}
 
+	/**
+	 * Instantiates the Twig objects.
+	 */
 	public function init_twig() {
 
 		$template_path = apply_filters( 'hmn_cp_template_path', plugin_dir_path( __FILE__ ) . '/templates' );
@@ -400,6 +416,9 @@ class HMN_Comment_Popularity {
 		return $comments_voted_on[ 'comment_id_' . $comment_id ];
 	}
 
+	/**
+	 * Ajax handler for the vote action.
+	 */
 	public function comment_vote_callback() {
 
 		check_ajax_referer( 'hmn_vote_submit', 'hmn_vote_nonce' );
