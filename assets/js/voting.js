@@ -14,7 +14,7 @@
 				value = -1;
 			}
 
-			var post = $.post( comment_popularity.ajaxurl, {action: 'comment_vote', vote: value, comment_id: comment_id, hmn_vote_nonce: comment_popularity.hmn_vote_nonce} );
+			var post = $.post( comment_popularity.ajaxurl, {action: 'comment_vote_callback', vote: value, comment_id: comment_id, hmn_vote_nonce: comment_popularity.hmn_vote_nonce} );
 
 			post.done( function( data ) {
 
