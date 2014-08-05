@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Class HMN_Comment_PopularityTestCase
+ */
 class HMN_Comment_PopularityTestCase extends WP_UnitTestCase {
 
 	protected $plugin;
