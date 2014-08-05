@@ -24,11 +24,10 @@ class Test_HMN_Comment_Popularity extends HMN_Comment_PopularityTestCase {
 		);
 		wp_set_current_user( $this->test_user_id );
 
-		// set interval to 30 seconds
+		// set interval to 5 seconds
 		add_filter( 'hmn_cp_interval', function(){
 			return 5;
 		});
-
 
 		// insert a post
 		$this->test_post_id = $this->factory->post->create();
@@ -80,7 +79,6 @@ class Test_HMN_Comment_Popularity extends HMN_Comment_PopularityTestCase {
 		}
 
 	}
-
 
 	public function test_too_soon_to_vote_again() {
 
