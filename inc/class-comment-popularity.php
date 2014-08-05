@@ -190,7 +190,7 @@ class HMN_Comment_Popularity {
 	/**
 	 * Template for comments and pingbacks.
 	 * Used as a callback by wp_list_comments() for displaying the comments.
-	 * 
+	 *
 	 * @param $comment
 	 * @param $args
 	 * @param $depth
