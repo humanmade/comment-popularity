@@ -63,6 +63,8 @@ class HMN_Comment_Popularity {
 
 		add_action( 'init', array( $this, 'load_textdomain' ) );
 
+		add_filter( 'comments_template', array( $this, 'custom_comments_template' ) );
+
 		$this->init_twig();
 		$this->set_permissions();
 	}
@@ -164,6 +166,106 @@ class HMN_Comment_Popularity {
 
 		wp_enqueue_script( 'comment-popularity' );
 
+	}
+
+	public function custom_comments_template() {
+
+		global $post;
+
+		if ( ! ( is_singular() && ( have_comments() || 'open' == $post->comment_status ) ) ) {
+
+			return;
+
+		}
+
+		return plugin_dir_path( __FILE__ ) . 'templates/comments.php';
+
+	}
+
+	function comment_callback( $comment, $args, $depth ) {
+
+		$GLOBALS['comment'] = $comment;
+
+		if ( 'pingback' == $comment->comment_type || 'trackback' == $comment->comment_type ) : ?>
+
+			<li id="comment-<?php comment_ID(); ?>" <?php comment_class(); ?>>
+			<div class="comment-body">
+				<?php _e( 'Pingback:', 'comment-popularity' ); ?> <?php comment_author_link(); ?> <?php edit_comment_link( __( 'Edit', 'comment-popularity' ), '<span class="edit-link">', '</span>' ); ?>
+			</div>
+
+		<?php else : ?>
+
+		<li id="comment-<?php comment_ID(); ?>" <?php comment_class( empty( $args['has_children'] ) ? '' : 'comment-parent' ); ?>>
+			<article id="div-comment-<?php comment_ID(); ?>" class="comment-body">
+				<header class="comment-header">
+					<?php $this->render_ui( get_comment_ID() ); ?>
+					<?php // Avatar
+					if ( 0 != $args['avatar_size'] ) :
+						echo get_avatar( $comment, $args['avatar_size'] );
+					endif;
+
+					?>
+					<div class="comment-date">
+						<a href="<?php echo esc_url( get_comment_link( $comment->comment_ID ) ); ?>">
+							<time datetime="<?php comment_time( 'c' ); ?>">
+								<?php
+								printf(
+									_x( '%1$s at %2$s', '1: date, 2: time', 'comment-popularity' ),
+									get_comment_date(),
+									get_comment_time()
+								);
+								?>
+							</time>
+						</a>
+					</div>
+					<div class="comment-author vcard">
+						<?php
+						printf(
+							'%1$s <span class="says">%2$s</span>',
+							sprintf(
+								'<cite class="fn">%s</cite>',
+								get_comment_author_link()
+							),
+							_x( 'says:', 'e.g. Bob says hello.', 'comment-popularity' )
+						);
+
+						$comment_author_email = get_comment_author_email( $comment->comment_ID );
+
+						if ( ! empty( $comment_author_email ) ) {
+
+							$author_karma = $this->get_comment_author_karma( $comment_author_email );
+
+							if ( false !== $author_karma ) {
+								printf( __( '%1$s( User Karma: %2$s )%3$s', 'comment-popularity' ), '<small class="user-karma">', esc_html( $author_karma ), '</small>' );
+							}
+
+						}
+
+
+						?>
+					</div>
+
+					<?php if ( '0' == $comment->comment_approved ) : ?>
+						<p class="comment-awaiting-moderation"><?php _e( 'Your comment is awaiting moderation.', 'comment-popularity' ); ?></p>
+					<?php endif; ?>
+				</header>
+
+				<div class="comment-content">
+					<?php comment_text(); ?>
+				</div>
+
+				<?php
+				comment_reply_link( array_merge( $args, array(
+					'add_below' => 'div-comment',
+					'depth'     => $depth,
+					'max_depth' => $args['max_depth'],
+					'before'    => '<footer class="comment-reply">',
+					'after'     => '</footer>',
+				) ) );
+				?>
+			</article>
+
+		<?php endif;
 	}
 
 	/**
