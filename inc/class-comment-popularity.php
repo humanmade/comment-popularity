@@ -612,7 +612,8 @@ class HMN_Comment_Popularity {
 		$this->update_comments_voted_on_for_user( $user_id, $comment_id, $action );
 
 		$return = array(
-			'weight'      => $this->get_comment_weight( $comment_id ),
+			'success_message'    => __( 'Thanks for voting!', 'comment-popularity' ),
+			'weight'     => $this->get_comment_weight( $comment_id ),
 			'comment_id' => $comment_id,
 		);
 
