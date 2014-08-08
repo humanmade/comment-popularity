@@ -124,7 +124,7 @@ class Test_HMN_Comment_Popularity extends HMN_Comment_PopularityTestCase {
 
 	}
 
-	public function test_upvote_comment() {
+	public function test_upvote_comment_saves_action_to_user_meta() {
 
 		$vote_time = current_time( 'timestamp' );
 
@@ -153,14 +153,36 @@ class Test_HMN_Comment_Popularity extends HMN_Comment_PopularityTestCase {
 		$this->assertGreaterThan( $current_value, $new_value );
 	}
 
-	public function test_comment_author_karma_dereases_on_downvote() {
+	public function test_comment_author_karma_decreases_on_downvote() {
 
 		$vote = 'downvote';
 
 		// Current comment author karma value
 		$current_value = $this->plugin->get_user_karma( $this->test_commenter_id );
 
+		// Downvote twice so we check negative values
+		$this->plugin->update_user_karma( $this->test_commenter_id, $vote );
 		$new_value = $this->plugin->update_user_karma( $this->test_commenter_id, $vote );
+
+		$this->assertLessThanOrEqual( $current_value, $new_value );
+	}
+
+	public function test_upvoting_comment_changes_comment_weight() {
+
+		$vote = 'upvote';
+		$current_value = $this->plugin->get_comment_weight( $this->test_comment_id );
+
+		$new_value = $this->plugin->update_comment_weight( $vote, $this->test_comment_id );
+
+		$this->assertGreaterThan( $current_value, $new_value );
+	}
+
+	public function test_downvoting_comment_changes_comment_weight() {
+
+		$vote = 'downvote';
+		$current_value = $this->plugin->get_comment_weight( $this->test_comment_id );
+
+		$new_value = $this->plugin->update_comment_weight( $vote, $this->test_comment_id );
 
 		$this->assertLessThanOrEqual( $current_value, $new_value );
 	}
