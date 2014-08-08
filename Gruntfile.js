@@ -5,6 +5,7 @@ module.exports = function (grunt) {
 	require('load-grunt-tasks')(grunt);
 
 	grunt.initConfig({
+
 		pkg: grunt.file.readJSON( 'package.json' ),
 
 		jshint: {
@@ -140,6 +141,15 @@ module.exports = function (grunt) {
 			changelog: 'changelog.md'
 		},
 
+		// Creates an MD version of the README file
+		wp_readme_to_markdown: {
+			your_target: {
+				files: {
+					'README.md': 'README.txt'
+				}
+			}
+		},
+
 		// Deploys a new version to the svn WordPress.org repo.
 		wp_deploy: {
 			deploy: {
@@ -153,6 +163,7 @@ module.exports = function (grunt) {
 		}
 
 	});
+
 	grunt.registerTask('minify', ['newer:uglify:modules','newer:uglify:plugin']);
 	grunt.registerTask('lint', ['newer:jshint:grunt','newer:jshint:plugin']);
 
