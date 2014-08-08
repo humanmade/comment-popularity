@@ -1,0 +1,9 @@
+<div class="{% for class in container_classes %}{{ class }} {% endfor %}">
+	<span>
+		<a data-comment-id="{{ comment_id }}" class="vote-up" href="#">▲</a>
+	</span>
+	<span id="comment-weight-value-{{ comment_id }}">{{ comment_weight }}</span>
+	<span>
+		<a data-comment-id="{{ comment_id }}" class="vote-down" href="#">▼</a>
+	</span>
+</div>

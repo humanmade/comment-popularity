@@ -1,5 +1,5 @@
 === Comment Popularity ===
-Contributors: pauldewouters, humanmade
+Contributors: pdewouters, humanmade
 Tags: comments, voting, karma
 Requires at least: 3.9.1
 Tested up to: 4.0-beta2
@@ -12,19 +12,17 @@ Comment Popularity adds the ability for logged in users to vote on comments.
 == Description ==
 
 With this plugin, members of your site will be able to vote comments up or down. Think Reddit comments.
-
 After activating the plugin, there will be up/down arrows next to each comment and the total weight of the comment.
 Comments are sorted by weight in a descending order.
-
 Each commenter is allocated karma each time that one of their comments are upvoted.
-
 Admin users can give users the "expert" label which will attribute more weight to their comments.
-
 You'll find an option under discussion for the default expert karma and it can also be changed on the user's profile.
 
 == Installation ==
 
 This section describes how to install the plugin and get it working.
+
+e.g.
 
 = Using The WordPress Dashboard =
 
@@ -62,11 +60,6 @@ Under Settings > Discussion, and Users > Profile
 3. The comment voting controls, and the user's karma on the public facing site.
 
 == Changelog ==
-
-= 1.0.1 =
-
-* Fix contributors
-* Remove unneeded files
 
 = 1.0 =
 * First version.

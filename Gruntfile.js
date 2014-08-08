@@ -11,10 +11,18 @@ module.exports = function (grunt) {
 					exclude: ['node_modules/.*']
 				}
 			}
+		},
+
+		wp_deploy: {
+			deploy: {
+				options: {
+					plugin_slug: 'comment-popularity',
+					svn_user: 'pauldewouters',
+					build_dir: 'build',
+					assets_dir: 'wp-assets'
+				}
+			}
 		}
 	});
-
-	//grunt.registerTask('default', []);
-
 
 };
