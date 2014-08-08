@@ -11,10 +11,16 @@ module.exports = function (grunt) {
 					exclude: ['node_modules/.*']
 				}
 			}
+		},
+
+		wp_readme_to_markdown: {
+			your_target: {
+				files: {
+					'README.md': 'README.txt'
+				}
+			}
 		}
 	});
-
-	//grunt.registerTask('default', []);
 
 
 };
