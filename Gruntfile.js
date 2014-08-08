@@ -3,6 +3,8 @@ module.exports = function (grunt) {
 	require('load-grunt-tasks')(grunt);
 
 	grunt.initConfig({
+
+		// Generates a POT file for translators.
 		makepot: {
 			target: {
 				options: {
@@ -13,6 +15,16 @@ module.exports = function (grunt) {
 			}
 		},
 
+		// Creates an MD version of the README file
+		wp_readme_to_markdown: {
+			your_target: {
+				files: {
+					'README.md': 'README.txt'
+				}
+			}
+		},
+
+		// Deploys a new version to the svn WordPress.org repo.
 		wp_deploy: {
 			deploy: {
 				options: {
