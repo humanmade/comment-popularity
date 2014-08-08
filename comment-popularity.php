@@ -3,7 +3,7 @@
 Plugin Name: Comment Popularity
 Plugin URI: https://github.com/humanmade/comment-popularity
 Description: Allow visitors to vote on comments.
-Version: 1.0.1
+Version: 1.0.2
 Author: Human Made Limited
 Author URI: http://humanmade.co.uk
 Text Domain: comment-popularity
