@@ -362,7 +362,16 @@ class HMN_Comment_Popularity {
 
 		$comment_arr = get_comment( $comment_id, ARRAY_A );
 
-		$weight_value = $comment_arr['comment_karma'] + $this->get_vote_value( $vote );
+		if ( 'upvote' === $vote ) {
+
+			$weight_value = $comment_arr['comment_karma'] + $this->get_vote_value( $vote );
+
+		} else {
+
+			$weight_value = $comment_arr['comment_karma'] - $this->get_vote_value( $vote );
+
+		}
+
 
 		if ( $weight_value <= 0 )
 			$weight_value = 0;
