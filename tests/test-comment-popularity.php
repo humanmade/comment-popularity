@@ -82,9 +82,9 @@ class Test_HMN_Comment_Popularity extends HMN_Comment_PopularityTestCase {
 
 	public function test_too_soon_to_vote_again() {
 
-		$this->plugin->comment_vote( 1, $this->test_comment_id, $this->test_user_id );
+		$this->plugin->comment_vote( 'upvote', $this->test_comment_id, $this->test_user_id );
 
-		$ret = $this->plugin->comment_vote( -1, $this->test_comment_id, $this->test_user_id );
+		$ret = $this->plugin->comment_vote( 'downvote', $this->test_comment_id, $this->test_user_id );
 
 		$this->assertEquals( 'voting_flood', $ret['error_code'] );
 
@@ -92,9 +92,9 @@ class Test_HMN_Comment_Popularity extends HMN_Comment_PopularityTestCase {
 
 	public function test_prevent_same_vote_twice() {
 
-		$this->plugin->comment_vote( 1, $this->test_comment_id, $this->test_user_id );
+		$this->plugin->comment_vote( 'upvote', $this->test_comment_id, $this->test_user_id );
 
-		$ret = $this->plugin->comment_vote( 1, $this->test_comment_id, $this->test_user_id );
+		$ret = $this->plugin->comment_vote( 'upvote', $this->test_comment_id, $this->test_user_id );
 
 		sleep( 7 );
 
