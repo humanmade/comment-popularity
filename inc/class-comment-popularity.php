@@ -70,6 +70,34 @@ class HMN_Comment_Popularity {
 	}
 
 	/**
+	 * Returns the value of an upvote or downvote.
+	 *
+	 * @param $type ( 'upvote' or 'downvote' )
+	 *
+	 * @return int|mixed|void
+	 */
+	public function get_vote_value( $type ) {
+
+		switch ( $type ) {
+
+			case 'upvote':
+				$value = apply_filters( 'upvote_value', 1 );
+				break;
+
+			case 'downvote':
+				$value = apply_filters( 'downvote_value', -1 );
+				break;
+
+			default:
+				$value = new WP_Error( 'invalid_vote_type', __( 'Sorry, invalid vote type', 'comment-popularity' ) );
+				break;
+
+		}
+
+		return $value;
+	}
+
+	/**
 	 * Run checks on plugin activation.
 	 */
 	public function activate() {
@@ -334,7 +362,7 @@ class HMN_Comment_Popularity {
 
 		$comment_arr = get_comment( $comment_id, ARRAY_A );
 
-		$weight_value = $comment_arr['comment_karma'] + $vote;
+		$weight_value = $comment_arr['comment_karma'] + $this->get_vote_value( $vote );
 
 		if ( $weight_value <= 0 )
 			$weight_value = 0;
@@ -416,7 +444,7 @@ class HMN_Comment_Popularity {
 			//comment author is a registered user! Update karma
 			$user_karma = (int) get_user_meta( $user->ID, 'hmn_user_karma', true );
 
-			$user_karma += 1;
+			$user_karma += $this->get_vote_value( 'upvote' );
 
 			update_user_meta( $user->ID, 'hmn_user_karma', $user_karma );
 
@@ -542,10 +570,11 @@ class HMN_Comment_Popularity {
 
 		check_ajax_referer( 'hmn_vote_submit', 'hmn_vote_nonce' );
 
-		$vote       = intval( $_POST['vote'] );
 		$comment_id = absint( $_POST['comment_id'] );
 
-		if ( ! in_array( (int)$_POST['vote'], array( -1, 1 ) ) ) {
+		$vote = $_POST['vote'];
+
+		if ( ! in_array( $vote, array( 'upvote', 'downvote' ) ) ) {
 
 			$return = array(
 				'error_code'    => 'invalid_action',
@@ -584,9 +613,7 @@ class HMN_Comment_Popularity {
 	 */
 	public function comment_vote( $vote, $comment_id, $user_id ) {
 
-		$action = ( $vote > 0 ) ? 'upvote' : 'downvote';
-
-		$user_can_vote = $this->user_can_vote( $user_id, $comment_id, $action );
+		$user_can_vote = $this->user_can_vote( $user_id, $comment_id, $vote );
 
 		if ( is_wp_error( $user_can_vote ) ) {
 
@@ -606,10 +633,10 @@ class HMN_Comment_Popularity {
 		$this->update_comment_weight( $vote, $comment_id );
 
 		// update comment author karma if it's an upvote.
-		if ( 0 < $vote )
+		if ( 'upvote' === $vote )
 			$this->update_user_karma( $comment_id );
 
-		$this->update_comments_voted_on_for_user( $user_id, $comment_id, $action );
+		$this->update_comments_voted_on_for_user( $user_id, $comment_id, $vote );
 
 		$return = array(
 			'success_message'    => __( 'Thanks for voting!', 'comment-popularity' ),
