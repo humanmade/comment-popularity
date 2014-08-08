@@ -443,7 +443,7 @@ class HMN_Comment_Popularity {
 
 			update_user_meta( $commenter_id, 'hmn_user_karma', $user_karma );
 
-		return $user_karma;
+		return get_user_meta( $commenter_id, 'hmn_user_karma', true );
 	}
 
 
