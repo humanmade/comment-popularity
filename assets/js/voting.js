@@ -9,9 +9,9 @@
 			var value = 0;
 			var comment_id = $(this).data('commentId');
 			if ( $(this).hasClass( 'vote-up' ) ) {
-				value = 1;
+				value = 'upvote';
 			} else if( $(this).hasClass( 'vote-down' ) ) {
-				value = -1;
+				value = 'downvote';
 			}
 
 			var post = $.post( comment_popularity.ajaxurl, {action: 'comment_vote_callback', vote: value, comment_id: comment_id, hmn_vote_nonce: comment_popularity.hmn_vote_nonce} );

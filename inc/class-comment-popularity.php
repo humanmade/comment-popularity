@@ -70,6 +70,34 @@ class HMN_Comment_Popularity {
 	}
 
 	/**
+	 * Returns the value of an upvote or downvote.
+	 *
+	 * @param $type ( 'upvote' or 'downvote' )
+	 *
+	 * @return int|mixed|void
+	 */
+	public function get_vote_value( $type ) {
+
+		switch ( $type ) {
+
+			case 'upvote':
+				$value = apply_filters( 'upvote_value', 1 );
+				break;
+
+			case 'downvote':
+				$value = apply_filters( 'downvote_value', 1 );
+				break;
+
+			default:
+				$value = new WP_Error( 'invalid_vote_type', __( 'Sorry, invalid vote type', 'comment-popularity' ) );
+				break;
+
+		}
+
+		return $value;
+	}
+
+	/**
 	 * Run checks on plugin activation.
 	 */
 	public function activate() {
@@ -247,10 +275,11 @@ class HMN_Comment_Popularity {
 						);
 
 						$comment_author_email = get_comment_author_email( $comment->comment_ID );
+						$author = get_user_by( 'email', $comment_author_email );
 
-						if ( ! empty( $comment_author_email ) ) {
+						if ( false !== $author ) {
 
-							$author_karma = $this->get_comment_author_karma( $comment_author_email );
+							$author_karma = $this->get_user_karma( $comment_author_email );
 
 							if ( false !== $author_karma ) {
 								printf( __( '%1$s( User Karma: %2$s )%3$s', 'comment-popularity' ), '<small class="user-karma">', esc_html( $author_karma ), '</small>' );
@@ -314,7 +343,7 @@ class HMN_Comment_Popularity {
 	 *
 	 * @return int
 	 */
-	protected function get_comment_weight( $comment_id ) {
+	public function get_comment_weight( $comment_id ) {
 
 		$comment = get_comment( $comment_id );
 
@@ -334,7 +363,16 @@ class HMN_Comment_Popularity {
 
 		$comment_arr = get_comment( $comment_id, ARRAY_A );
 
-		$weight_value = $comment_arr['comment_karma'] + $vote;
+		if ( 'upvote' === $vote ) {
+
+			$weight_value = $comment_arr['comment_karma'] + $this->get_vote_value( $vote );
+
+		} else {
+
+			$weight_value = $comment_arr['comment_karma'] - $this->get_vote_value( $vote );
+
+		}
+
 
 		if ( $weight_value <= 0 )
 			$weight_value = 0;
@@ -344,22 +382,6 @@ class HMN_Comment_Popularity {
 		$ret = wp_update_comment( $comment_arr );
 
 		return $ret;
-	}
-
-	/**
-	 * Fetches the karma for the current user from the database.
-	 *
-	 * @param $user_id
-	 *
-	 * @return int
-	 */
-	public function get_user_karma( $user_id ) {
-
-		// get user meta for karma
-		// if its > 0 then user is an expert
-		$user_karma = (int) get_user_meta( $user_id, 'hmn_user_karma', true );
-
-		return $user_karma;
 	}
 
 	/**
@@ -399,46 +421,52 @@ class HMN_Comment_Popularity {
 	}
 
 	/**
-	 * Updates the comment author karma when a comment is upvoted.
+	 * Updates the comment author karma when a comment is voted on.
 	 *
-	 * @param $comment_id
+	 * @param $commenter_id
+	 * @param $vote
 	 *
-	 * @return bool|int
+	 * @return int|mixed|void
 	 */
-	public function update_user_karma( $comment_id ) {
+	public function update_user_karma( $commenter_id, $vote ) {
 
-		$email = get_comment_author_email( $comment_id );
+		$user_karma = $this->get_user_karma( $commenter_id );
 
-		$user = get_user_by( 'email', $email );
+		if ( 'upvote' === $vote ) {
 
-		if ( false !== $user ) {
+			$user_karma += $this->get_vote_value( $vote );
 
-			//comment author is a registered user! Update karma
-			$user_karma = (int) get_user_meta( $user->ID, 'hmn_user_karma', true );
+		} else {
 
-			$user_karma += 1;
+			$user_karma -= $this->get_vote_value( $vote );
+			// Do not allow negative karma.
+			if ( $user_karma < 0 ) {
+				$user_karma = 0;
+			}
 
-			update_user_meta( $user->ID, 'hmn_user_karma', $user_karma );
-
-			return $user_karma;
 		}
 
-		return false;
+		update_user_meta( $commenter_id, 'hmn_user_karma', $user_karma );
+
+		return get_user_meta( $commenter_id, 'hmn_user_karma', true );
 	}
+
 
 	/**
-	 * Fetch the comment author karma from the options.
+	 * Fetches the karma for the current user from the database.
 	 *
-	 * @param $email
+	 * @param $user_id
 	 *
-	 * @return mixed
+	 * @return int
 	 */
-	public function get_comment_author_karma( $email ) {
+	public function get_user_karma( $user_id ) {
 
-		$author = get_user_by( 'email', $email );
+		// get user meta for karma
+		$user_karma = get_user_meta( $user_id, 'hmn_user_karma', true );
 
-		return get_user_meta( $author->ID, 'hmn_user_karma', true );
+		return ( '' !== $user_karma ) ? $user_karma : 0;
 	}
+
 
 	/**
 	 * Sorts the comments by weight and returns them.
@@ -542,10 +570,11 @@ class HMN_Comment_Popularity {
 
 		check_ajax_referer( 'hmn_vote_submit', 'hmn_vote_nonce' );
 
-		$vote       = intval( $_POST['vote'] );
 		$comment_id = absint( $_POST['comment_id'] );
 
-		if ( ! in_array( (int)$_POST['vote'], array( -1, 1 ) ) ) {
+		$vote = $_POST['vote'];
+
+		if ( ! in_array( $vote, array( 'upvote', 'downvote' ) ) ) {
 
 			$return = array(
 				'error_code'    => 'invalid_action',
@@ -584,9 +613,7 @@ class HMN_Comment_Popularity {
 	 */
 	public function comment_vote( $vote, $comment_id, $user_id ) {
 
-		$action = ( $vote > 0 ) ? 'upvote' : 'downvote';
-
-		$user_can_vote = $this->user_can_vote( $user_id, $comment_id, $action );
+		$user_can_vote = $this->user_can_vote( $user_id, $comment_id, $vote );
 
 		if ( is_wp_error( $user_can_vote ) ) {
 
@@ -605,11 +632,16 @@ class HMN_Comment_Popularity {
 
 		$this->update_comment_weight( $vote, $comment_id );
 
-		// update comment author karma if it's an upvote.
-		if ( 0 < $vote )
-			$this->update_user_karma( $comment_id );
+		// Get the comment author object.
+		$email = get_comment_author_email( $comment_id );
+		$author = get_user_by( 'email', $email );
 
-		$this->update_comments_voted_on_for_user( $user_id, $comment_id, $action );
+		// update comment author karma if registered user.
+		if ( false !== $author ) {
+			$this->update_user_karma( $author->ID, $vote );
+		}
+
+		$this->update_comments_voted_on_for_user( $user_id, $comment_id, $vote );
 
 		$return = array(
 			'success_message'    => __( 'Thanks for voting!', 'comment-popularity' ),
