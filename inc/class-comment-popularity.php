@@ -275,10 +275,11 @@ class HMN_Comment_Popularity {
 						);
 
 						$comment_author_email = get_comment_author_email( $comment->comment_ID );
+						$author = get_user_by( 'email', $comment_author_email );
 
-						if ( ! empty( $comment_author_email ) ) {
+						if ( false !== $author ) {
 
-							$author_karma = $this->get_comment_author_karma( $comment_author_email );
+							$author_karma = $this->get_user_karma( $comment_author_email );
 
 							if ( false !== $author_karma ) {
 								printf( __( '%1$s( User Karma: %2$s )%3$s', 'comment-popularity' ), '<small class="user-karma">', esc_html( $author_karma ), '</small>' );
