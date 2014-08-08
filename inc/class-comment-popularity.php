@@ -85,7 +85,7 @@ class HMN_Comment_Popularity {
 				break;
 
 			case 'downvote':
-				$value = apply_filters( 'downvote_value', -1 );
+				$value = apply_filters( 'downvote_value', 1 );
 				break;
 
 			default:
@@ -375,22 +375,6 @@ class HMN_Comment_Popularity {
 	}
 
 	/**
-	 * Fetches the karma for the current user from the database.
-	 *
-	 * @param $user_id
-	 *
-	 * @return int
-	 */
-	public function get_user_karma( $user_id ) {
-
-		// get user meta for karma
-		// if its > 0 then user is an expert
-		$user_karma = (int) get_user_meta( $user_id, 'hmn_user_karma', true );
-
-		return $user_karma;
-	}
-
-	/**
 	 * Determine if a user has been granted expert status.
 	 *
 	 * @param $user_id
@@ -427,46 +411,48 @@ class HMN_Comment_Popularity {
 	}
 
 	/**
-	 * Updates the comment author karma when a comment is upvoted.
+	 * Updates the comment author karma when a comment is voted on.
 	 *
-	 * @param $comment_id
+	 * @param $commenter_id
+	 * @param $vote
 	 *
-	 * @return bool|int
+	 * @return int|mixed|void
 	 */
-	public function update_user_karma( $comment_id ) {
+	public function update_user_karma( $commenter_id, $vote ) {
 
-		$email = get_comment_author_email( $comment_id );
+		$user_karma = $this->get_user_karma( $commenter_id );
 
-		$user = get_user_by( 'email', $email );
+		if ( 'upvote' === $vote ) {
 
-		if ( false !== $user ) {
+			$user_karma += $this->get_vote_value( $vote );
 
-			//comment author is a registered user! Update karma
-			$user_karma = (int) get_user_meta( $user->ID, 'hmn_user_karma', true );
+		} else {
 
-			$user_karma += $this->get_vote_value( 'upvote' );
+			$user_karma -= $this->get_vote_value( $vote );
 
-			update_user_meta( $user->ID, 'hmn_user_karma', $user_karma );
-
-			return $user_karma;
 		}
 
-		return false;
+			update_user_meta( $commenter_id, 'hmn_user_karma', $user_karma );
+
+		return $user_karma;
 	}
+
 
 	/**
-	 * Fetch the comment author karma from the options.
+	 * Fetches the karma for the current user from the database.
 	 *
-	 * @param $email
+	 * @param $user_id
 	 *
-	 * @return mixed
+	 * @return int
 	 */
-	public function get_comment_author_karma( $email ) {
+	public function get_user_karma( $user_id ) {
 
-		$author = get_user_by( 'email', $email );
+		// get user meta for karma
+		$user_karma = get_user_meta( $user_id, 'hmn_user_karma', true );
 
-		return get_user_meta( $author->ID, 'hmn_user_karma', true );
+		return ( '' !== $user_karma ) ? $user_karma : 0;
 	}
+
 
 	/**
 	 * Sorts the comments by weight and returns them.
@@ -632,9 +618,14 @@ class HMN_Comment_Popularity {
 
 		$this->update_comment_weight( $vote, $comment_id );
 
-		// update comment author karma if it's an upvote.
-		if ( 'upvote' === $vote )
-			$this->update_user_karma( $comment_id );
+		// Get the comment author object.
+		$email = get_comment_author_email( $comment_id );
+		$author = get_user_by( 'email', $email );
+
+		// update comment author karma if registered user.
+		if ( false !== $author ) {
+			$this->update_user_karma( $author->ID, $vote );
+		}
 
 		$this->update_comments_voted_on_for_user( $user_id, $comment_id, $vote );
 
