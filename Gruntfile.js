@@ -13,6 +13,14 @@ module.exports = function (grunt) {
 			}
 		},
 
+		wp_readme_to_markdown: {
+			your_target: {
+				files: {
+					'README.md': 'README.txt'
+				}
+			}
+		},
+
 		wp_deploy: {
 			deploy: {
 				options: {
@@ -23,6 +31,7 @@ module.exports = function (grunt) {
 				}
 			}
 		}
-	});
+
+	}); // end config
 
 };
