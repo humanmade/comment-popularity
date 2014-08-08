@@ -343,7 +343,7 @@ class HMN_Comment_Popularity {
 	 *
 	 * @return int
 	 */
-	protected function get_comment_weight( $comment_id ) {
+	public function get_comment_weight( $comment_id ) {
 
 		$comment = get_comment( $comment_id );
 
@@ -439,10 +439,14 @@ class HMN_Comment_Popularity {
 		} else {
 
 			$user_karma -= $this->get_vote_value( $vote );
+			// Do not allow negative karma.
+			if ( $user_karma < 0 ) {
+				$user_karma = 0;
+			}
 
 		}
 
-			update_user_meta( $commenter_id, 'hmn_user_karma', $user_karma );
+		update_user_meta( $commenter_id, 'hmn_user_karma', $user_karma );
 
 		return get_user_meta( $commenter_id, 'hmn_user_karma', true );
 	}
