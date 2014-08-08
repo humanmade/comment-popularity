@@ -19,8 +19,19 @@ module.exports = function (grunt) {
 					'README.md': 'README.txt'
 				}
 			}
-		}
-	});
+		},
 
+		wp_deploy: {
+			deploy: {
+				options: {
+					plugin_slug: 'comment-popularity',
+					svn_user: 'pauldewouters',
+					build_dir: 'build',
+					assets_dir: 'wp-assets'
+				}
+			}
+		}
+
+	}); // end config
 
 };
