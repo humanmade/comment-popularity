@@ -83,11 +83,11 @@ class HMN_Comment_Popularity {
 		switch ( $type ) {
 
 			case 'upvote':
-				$value = apply_filters( 'upvote_value', 1 );
+				$value = apply_filters( 'hmn_cp_upvote_value', 1 );
 				break;
 
 			case 'downvote':
-				$value = apply_filters( 'downvote_value', 1 );
+				$value = apply_filters( 'hmn_cp_downvote_value', 1 );
 				break;
 
 			default:
