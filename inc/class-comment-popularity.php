@@ -347,7 +347,7 @@ class HMN_Comment_Popularity {
 
 		$comment = get_comment( $comment_id );
 
-		return $comment->comment_karma;
+		return (int)$comment->comment_karma;
 
 	}
 
