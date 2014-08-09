@@ -17,7 +17,7 @@ class HMN_Comment_Popularity {
 	 */
 	const HMN_CP_REQUIRED_PHP_VERSION = '5.3.2';
 
-	const HMN_CP_REQUIRED_WP_VERSION = '3.9.2';
+	const HMN_CP_REQUIRED_WP_VERSION = '3.8.4';
 
 	/**
 	 * The instance of HMN_Comment_Popularity.
