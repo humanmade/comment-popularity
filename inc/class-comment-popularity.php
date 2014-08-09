@@ -579,6 +579,9 @@ class HMN_Comment_Popularity {
 	 *
 	 * @param $user_id
 	 * @param $comment_id
+	 * @param $action
+	 *
+	 * @return mixed
 	 */
 	public function update_comments_voted_on_for_user( $user_id, $comment_id, $action ) {
 
@@ -589,7 +592,9 @@ class HMN_Comment_Popularity {
 
 		update_user_meta( $user_id, 'comments_voted_on', $comments_voted_on );
 
-		$updated = get_user_meta( $user_id, 'comments_voted_on', true );
+		$comments_voted_on = get_user_meta( $user_id, 'comments_voted_on', true );
+
+		$updated = $comments_voted_on[ 'comment_id_' . $comment_id ];
 
 		/**
 		 * Fires once the user meta has been updated.
