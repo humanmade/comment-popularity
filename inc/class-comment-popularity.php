@@ -54,7 +54,7 @@ class HMN_Comment_Popularity {
 
 		$this->admin_roles = apply_filters( 'hmn_cp_roles', array( 'administrator', 'editor' ) );
 
-		add_action( 'wp_insert_comment', array( $this, 'set_comment_weight' ), 10, 2 );
+		add_action( 'wp_insert_comment', array( $this, 'insert_comment_callback' ), 10, 2 );
 
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 
