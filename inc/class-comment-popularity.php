@@ -614,7 +614,7 @@ class HMN_Comment_Popularity {
 	}
 
 	/**
-	 * Handles the voting ajax request.
+	 * Processes the comment vote logic.
 	 *
 	 * @param $vote
 	 * @param $comment_id
