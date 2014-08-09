@@ -1,7 +1,7 @@
 === Comment Popularity ===
 Contributors: pauldewouters, mattheu, humanmade
 Tags: comments, voting, karma
-Requires at least: 3.9.1
+Requires at least: 3.8.4
 Tested up to: 4.0-beta2
 Stable tag: 1.0.2
 License: GPLv2 or later
