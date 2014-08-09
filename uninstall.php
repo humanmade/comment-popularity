@@ -53,6 +53,28 @@ if ( ! empty( $user_query->results ) ) {
 
 }
 
+$args = array(
+	'meta_query' => array(
+		array(
+			'key'     => 'hmn_comments_voted_on',
+			'compare' => 'EXISTS',
+		),
+	),
+	'fields'     => 'all',
+);
+
+$user_query = new WP_User_Query( $args );
+
+if ( ! empty( $user_query->results ) ) {
+
+	foreach ( $user_query->results as $user ) {
+
+		delete_user_meta( $user->ID, 'hmn_comments_voted_on' );
+
+	}
+
+}
+
 // Delete comment meta.
 $args = array(
 	'karma' => '',
