@@ -16,11 +16,15 @@ class HMN_Comment_Popularity_Admin {
 		add_action( 'edit_user_profile_update', array( $this, 'save_user_meta' ) );
 
 		add_filter( 'manage_edit-comments_columns', array( $this, 'add_comment_columns' ) );
-		add_filter( 'manage_comments_custom_column', array( $this, 'populate_comment_column' ), 10, 2 );
+		add_filter( 'manage_comments_custom_column', array( $this, 'populate_comment_column' ) );
 
 		add_filter( 'manage_edit-comments_sortable_columns', array( $this, 'make_weight_column_sortable' ) );
 
 		add_action( 'admin_init', array( $this, 'register_plugin_settings' ) );
+
+		add_filter( 'manage_users_columns', array( $this, 'add_users_columns' ) );
+		add_filter( 'manage_users_custom_column', array( $this, 'populate_users_columns'), 10, 3  );
+		add_filter( 'manage_users_sortable_columns', array( $this, 'make_karma_column_sortable' ) );
 
 	}
 
@@ -145,8 +149,7 @@ class HMN_Comment_Popularity_Admin {
 	 *
 	 * @return array
 	 */
-	public function add_comment_columns( $columns )
-	{
+	public function add_comment_columns( $columns ) {
 		return array_merge( $columns, array(
 			'comment_karma' => __( 'Weight', 'comment-popularity' ),
 		) );
@@ -158,15 +161,59 @@ class HMN_Comment_Popularity_Admin {
 	 * @param $column
 	 * @param $comment_ID
 	 */
-	public function populate_comment_column( $column, $comment_ID )
-	{
+	public function populate_comment_column( $column, $comment_ID ) {
+
 		$comment = get_comment( $comment_ID );
 
 		echo intval( $comment->comment_karma );
 	}
 
 	/**
-	 * Add ability to sort by comment karma on the edit comments admin view.
+	 * Adds columns to the admin users screen.
+	 *
+	 * @param $columns
+	 *
+	 * @return array
+	 */
+	public function add_users_columns( $columns ) {
+		return array_merge( $columns, array( 'user_karma' => __( 'Karma', 'comment-popularity' ) ) );
+	}
+
+	/**
+	 * Display values for the user karma column.
+	 *
+	 * @param $empty
+	 * @param $column_name
+	 * @param $user_id
+	 *
+	 * @return string
+	 */
+	public function populate_users_columns( $empty, $column_name, $user_id ) {
+
+		if ( 'user_karma' !== $column_name ) {
+			return $empty;
+		}
+
+		$user_karma = get_user_meta( $user_id, 'hmn_user_karma', true );
+
+		return $user_karma;
+
+	}
+
+	/**
+	 * Add ability to sort by user karma on the users list admin view.
+	 *
+	 * @param $columns
+	 */
+	public function make_karma_column_sortable( $columns ) {
+
+		$columns['user_karma'] = 'user_karma';
+
+		return $columns;
+	}
+
+	/**
+	 * Add ability to sort by comment weight on the edit comments admin view.
 	 *
 	 * @param $columns
 	 *
