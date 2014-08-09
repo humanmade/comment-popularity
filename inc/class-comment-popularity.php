@@ -404,7 +404,7 @@ class HMN_Comment_Popularity {
 	 * @param $comment_id
 	 * @param $comment
 	 */
-	public function set_comment_weight( $comment_id, $comment ) {
+	public function insert_comment_callback( $comment_id, $comment ) {
 
 		$user_id = get_current_user_id();
 
