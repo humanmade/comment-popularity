@@ -10,12 +10,14 @@ class HMN_Comment_Popularity {
 	/**
 	 * Plugin version number.
 	 */
-	const VERSION = '1.0.0';
+	const HMN_CP_PLUGIN_VERSION = '1.0.2';
 
 	/**
 	 * The minimum PHP version compatibility.
 	 */
-	const MINIMUM_PHP_VERSION = '5.3.2';
+	const HMN_CP_REQUIRED_PHP_VERSION = '5.3.2';
+
+	const HMN_CP_REQUIRED_WP_VERSION = '3.8.4';
 
 	/**
 	 * The instance of HMN_Comment_Popularity.
@@ -81,11 +83,11 @@ class HMN_Comment_Popularity {
 		switch ( $type ) {
 
 			case 'upvote':
-				$value = apply_filters( 'upvote_value', 1 );
+				$value = apply_filters( 'hmn_cp_upvote_value', 1 );
 				break;
 
 			case 'downvote':
-				$value = apply_filters( 'downvote_value', 1 );
+				$value = apply_filters( 'hmn_cp_downvote_value', 1 );
 				break;
 
 			default:
@@ -103,8 +105,16 @@ class HMN_Comment_Popularity {
 	public function activate() {
 
 		// Check PHP version. We need at least 5.3.2 for Composer.
-		if ( version_compare( PHP_VERSION, '5.3.2', '<' ) ) {
+		if ( version_compare( PHP_VERSION, self::HMN_CP_REQUIRED_PHP_VERSION, '<' ) ) {
 			deactivate_plugins( basename( __FILE__ ) );
+			wp_die( sprintf( __( 'This plugin requires PHP Version %s. Sorry about that.', 'comment-popularity' ), self::HMN_CP_REQUIRED_PHP_VERSION ), 'Comment Popularity', array( 'back_link' => true ) );
+		}
+
+		global $wp_version;
+
+		if ( version_compare( $wp_version, self::HMN_CP_REQUIRED_WP_VERSION, '<' ) ) {
+			deactivate_plugins( basename( __FILE__ ) );
+			wp_die( sprintf( __( 'This plugin requires WordPress version %s. Sorry about that.', 'comment-popularity' ), self::HMN_CP_REQUIRED_WP_VERSION ), 'Comment Popularity', array( 'back_link' => true ) );
 		}
 	}
 
@@ -183,11 +193,11 @@ class HMN_Comment_Popularity {
 	 */
 	public function enqueue_scripts() {
 
-		wp_enqueue_style( 'growl', plugins_url( '../assets/js/modules/growl/stylesheets/jquery.growl.min.css', __FILE__ ), array(), self::VERSION );
+		wp_enqueue_style( 'growl', plugins_url( '../assets/js/modules/growl/stylesheets/jquery.growl.min.css', __FILE__ ), array(), self::HMN_CP_PLUGIN_VERSION );
 
-		wp_enqueue_script( 'growl', plugins_url( '../assets/js/modules/growl/javascripts/jquery.growl.min.js', __FILE__ ), array( 'jquery' ), self::VERSION, true );
+		wp_enqueue_script( 'growl', plugins_url( '../assets/js/modules/growl/javascripts/jquery.growl.min.js', __FILE__ ), array( 'jquery' ), self::HMN_CP_PLUGIN_VERSION, true );
 
-		wp_register_script( 'comment-popularity', plugins_url( '../assets/js/voting.min.js', __FILE__ ), array( 'jquery', 'growl' ), self::VERSION );
+		wp_register_script( 'comment-popularity', plugins_url( '../assets/js/voting.min.js', __FILE__ ), array( 'jquery', 'growl' ), self::HMN_CP_PLUGIN_VERSION );
 
 		$args = array(
 			'hmn_vote_nonce' => wp_create_nonce( 'hmn_vote_submit' ),
@@ -383,6 +393,13 @@ class HMN_Comment_Popularity {
 
 		$comment_arr = get_comment( $comment_id, ARRAY_A );
 
+		/**
+		 * Fires once a comment has been updated.
+		 *
+		 * @param array $comment_arr The comment data array.
+		 */
+		do_action( 'hmn_cp_update_comment_weight', $comment_arr );
+
 		return $comment_arr['comment_karma'];
 	}
 
@@ -450,7 +467,17 @@ class HMN_Comment_Popularity {
 
 		update_user_meta( $commenter_id, 'hmn_user_karma', $user_karma );
 
-		return get_user_meta( $commenter_id, 'hmn_user_karma', true );
+		$user_karma = get_user_meta( $commenter_id, 'hmn_user_karma', true );
+
+		/**
+		 * Fires once the user meta has been updated for the karma.
+		 *
+		 * @param int $commenter_id
+		 * @param int $user_karma
+		 */
+		do_action( 'hmn_cp_update_user_karma', $commenter_id, $user_karma );
+
+		return $user_karma;
 	}
 
 
@@ -552,6 +579,9 @@ class HMN_Comment_Popularity {
 	 *
 	 * @param $user_id
 	 * @param $comment_id
+	 * @param $action
+	 *
+	 * @return mixed
 	 */
 	public function update_comments_voted_on_for_user( $user_id, $comment_id, $action ) {
 
@@ -562,7 +592,20 @@ class HMN_Comment_Popularity {
 
 		update_user_meta( $user_id, 'comments_voted_on', $comments_voted_on );
 
-		return $comments_voted_on[ 'comment_id_' . $comment_id ];
+		$comments_voted_on = get_user_meta( $user_id, 'comments_voted_on', true );
+
+		$updated = $comments_voted_on[ 'comment_id_' . $comment_id ];
+
+		/**
+		 * Fires once the user meta has been updated.
+		 *
+		 * @param int   $user_id
+		 * @param int   $comment_id
+		 * @param array $updated
+		 */
+		do_action( 'hmn_cp_update_comments_voted_on_for_user', $user_id, $comment_id, $updated );
+
+		return $updated;
 	}
 
 	/**
@@ -604,7 +647,7 @@ class HMN_Comment_Popularity {
 	}
 
 	/**
-	 * Handles the voting ajax request.
+	 * Processes the comment vote logic.
 	 *
 	 * @param $vote
 	 * @param $comment_id
