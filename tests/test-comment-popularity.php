@@ -72,7 +72,7 @@ class Test_HMN_Comment_Popularity extends HMN_Comment_PopularityTestCase {
 
 		wp_delete_post( $this->test_post_id );
 
-		delete_user_meta( $this->test_voter_id, 'comments_voted_on' );
+		delete_user_meta( $this->test_voter_id, 'hmn_comments_voted_on' );
 
 		wp_delete_user( $this->test_voter_id );
 		wp_delete_user( $this->test_commenter_id );
