@@ -1,5 +1,5 @@
 === Comment Popularity ===
-Contributors: pauldewouters, humanmade
+Contributors: pauldewouters, mattheu, humanmade
 Tags: comments, voting, karma
 Requires at least: 3.9.1
 Tested up to: 4.0-beta2
