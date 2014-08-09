@@ -393,6 +393,13 @@ class HMN_Comment_Popularity {
 
 		$comment_arr = get_comment( $comment_id, ARRAY_A );
 
+		/**
+		 * Fires once a comment has been updated.
+		 *
+		 * @param array $comment_arr The comment data array.
+		 */
+		do_action( 'hmn_cp_update_comment_weight', $comment_arr );
+
 		return $comment_arr['comment_karma'];
 	}
 
@@ -460,7 +467,17 @@ class HMN_Comment_Popularity {
 
 		update_user_meta( $commenter_id, 'hmn_user_karma', $user_karma );
 
-		return get_user_meta( $commenter_id, 'hmn_user_karma', true );
+		$user_karma = get_user_meta( $commenter_id, 'hmn_user_karma', true );
+
+		/**
+		 * Fires once the user meta has been updated for the karma.
+		 *
+		 * @param int $commenter_id
+		 * @param int $user_karma
+		 */
+		do_action( 'hmn_cp_update_user_karma', $commenter_id, $user_karma );
+
+		return $user_karma;
 	}
 
 
@@ -572,7 +589,18 @@ class HMN_Comment_Popularity {
 
 		update_user_meta( $user_id, 'comments_voted_on', $comments_voted_on );
 
-		return $comments_voted_on[ 'comment_id_' . $comment_id ];
+		$updated = get_user_meta( $user_id, 'comments_voted_on', true );
+
+		/**
+		 * Fires once the user meta has been updated.
+		 *
+		 * @param int   $user_id
+		 * @param int   $comment_id
+		 * @param array $updated
+		 */
+		do_action( 'hmn_cp_update_comments_voted_on_for_user', $user_id, $comment_id, $updated );
+
+		return $updated;
 	}
 
 	/**
