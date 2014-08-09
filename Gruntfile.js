@@ -107,6 +107,16 @@ module.exports = function (grunt) {
 		},
 
 		replace: {
+			classVersion: {
+				src: [
+					'inc/class-comment-popularity.php'
+				],
+				overwrite: true,
+				replacements: [ {
+					from: /^const HMN_CP_PLUGIN_VERSION = '.*';$/m,
+					to: "const HMN_CP_PLUGIN_VERSION '<%= pkg.version %>';"
+				} ]
+			},
 			pluginsVersion: {
 				src: [
 					'comment-popularity.php'
