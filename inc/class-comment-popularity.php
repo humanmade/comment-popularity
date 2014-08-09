@@ -54,7 +54,7 @@ class HMN_Comment_Popularity {
 
 		$this->admin_roles = apply_filters( 'hmn_cp_roles', array( 'administrator', 'editor' ) );
 
-		add_action( 'wp_insert_comment', array( $this, 'set_comment_weight' ), 10, 2 );
+		add_action( 'wp_insert_comment', array( $this, 'insert_comment_callback' ), 10, 2 );
 
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 
@@ -347,7 +347,7 @@ class HMN_Comment_Popularity {
 
 		$comment = get_comment( $comment_id );
 
-		return $comment->comment_karma;
+		return (int)$comment->comment_karma;
 
 	}
 
@@ -379,9 +379,11 @@ class HMN_Comment_Popularity {
 
 		$comment_arr['comment_karma'] = $weight_value;
 
-		$ret = wp_update_comment( $comment_arr );
+		wp_update_comment( $comment_arr );
 
-		return $ret;
+		$comment_arr = get_comment( $comment_id, ARRAY_A );
+
+		return $comment_arr['comment_karma'];
 	}
 
 	/**
@@ -402,7 +404,7 @@ class HMN_Comment_Popularity {
 	 * @param $comment_id
 	 * @param $comment
 	 */
-	public function set_comment_weight( $comment_id, $comment ) {
+	public function insert_comment_callback( $comment_id, $comment ) {
 
 		$user_id = get_current_user_id();
 
