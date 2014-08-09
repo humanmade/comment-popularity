@@ -379,9 +379,11 @@ class HMN_Comment_Popularity {
 
 		$comment_arr['comment_karma'] = $weight_value;
 
-		$ret = wp_update_comment( $comment_arr );
+		wp_update_comment( $comment_arr );
 
-		return $ret;
+		$comment_arr = get_comment( $comment_id, ARRAY_A );
+
+		return $comment_arr['comment_karma'];
 	}
 
 	/**
