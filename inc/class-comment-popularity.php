@@ -425,10 +425,6 @@ class HMN_Comment_Popularity {
 
 		$user_id = get_current_user_id();
 
-		if ( ! $this->user_can_vote( $user_id, $comment_id ) ) {
-			return;
-		}
-
 		$is_expert = $this->get_user_expert_status( $user_id );
 
 		$user_karma = $this->get_user_karma( $user_id );
@@ -536,6 +532,12 @@ class HMN_Comment_Popularity {
 	 * @return bool|WP_Error
 	 */
 	public function user_can_vote( $user_id, $comment_id, $action = '' ) {
+
+		$comment = get_comment( $comment_id );
+
+		if ( $comment->user_id && ( $user_id === (int)$comment->user_id ) ) {
+			return new WP_Error( 'upvote_own_comment', __( 'You cannot upvote your own comments.', 'comment-popularity' ) );
+		}
 
 		if ( ! current_user_can( 'vote_on_comments' ) ) {
 			return new WP_Error( 'insufficient_permissions', __( 'You lack sufficient permissions to vote on comments', 'comment-popularity' ) );
