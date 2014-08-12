@@ -21,6 +21,8 @@ Admin users can give users the \"expert\" label which will attribute more weight
 
 You\'ll find an option under discussion for the default expert karma and it can also be changed on the user\'s profile.
 
+Follow development of this plugin on [Github](https://github.com/humanmade/comment-popularity/)
+
 == Installation ==
 = Using The WordPress Dashboard =
 
