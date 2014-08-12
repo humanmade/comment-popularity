@@ -150,9 +150,11 @@ class HMN_Comment_Popularity_Admin {
 	 * @return array
 	 */
 	public function add_comment_columns( $columns ) {
+
 		return array_merge( $columns, array(
 			'comment_karma' => __( 'Weight', 'comment-popularity' ),
 		) );
+
 	}
 
 	/**
@@ -176,7 +178,11 @@ class HMN_Comment_Popularity_Admin {
 	 * @return array
 	 */
 	public function add_users_columns( $columns ) {
-		return array_merge( $columns, array( 'user_karma' => __( 'Karma', 'comment-popularity' ) ) );
+
+		return array_merge( $columns, array(
+			'user_karma' => __( 'Karma', 'comment-popularity' )
+		) );
+
 	}
 
 	/**
@@ -250,6 +256,5 @@ class HMN_Comment_Popularity_Admin {
 		update_user_meta( $user_id, 'hmn_user_expert_status', $user_expert_status );
 
 	}
-
 
 }
