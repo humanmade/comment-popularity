@@ -1,4 +1,4 @@
-Contributing guidelines [![Build Status](https://travis-ci.org/humanmade/comment-popularity.svg?branch=master)](https://magnum.travis-ci.com/humanmade/comment-popularity)
+Contributing guidelines [![Build Status](https://travis-ci.org/humanmade/comment-popularity.svg?branch=master)](https://travis-ci.org/humanmade/comment-popularity)
 =======================
 
 Coding Standards
