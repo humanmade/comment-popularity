@@ -33,7 +33,7 @@ endif;
 
 			$args = array(
 				'echo' => true,
-				'callback' => array( 'HMN_Comment_Popularity', 'comment_callback' ),
+				'callback' => array( $hmn_cp_obj, 'comment_callback' ),
 				'style'    => 'ol'
 			);
 
