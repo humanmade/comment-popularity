@@ -225,7 +225,7 @@ class HMN_Comment_Popularity {
 
 		}
 
-		return plugin_dir_path( __FILE__ ) . 'templates/comments.php';
+		return apply_filters( 'hmn_cp_comments_template_path', plugin_dir_path( __FILE__ ) . 'templates/comments.php' );
 
 	}
 
@@ -239,7 +239,7 @@ class HMN_Comment_Popularity {
 	 */
 	function comment_callback( $comment, $args, $depth ) {
 
-		include plugin_dir_path( __FILE__ ) . 'templates/comment.php';
+		include apply_filters( 'hmn_cp_single_comment_template_path', plugin_dir_path( __FILE__ ) . 'templates/comment.php' );
 
 	}
 
