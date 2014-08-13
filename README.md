@@ -3,7 +3,7 @@
 **Tags:** comments,vote,upvote,karma  
 **Requires at least:** 3.8.4  
 **Tested up to:** 4.0-beta2  
-**Stable tag:** 1.0.2  
+**Stable tag:** 1.1.0  
 **License:** GPLv2 or later  
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -94,6 +94,48 @@ To display the comment author karma:
 
 
 ## Changelog ##
+
+## 1.1.0 / 2014-08-13 ##
+
+ * Bump to version 1.1.0
+ * Make the paths filterable
+ * Fix how we call comments template
+ * Add a comment template file
+ * Move comments to own file
+ * Fix a PHP notice
+ * Regenerate readme
+ * Add link to github
+ * Fix some spacing and formatting
+ * Update CONTRIBUTING.md
+ * Fix composer.json
+ * Regenerate readme.md
+ * Fix Readme file and add contributors
+ * Prevent users from upvoting their comments
+ * No need to check if user can vote
+ * Register widget
+ * Add a most voted comments widget
+ * Update min WordPress version in readme
+ * Add Matt as contributor
+ * Add sortable karma column to users view
+ * Return just the values
+ * Add task to update class plugin version
+ * Update version
+ * Add some actions
+ * Update function desc
+ * Use prefixed constant VERSION
+ * Improve activation checks
+ * Change required WP Version
+ * Prefix filters
+ * Rename constants
+ * Add Travis badge
+ * Update tests to account for downvoting a comment with no karma
+ * Rename function
+ * Return comment weight
+ * Rename callback
+ * Return as integer
+ * Bump version
+ * First version of instructions
+ * Add contributing.md file
 
 ## 1.0.2 / 2014-08-08 ##
 
