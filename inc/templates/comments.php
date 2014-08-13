@@ -32,11 +32,12 @@ endif;
 			global $comment;
 
 			$args = array(
-				'callback' => array( $hmn_cp_obj, 'comment_callback' ),
+				'echo' => true,
+				'callback' => array( 'HMN_Comment_Popularity', 'comment_callback' ),
 				'style'    => 'ol'
 			);
 
-			echo $hmn_cp_obj->get_comments_sorted_by_weight( $args );
+			$hmn_cp_obj->get_comments_sorted_by_weight( $args );
 
 			?>
 
