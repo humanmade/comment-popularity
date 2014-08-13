@@ -21,10 +21,12 @@ Obviously you'll need contributor access to the WordPress.org repository.
 - Run `grunt makepot` and commit if necessary
 - Run `git changelog` ( requires git-extras ) and copy changelog.md to the README.txt
 - Run `grunt wp_readme_to_markdown`
-- Run `grunt copy:build`
 - Run `git tag -a vn.n.n -m "Version n.n.n"`
 - Run `git push --tags`
+- Run `grunt copy:build`
+- Test plugin from build
 - Run `grunt wp_deploy`
+- Delete build folder ( `grunt clean:build` )
 
 Available Grunt tasks
 ---------------------
