@@ -89,6 +89,11 @@ To display the comment author karma:
 
 == Changelog ==
 
+== 1.1.1 / 2014-08-13 ==
+
+ * Bump to version 1.1.1
+ * Fix a PHP notice
+
 == 1.1.0 / 2014-08-13 ==
 
  * Bump to version 1.1.0
