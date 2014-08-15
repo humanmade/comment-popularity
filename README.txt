@@ -10,6 +10,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Comment Popularity adds the ability for logged in users to vote on comments.
 
 == Description ==
+
 With this plugin, members of your site will be able to vote comments up or down. Think Reddit comments.
 
 After activating the plugin, there will be up/down arrows next to each comment and the total weight of the comment.
@@ -19,24 +20,25 @@ Each commenter is allocated karma each time that one of their comments are upvot
 
 Admin users can give users the \"expert\" label which will attribute more weight to their comments.
 
-You\'ll find an option under discussion for the default expert karma and it can also be changed on the user\'s profile.
+You'll find an option under discussion for the default expert karma and it can also be changed on the user's profile.
 
 Follow development of this plugin on [Github](https://github.com/humanmade/comment-popularity/)
 
 == Installation ==
+
 = Using The WordPress Dashboard =
 
-1. Navigate to the \'Add New\' in the plugins dashboard
-2. Search for \'plugin-name\'
-3. Click \'Install Now\'
+1. Navigate to the 'Add New' in the plugins dashboard
+2. Search for 'plugin-name'
+3. Click 'Install Now'
 4. Activate the plugin on the Plugin dashboard
 
 = Uploading in WordPress Dashboard =
 
-1. Navigate to the \'Add New\' in the plugins dashboard
-2. Navigate to the \'Upload\' area
+1. Navigate to the 'Add New' in the plugins dashboard
+2. Navigate to the 'Upload' area
 3. Select `plugin-name.zip` from your computer
-4. Click \'Install Now\'
+4. Click 'Install Now'
 5. Activate the plugin in the Plugin dashboard
 
 = Using FTP =
@@ -50,26 +52,26 @@ Follow development of this plugin on [Github](https://github.com/humanmade/comme
 
 = Can anonymous visitors vote on comments? =
 
-No, they can\'t. Currently, the only way to be able to vote is to be a registered member of the site where the plugin is
+No, they can't. Currently, the only way to be able to vote is to be a registered member of the site where the plugin is
 installed. There are plans to integrate social network authentication such as Twitter/Facebook... in the future.
 
 = Where do I find the plugin settings? =
 
 Under Settings > Discussion, and Users > Profile
 
-## Advanced Usage
+= Advanced Usage =
 
 **I want to use this with a custom comment template.**
 
 First thing - you need to remove the default comments template added by the plugin.
 
-`add_action( \'plugins_loaded\', function() {
-	remove_filter( \'comments_template\', array( \'HMN_Comment_Popularity\', \'custom_comments_template\' ) );
+`add_action( 'plugins_loaded', function() {
+	remove_filter( 'comments_template', array( 'HMN_Comment_Popularity', 'custom_comments_template' ) );
 }, 100 );`
 
 Secondly, you need to add replace the `wp_list_comments` call with the following code:
 
-`if ( function_exists( \'hmn_cp_the_sorted_comments\' ) ) {
+`if ( function_exists( 'hmn_cp_the_sorted_comments' ) ) {
 	hmn_cp_the_sorted_comments( $args );
 } else {
 	wp_list_comments();
@@ -86,20 +88,29 @@ To display the comment author karma:
 == Screenshots ==
 
 1. Set the default karma value for expert users.
-2. Set the user\'s karma and expert label.
-3. The comment voting controls, and the user\'s karma on the public facing site.
+2. Set the user's karma and expert label.
+3. The comment voting controls, and the user's karma on the public facing site.
 
-== Other notes ==
+== Upgrade Notice ==
 
+= 1.1.2 =
+* Fixes a bug which prevented the user karma to appear in the single comment template.
 
 == Changelog ==
 
-== 1.1.1 / 2014-08-13 ==
+= 1.1.2 / 2014-08-15 =
+
+ * Bump version
+ * Pass user ID as param instead of email
+ * Add RTD config
+ * fix to readme
+
+= 1.1.1 / 2014-08-13 =
 
  * Bump to version 1.1.1
  * Fix a PHP notice
 
-== 1.1.0 / 2014-08-13 ==
+= 1.1.0 / 2014-08-13 =
 
  * Bump to version 1.1.0
  * Make the paths filterable
@@ -141,7 +152,7 @@ To display the comment author karma:
  * First version of instructions
  * Add contributing.md file
 
-== 1.0.2 / 2014-08-08 ==
+= 1.0.2 / 2014-08-08 =
 
  * Add tests for comment weight update
  * disallow negative karma
@@ -159,7 +170,7 @@ To display the comment author karma:
  * Add minified scripts
  * JSHint config
  * Ignore build dir
- * Merge branch \'master\' into build-tasks
+ * Merge branch 'master' into build-tasks
  * add comments
  * Changelog file
  * Add build tasks
@@ -167,16 +178,16 @@ To display the comment author karma:
  * Use minified scripts and styles
  * add comments
  * Merge pull request #45 from humanmade/docs
- * Merge branch \'master\' into docs
+ * Merge branch 'master' into docs
  * Update readme
  * Add readme to markdown task
  * Documentation for how to remove the built in comment template
  
-== 1.0.1 ==
+= 1.0.1 =
 
 * Fix contributors
 * Remove unneeded files
 
-== 1.0.0 ==
+= 1.0.0 =
 
 * Initial release

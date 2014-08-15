@@ -1,4 +1,13 @@
 
+1.1.2 / 2014-08-15
+==================
+
+ * Bump version
+ * Merge pull request #60 from humanmade/fix-bug-display-karma
+ * Pass user ID as param instead of email
+ * Add RTD config
+ * fix to readme
+
 1.1.1 / 2014-08-13
 ==================
 
