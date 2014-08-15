@@ -86,7 +86,7 @@ module.exports = function (grunt) {
 							'!**composer{.json,.lock}**',
 							'!**package.json**',
 							'!**Gruntfile.js**',
-							'!**README.md**',
+							'!**{CONTRIBUTING,README}.md**',
 							'!**phpunit**',
 							'!**/node_modules/**',
 							'!**/wp-assets/**',
