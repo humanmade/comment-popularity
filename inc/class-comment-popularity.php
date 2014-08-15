@@ -10,7 +10,7 @@ class HMN_Comment_Popularity {
 	/**
 	 * Plugin version number.
 	 */
-	const HMN_CP_PLUGIN_VERSION = '1.1.1';
+	const HMN_CP_PLUGIN_VERSION = '1.1.2';
 
 	/**
 	 * The minimum PHP version compatibility.
