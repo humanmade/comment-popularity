@@ -35,27 +35,27 @@ if ( 'pingback' == $comment->comment_type || 'trackback' == $comment->comment_ty
 			</div>
 			<div class="comment-author vcard">
 				<?php
+				$comment_author_email = get_comment_author_email( $comment->comment_ID );
+				$author = get_user_by( 'email', $comment_author_email );
+				$karma_element = '';
+				if ( false !== $author ) {
+
+					$author_karma = $hmn_cp_plugin->get_user_karma( $author->ID );
+
+					if ( false !== $author_karma ) {
+						$karma_element = sprintf( __( '%1$s( User Karma: %2$s )%3$s', 'comment-popularity' ), '<small class="user-karma">', esc_html( $author_karma ), '</small>' );
+					}
+
+				}
 				printf(
-				'%1$s <span class="says">%2$s</span>',
+				'%1$s %3$s <span class="says">%2$s</span>',
 				sprintf(
 				'<cite class="fn">%s</cite>',
 				get_comment_author_link()
 				),
-				_x( 'says:', 'e.g. Bob says hello.', 'comment-popularity' )
+				_x( 'says:', 'e.g. Bob says hello.', 'comment-popularity' ),
+				$karma_element
 				);
-
-				$comment_author_email = get_comment_author_email( $comment->comment_ID );
-				$author = get_user_by( 'email', $comment_author_email );
-
-				if ( false !== $author ) {
-
-				$author_karma = $hmn_cp_plugin->get_user_karma( $comment_author_email );
-
-				if ( false !== $author_karma ) {
-				printf( __( '%1$s( User Karma: %2$s )%3$s', 'comment-popularity' ), '<small class="user-karma">', esc_html( $author_karma ), '</small>' );
-				}
-
-				}
 
 				?>
 			</div>
