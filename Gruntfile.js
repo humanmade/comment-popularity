@@ -86,12 +86,14 @@ module.exports = function (grunt) {
 							'!**composer{.json,.lock}**',
 							'!**package.json**',
 							'!**Gruntfile.js**',
-							'!**{CONTRIBUTING,README}.md**',
+							'!**{changelog,CONTRIBUTING,README}.md**',
 							'!**phpunit**',
 							'!**/node_modules/**',
 							'!**/wp-assets/**',
 							'!**/tests/**',
 							'!**/build/**',
+							'!**/docs/**',
+							'!**phpdoc.xml**',
 							'!**/inc/lib/twig/twig/{test,doc}/**'
 						],
 						dest: 'build'
