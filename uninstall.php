@@ -53,11 +53,6 @@ if ( ! empty( $user_query->results ) ) {
 
 }
 
-// Delete comment meta.
-$args = array(
-	'karma' => '',
-);
-
 // Select all comments with karma > 0, and reset value to zero.
 global $wpdb;
 
