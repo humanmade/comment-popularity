@@ -3,7 +3,7 @@
 **Tags:** comments,vote,upvote,karma  
 **Requires at least:** 3.8.4  
 **Tested up to:** 4.0-beta2  
-**Stable tag:** 1.1.2  
+**Stable tag:** 1.1.3  
 **License:** GPLv2 or later  
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -23,6 +23,8 @@ Admin users can give users the \"expert\" label which will attribute more weight
 You'll find an option under discussion for the default expert karma and it can also be changed on the user's profile.
 
 Follow development of this plugin on [Github](https://github.com/humanmade/comment-popularity/)
+
+Requires PHP `5.3.2` or newer.
 
 ## Installation ##
 
@@ -103,6 +105,20 @@ To display the comment author karma:
 * Fixes a bug which prevented the user karma to appear in the single comment template.
 
 ## Changelog ##
+
+### 1.1.3 / 2014-08-16 ###
+
+ * Add dotorg banners
+ * Bump version to 1.1.3
+ * Fix PHP error
+ * Switch statement order
+ * Add min PHP version
+ * Use html entities
+ * Ignore non build files
+ * Igonre contributing.md from build
+ * Remove some unused code
+ * Fix a PHP notice
+ * Update readme and changelog
 
 ### 1.1.2 / 2014-08-15 ###
 
