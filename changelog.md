@@ -1,4 +1,19 @@
 
+1.1.3 / 2014-08-16
+==================
+
+ * Add dotorg banners
+ * Bump version to 1.1.3
+ * Fix PHP error
+ * Switch statement order
+ * Add min PHP version
+ * Use html entities
+ * Ignore non build files
+ * Igonre contributing.md from build
+ * Remove some unused code
+ * Fix a PHP notice
+ * Update readme and changelog
+
 1.1.2 / 2014-08-15
 ==================
 
