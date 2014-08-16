@@ -17,9 +17,9 @@ defined( 'ABSPATH' ) || exit;
 // Main plugin class
 require_once trailingslashit( __DIR__ ) . 'inc/class-comment-popularity.php';
 
-add_action( 'plugins_loaded', array( 'HMN_Comment_Popularity', 'get_instance' ) );
-
 register_activation_hook( __FILE__, array( 'HMN_Comment_Popularity', 'activate' ) );
+
+add_action( 'plugins_loaded', array( 'HMN_Comment_Popularity', 'get_instance' ) );
 
 // Template tags
 include_once trailingslashit( __DIR__ ) . 'inc/helpers.php';
