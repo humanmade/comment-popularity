@@ -102,7 +102,7 @@ class HMN_Comment_Popularity {
 	/**
 	 * Run checks on plugin activation.
 	 */
-	public function activate() {
+	public static function activate() {
 
 		// Check PHP version. We need at least 5.3.2 for Composer.
 		if ( version_compare( PHP_VERSION, self::HMN_CP_REQUIRED_PHP_VERSION, '<' ) ) {
