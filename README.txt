@@ -24,6 +24,8 @@ You'll find an option under discussion for the default expert karma and it can a
 
 Follow development of this plugin on [Github](https://github.com/humanmade/comment-popularity/)
 
+Requires PHP `5.3.2` or newer.
+
 == Installation ==
 
 = Using The WordPress Dashboard =
