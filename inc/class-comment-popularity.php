@@ -104,8 +104,8 @@ class HMN_Comment_Popularity {
 	 */
 	public static function activate() {
 
-		// Check PHP version. We need at least 5.3.2 for Composer.
-		if ( version_compare( PHP_VERSION, self::HMN_CP_REQUIRED_PHP_VERSION, '<' ) ) {
+		// Check PHP version. We need at least 5.3.2.
+		if ( version_compare( phpversion(), self::HMN_CP_REQUIRED_PHP_VERSION, '<' ) ) {
 			deactivate_plugins( basename( __FILE__ ) );
 			wp_die( sprintf( __( 'This plugin requires PHP Version %s. Sorry about that.', 'comment-popularity' ), self::HMN_CP_REQUIRED_PHP_VERSION ), 'Comment Popularity', array( 'back_link' => true ) );
 		}
