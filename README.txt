@@ -1,6 +1,7 @@
 === Comment Popularity ===
+
 Contributors: pauldewouters, mattheu,humanmade,cfo-publishing
-Tags: comments,vote,upvote,karma
+Tags: comments,vote,upvote,karma,widget
 Requires at least: 3.8.4
 Tested up to: 4.0-beta2
 Stable tag: 1.1.3
