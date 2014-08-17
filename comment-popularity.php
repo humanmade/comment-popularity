@@ -15,14 +15,14 @@ Domain Path: /languages
 defined( 'ABSPATH' ) || exit;
 
 // Main plugin class
-require_once trailingslashit( __DIR__ ) . 'inc/class-comment-popularity.php';
+require_once trailingslashit( dirname( __FILE__ ) ) . 'inc/class-comment-popularity.php';
 
 register_activation_hook( __FILE__, array( 'HMN_Comment_Popularity', 'activate' ) );
 
 add_action( 'plugins_loaded', array( 'HMN_Comment_Popularity', 'get_instance' ) );
 
 // Template tags
-include_once trailingslashit( __DIR__ ) . 'inc/helpers.php';
+include_once trailingslashit( dirname( __FILE__ ) ) . 'inc/helpers.php';
 
 // Admin class
 if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
