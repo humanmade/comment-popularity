@@ -214,7 +214,8 @@ class HMN_Comment_Popularity {
 
 		wp_enqueue_script( 'growl', plugins_url( '../assets/js/modules/growl/javascripts/jquery.growl.min.js', __FILE__ ), array( 'jquery' ), self::HMN_CP_PLUGIN_VERSION, true );
 
-		wp_register_script( 'comment-popularity', plugins_url( '../assets/js/voting.min.js', __FILE__ ), array( 'jquery', 'growl' ), self::HMN_CP_PLUGIN_VERSION );
+		$js_file = ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ? '../assets/js/voting.js' : '../assets/js/voting.min.js';
+		wp_register_script( 'comment-popularity', plugins_url( $js_file, __FILE__ ), array( 'jquery', 'growl' ), self::HMN_CP_PLUGIN_VERSION );
 
 		$args = array(
 			'hmn_vote_nonce' => wp_create_nonce( 'hmn_vote_submit' ),
@@ -625,6 +626,8 @@ class HMN_Comment_Popularity {
 		}
 
 		$this->update_comments_voted_on_for_user( $user_id, $comment_id, $vote );
+
+		do_action( 'hmn_cp_comment_vote', $user_id, $comment_id, $vote );
 
 		$return = array(
 			'success_message'    => __( 'Thanks for voting!', 'comment-popularity' ),
