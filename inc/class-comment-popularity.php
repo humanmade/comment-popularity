@@ -1,6 +1,4 @@
 <?php
-// Load our dependencies
-require_once plugin_dir_path( __FILE__ ) . '/lib/autoload.php';
 
 /**
  * Class HMN_Comment_Popularity
@@ -52,6 +50,8 @@ class HMN_Comment_Popularity {
 	 */
 	private function __construct() {
 
+		$this->includes();
+
 		$this->interval = apply_filters( 'hmn_cp_interval', 15 * MINUTE_IN_SECONDS );
 
 		$this->admin_roles = apply_filters( 'hmn_cp_roles', array( 'administrator', 'editor' ) );
@@ -67,8 +67,31 @@ class HMN_Comment_Popularity {
 
 		add_filter( 'comments_template', array( $this, 'custom_comments_template' ) );
 
+		add_action( 'widgets_init', array( $this, 'register_widgets' ) );
+
 		$this->init_twig();
 		$this->set_permissions();
+	}
+
+	/*
+	 * Include required files.
+	 */
+	protected function includes() {
+
+		// Load our dependencies
+		require_once plugin_dir_path( __FILE__ ) . 'lib/autoload.php';
+
+		// Widgets
+		require_once plugin_dir_path( __FILE__ ) . 'widgets/class-widget-most-voted.php';
+	}
+
+	/**
+	 * Register the plugin widgets.
+	 */
+	public function register_widgets() {
+
+		register_widget( 'HMN_CP_Widget_Most_Voted' );
+
 	}
 
 	/**
