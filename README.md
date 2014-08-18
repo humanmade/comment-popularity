@@ -1,9 +1,10 @@
 # Comment Popularity #
+
 **Contributors:** pauldewouters, mattheu,humanmade,cfo-publishing  
-**Tags:** comments,vote,upvote,karma  
+**Tags:** comments,vote,upvote,karma,widget  
 **Requires at least:** 3.8.4  
 **Tested up to:** 4.0-beta2  
-**Stable tag:** 1.1.3  
+**Stable tag:** 1.1.4  
 **License:** GPLv2 or later  
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html  
 

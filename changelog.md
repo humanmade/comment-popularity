@@ -1,4 +1,21 @@
 
+1.1.4 / 2014-08-18
+==================
+
+ * Check PHP version before evaluating any code
+ * Include and register widgets from main plugin class
+ * Add a tag
+ * Use function instead of constant
+ * Composer udpates
+ * Use 5.2 compatible code here
+ * Update minified script
+ * Throttle clicking events
+ * Add a tag
+ * Use function instead of constant
+ * Composer udpates
+ * Use 5.2 compatible code here
+ * Update CONTRIBUTING.md
+
 1.1.3 / 2014-08-16
 ==================
 
