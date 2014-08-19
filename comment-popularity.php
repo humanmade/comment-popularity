@@ -37,10 +37,3 @@ if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
 	add_action( 'plugins_loaded', array( 'HMN_Comment_Popularity_Admin', 'get_instance' ) );
 
 }
-
-// Remove time limit for voting for dev.
-if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-	add_filter( 'hmn_cp_interval', function( $interval ){
-		return 0;
-	} );
-}
