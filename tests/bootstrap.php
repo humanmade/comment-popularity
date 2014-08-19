@@ -5,12 +5,17 @@
  * @package WordPress
  * @subpackage JSON API
  */
-
+require_once getenv( 'WP_DEVELOP_DIR' ) . '/tests/phpunit/includes/functions.php';
+$plugin_path = basename( dirname( dirname( __FILE__ ) ) ) . '/comment-popularity.php';
 // Activates this plugin in WordPress so it can be tested.
-$GLOBALS['wp_tests_options'] = array(
-	'active_plugins' => array( basename( dirname( dirname( __FILE__ ) ) ) . '/comment-popularity.php' ),
-);
+function _manually_load_plugin() {
 
+	require dirname( dirname( __FILE__ ) ) . '/comment-popularity.php';
+	HMN_Comment_Popularity::get_instance();
+
+	// Make sure plugin is installed here ...
+}
+tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
 // If the develop repo location is defined (as WP_DEVELOP_DIR), use that
 // location. Otherwise, we'll just assume that this plugin is installed in a
 // WordPress develop SVN checkout.
