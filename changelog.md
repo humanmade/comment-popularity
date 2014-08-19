@@ -1,4 +1,15 @@
 
+1.1.5 / 2014-08-19
+==================
+
+ * Update tests to reflect refactoring
+ * Change how comment weight is calculated
+ * Use a multisite compatible function for user meta
+ * Fix up tests config
+ * Use appropriate WordPress functions
+ * Remove debugging function
+ * Make debugging easier
+
 1.1.4 / 2014-08-18
 ==================
 

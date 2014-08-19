@@ -4,7 +4,7 @@ Contributors: pauldewouters, mattheu,humanmade,cfo-publishing
 Tags: comments,vote,upvote,karma,widget
 Requires at least: 3.8.4
 Tested up to: 4.0-beta2
-Stable tag: 1.1.4
+Stable tag: 1.1.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -100,6 +100,32 @@ To display the comment author karma:
 * Fixes a bug which prevented the user karma to appear in the single comment template.
 
 == Changelog ==
+
+= 1.1.5 / 2014-08-19 =
+
+ * Update tests to reflect refactoring
+ * Change how comment weight is calculated
+ * Use a multisite compatible function for user meta
+ * Fix up tests config
+ * Use appropriate WordPress functions
+ * Remove debugging function
+ * Make debugging easier
+
+= 1.1.4 / 2014-08-18 =
+
+ * Check PHP version before evaluating any code
+ * Include and register widgets from main plugin class
+ * Add a tag
+ * Use function instead of constant
+ * Composer udpates
+ * Use 5.2 compatible code here
+ * Update minified script
+ * Throttle clicking events
+ * Add a tag
+ * Use function instead of constant
+ * Composer udpates
+ * Use 5.2 compatible code here
+ * Update CONTRIBUTING.md
 
 = 1.1.3 / 2014-08-16 =
 
