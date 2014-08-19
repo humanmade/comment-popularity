@@ -16,19 +16,19 @@ defined( 'ABSPATH' ) || exit;
 
 // Check PHP version. We need at least 5.3.2.
 if ( version_compare( phpversion(), '5.3.2', '<' ) ) {
-	deactivate_plugins( basename( __FILE__ ) );
+	deactivate_plugins( plugin_basename( __FILE__ ) );
 	wp_die( sprintf( __( 'This plugin requires PHP Version %s. Sorry about that.', 'comment-popularity' ), '5.3.2' ), 'Comment Popularity', array( 'back_link' => true ) );
 }
 
 // Main plugin class
-require_once trailingslashit( dirname( __FILE__ ) ) . 'inc/class-comment-popularity.php';
+require_once plugin_dir_path( __FILE__ ) . 'inc/class-comment-popularity.php';
 
 register_activation_hook( __FILE__, array( 'HMN_Comment_Popularity', 'activate' ) );
 
 add_action( 'plugins_loaded', array( 'HMN_Comment_Popularity', 'get_instance' ) );
 
 // Template tags
-include_once trailingslashit( dirname( __FILE__ ) ) . 'inc/helpers.php';
+include_once plugin_dir_path( __FILE__ ) . 'inc/helpers.php';
 
 // Admin class
 if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {

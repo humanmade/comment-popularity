@@ -130,7 +130,7 @@ class HMN_Comment_Popularity {
 		global $wp_version;
 
 		if ( version_compare( $wp_version, self::HMN_CP_REQUIRED_WP_VERSION, '<' ) ) {
-			deactivate_plugins( basename( __FILE__ ) );
+			deactivate_plugins( plugin_basename( __FILE__ ) );
 			wp_die( sprintf( __( 'This plugin requires WordPress version %s. Sorry about that.', 'comment-popularity' ), self::HMN_CP_REQUIRED_WP_VERSION ), 'Comment Popularity', array( 'back_link' => true ) );
 		}
 	}
@@ -646,7 +646,7 @@ class HMN_Comment_Popularity {
 	public function load_textdomain() {
 
 		// Set filter for plugin's languages directory
-		$hmn_cp_lang_dir = basename( plugin_dir_path( dirname( __FILE__ ) ) ) . '/languages/';
+		$hmn_cp_lang_dir = dirname( plugin_basename( __DIR__ ) ) . '/languages/';
 		$hmn_cp_lang_dir = apply_filters( 'hmn_cp_languages_directory', $hmn_cp_lang_dir );
 
 		// Traditional WordPress plugin locale filter
