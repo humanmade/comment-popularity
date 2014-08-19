@@ -110,7 +110,7 @@ class HMN_Comment_Popularity {
 				break;
 
 			case 'downvote':
-				$value = apply_filters( 'hmn_cp_downvote_value', 1 );
+				$value = apply_filters( 'hmn_cp_downvote_value', -1 );
 				break;
 
 			default:
@@ -306,25 +306,16 @@ class HMN_Comment_Popularity {
 	 *
 	 * @return int
 	 */
-	public function update_comment_weight( $vote, $comment_id ) {
+	public function update_comment_weight( $comment_id, $weight_value ) {
 
 		$comment_arr = get_comment( $comment_id, ARRAY_A );
 
-		if ( 'upvote' === $vote ) {
 
-			$weight_value = $comment_arr['comment_karma'] + $this->get_vote_value( $vote );
+		$comment_arr['comment_karma'] += $weight_value;
 
-		} else {
-
-			$weight_value = $comment_arr['comment_karma'] - $this->get_vote_value( $vote );
-
+		if ( 0 >= $comment_arr['comment_karma'] ) {
+			$comment_arr['comment_karma'] = 0;
 		}
-
-
-		if ( $weight_value <= 0 )
-			$weight_value = 0;
-
-		$comment_arr['comment_karma'] = $weight_value;
 
 		wp_update_comment( $comment_arr );
 
@@ -367,7 +358,7 @@ class HMN_Comment_Popularity {
 		$user_karma = $this->get_user_karma( $user_id );
 
 		if ( $is_expert && ( 0 < $user_karma ) ) {
-			$this->update_comment_weight( $user_karma, $comment_id );
+			$this->update_comment_weight( $comment_id, $user_karma );
 		}
 
 	}
@@ -380,23 +371,11 @@ class HMN_Comment_Popularity {
 	 *
 	 * @return int|mixed|void
 	 */
-	public function update_user_karma( $commenter_id, $vote ) {
+	public function update_user_karma( $commenter_id, $value ) {
 
 		$user_karma = $this->get_user_karma( $commenter_id );
 
-		if ( 'upvote' === $vote ) {
-
-			$user_karma += $this->get_vote_value( $vote );
-
-		} else {
-
-			$user_karma -= $this->get_vote_value( $vote );
-			// Do not allow negative karma.
-			if ( $user_karma < 0 ) {
-				$user_karma = 0;
-			}
-
-		}
+		$user_karma += $value;
 
 		update_user_meta( $commenter_id, 'hmn_user_karma', $user_karma );
 
@@ -426,7 +405,7 @@ class HMN_Comment_Popularity {
 		// get user meta for karma
 		$user_karma = get_user_option( 'hmn_user_karma', $user_id );
 
-		return ( '' !== $user_karma ) ? $user_karma : 0;
+		return ( '' !== $user_karma ) ? (int)$user_karma : 0;
 	}
 
 
@@ -614,7 +593,7 @@ class HMN_Comment_Popularity {
 
 		}
 
-		$this->update_comment_weight( $vote, $comment_id );
+		$this->update_comment_weight( $comment_id, $this->get_vote_value( $vote ) );
 
 		// Get the comment author object.
 		$email = get_comment_author_email( $comment_id );
@@ -622,7 +601,7 @@ class HMN_Comment_Popularity {
 
 		// update comment author karma if registered user.
 		if ( false !== $author ) {
-			$this->update_user_karma( $author->ID, $vote );
+			$this->update_user_karma( $author->ID, $this->get_vote_value( $vote ) );
 		}
 
 		$this->update_comments_voted_on_for_user( $user_id, $comment_id, $vote );
