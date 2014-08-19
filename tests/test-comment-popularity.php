@@ -148,7 +148,7 @@ class Test_HMN_Comment_Popularity extends HMN_Comment_PopularityTestCase {
 		// Current comment author karma value
 		$current_value = $this->plugin->get_user_karma( $this->test_commenter_id );
 
-		$new_value = $this->plugin->update_user_karma( $this->test_commenter_id, $vote );
+		$new_value = $this->plugin->update_user_karma( $this->test_commenter_id, $this->plugin->get_vote_value( $vote ) );
 
 		$this->assertGreaterThan( $current_value, $new_value );
 	}
@@ -163,8 +163,8 @@ class Test_HMN_Comment_Popularity extends HMN_Comment_PopularityTestCase {
 		$current_value = $this->plugin->get_user_karma( $this->test_commenter_id );
 
 		// Downvote twice so we check negative values
-		$this->plugin->update_user_karma( $this->test_commenter_id, $vote );
-		$new_value = $this->plugin->update_user_karma( $this->test_commenter_id, $vote );
+		$this->plugin->update_user_karma( $this->test_commenter_id, $this->plugin->get_vote_value( $vote ) );
+		$new_value = $this->plugin->update_user_karma( $this->test_commenter_id, $this->plugin->get_vote_value( $vote ) );
 
 		$this->assertLessThan( $current_value, $new_value );
 	}
@@ -192,11 +192,11 @@ class Test_HMN_Comment_Popularity extends HMN_Comment_PopularityTestCase {
 		$vote = 'upvote';
 
 		// Set initial comment weight
-		$this->plugin->update_comment_weight( $vote, $this->test_comment_id );
+		$this->plugin->update_comment_weight( $this->test_comment_id, $this->plugin->get_vote_value( $vote ) );
 
 		$current_value = $this->plugin->get_comment_weight( $this->test_comment_id );
 
-		$new_value = $this->plugin->update_comment_weight( $vote, $this->test_comment_id );
+		$new_value = $this->plugin->update_comment_weight( $this->test_comment_id, $this->plugin->get_vote_value( $vote ) );
 
 		$this->assertGreaterThan( $current_value, $new_value );
 	}
@@ -214,7 +214,7 @@ class Test_HMN_Comment_Popularity extends HMN_Comment_PopularityTestCase {
 
 		$current_value = $this->plugin->get_comment_weight( $this->test_comment_id );
 
-		$new_value = $this->plugin->update_comment_weight( $vote, $this->test_comment_id );
+		$new_value = $this->plugin->update_comment_weight( $this->test_comment_id, $this->plugin->get_vote_value( $vote ) );
 
 		$this->assertLessThan( $current_value, $new_value );
 		$this->assertEquals( 1, $new_value );
@@ -232,7 +232,7 @@ class Test_HMN_Comment_Popularity extends HMN_Comment_PopularityTestCase {
 
 		$current_value = $this->plugin->get_comment_weight( $this->test_comment_id );
 
-		$new_value = $this->plugin->update_comment_weight( $vote, $this->test_comment_id );
+		$new_value = $this->plugin->update_comment_weight( $this->test_comment_id, $this->plugin->get_vote_value( $vote ) );
 
 		$this->assertEquals( $current_value, $new_value );
 		$this->assertEquals( 0, $new_value );
