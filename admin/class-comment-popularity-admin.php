@@ -200,7 +200,7 @@ class HMN_Comment_Popularity_Admin {
 			return $empty;
 		}
 
-		$user_karma = get_user_meta( $user_id, 'hmn_user_karma', true );
+		$user_karma = get_user_option( 'hmn_user_karma', $user_id );
 
 		return $user_karma;
 

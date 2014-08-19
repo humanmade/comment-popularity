@@ -349,7 +349,7 @@ class HMN_Comment_Popularity {
 	 */
 	public function get_user_expert_status( $user_id ) {
 
-		return (bool) get_user_meta( $user_id, 'hmn_user_expert_status', true );
+		return (bool) get_user_option( 'hmn_user_expert_status',$user_id );
 	}
 
 	/**
@@ -400,7 +400,7 @@ class HMN_Comment_Popularity {
 
 		update_user_meta( $commenter_id, 'hmn_user_karma', $user_karma );
 
-		$user_karma = get_user_meta( $commenter_id, 'hmn_user_karma', true );
+		$user_karma = get_user_option( 'hmn_user_karma', $commenter_id );
 
 		/**
 		 * Fires once the user meta has been updated for the karma.
@@ -424,7 +424,7 @@ class HMN_Comment_Popularity {
 	public function get_user_karma( $user_id ) {
 
 		// get user meta for karma
-		$user_karma = get_user_meta( $user_id, 'hmn_user_karma', true );
+		$user_karma = get_user_option( 'hmn_user_karma', $user_id );
 
 		return ( '' !== $user_karma ) ? $user_karma : 0;
 	}
@@ -484,7 +484,7 @@ class HMN_Comment_Popularity {
 			return new WP_Error( 'not_logged_in', __( 'You must be logged in to vote on comments', 'comment-popularity' ) );
 		}
 
-		$comments_voted_on = get_user_meta( $user_id, 'comments_voted_on', true );
+		$comments_voted_on = get_user_option( 'comments_voted_on', $user_id );
 
 		// User has not yet voted on this comment
 		if ( empty( $comments_voted_on[ 'comment_id_' . $comment_id ] ) ) {
@@ -524,14 +524,14 @@ class HMN_Comment_Popularity {
 	 */
 	public function update_comments_voted_on_for_user( $user_id, $comment_id, $action ) {
 
-		$comments_voted_on = get_user_meta( $user_id, 'comments_voted_on', true );
+		$comments_voted_on = get_user_option( 'comments_voted_on', $user_id );
 
 		$comments_voted_on[ 'comment_id_' . $comment_id ]['vote_time'] = current_time( 'timestamp' );
 		$comments_voted_on[ 'comment_id_' . $comment_id ]['last_action'] = $action;
 
 		update_user_meta( $user_id, 'comments_voted_on', $comments_voted_on );
 
-		$comments_voted_on = get_user_meta( $user_id, 'comments_voted_on', true );
+		$comments_voted_on = get_user_option( 'comments_voted_on', $user_id );
 
 		$updated = $comments_voted_on[ 'comment_id_' . $comment_id ];
 
