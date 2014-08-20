@@ -122,6 +122,13 @@ class HMN_Comment_Popularity {
 		return $value;
 	}
 
+	public function get_vote_labels() {
+		return array(
+			'upvote'   => _x( 'upvote', 'verb', 'comment-popularity' ),
+			'downvote' => _x( 'downvote', 'verb', 'comment-popularity' ),
+		);
+	}
+
 	/**
 	 * Run checks on plugin activation.
 	 */
@@ -449,10 +456,12 @@ class HMN_Comment_Popularity {
 	 */
 	public function user_can_vote( $user_id, $comment_id, $action = '' ) {
 
+		$labels = $this->get_vote_labels();
+
 		$comment = get_comment( $comment_id );
 
 		if ( $comment->user_id && ( $user_id === (int)$comment->user_id ) ) {
-			return new WP_Error( 'upvote_own_comment', __( 'You cannot upvote your own comments.', 'comment-popularity' ) );
+			return new WP_Error( 'upvote_own_comment', sprintf( __( 'You cannot %s your own comments.', 'comment-popularity' ), $labels[ $action ] ) );
 		}
 
 		if ( ! current_user_can( 'vote_on_comments' ) ) {
@@ -474,7 +483,7 @@ class HMN_Comment_Popularity {
 		$last_action = $comments_voted_on[ 'comment_id_' . $comment_id ]['last_action'];
 
 		if ( $last_action === $action ) {
-			return new WP_Error( 'same_action', sprintf( __( 'You already %sd this comment', 'comment-popularity' ), $action ) );
+			return new WP_Error( 'same_action', sprintf( __( 'You cannot %s this comment again.', 'comment-popularity' ), $labels[ $action ] ) );
 		}
 
 		// Is user trying to vote too fast?
