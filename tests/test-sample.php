@@ -1,9 +1,9 @@
 <?php
-require_once 'testcase.php';
+
 /**
  * Class Test_HMN_Comment_Popularity
  */
-class Test_HMN_Comment_Popularity extends HMN_Comment_PopularityTestCase {
+class Test_HMN_Comment_Popularity extends WP_UnitTestCase {
 
 	protected $test_voter_id;
 	protected $test_commenter_id;
@@ -13,9 +13,13 @@ class Test_HMN_Comment_Popularity extends HMN_Comment_PopularityTestCase {
 
 	protected $test_comment_id;
 
+	protected $plugin;
+
 	public function setUp() {
 
 		parent::setUp();
+
+		$this->plugin = HMN_Comment_Popularity::get_instance();
 
 		$this->test_voter_id = $this->factory->user->create(
 			array(
