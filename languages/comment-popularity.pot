@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Comment Popularity 1.1.5\n"
 "Report-Msgid-Bugs-To: support@humanmade.co.uk\n"
-"POT-Creation-Date: 2014-08-19 21:00:54+00:00\n"
+"POT-Creation-Date: 2014-08-20 21:53:21+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -46,31 +46,31 @@ msgstr ""
 msgid "Sorry, invalid vote type"
 msgstr ""
 
-#: inc/class-comment-popularity.php:134
+#: inc/class-comment-popularity.php:141
 msgid "This plugin requires WordPress version %s. Sorry about that."
 msgstr ""
 
-#: inc/class-comment-popularity.php:455
-msgid "You cannot upvote your own comments."
+#: inc/class-comment-popularity.php:464
+msgid "You cannot %s your own comments."
 msgstr ""
 
-#: inc/class-comment-popularity.php:459
+#: inc/class-comment-popularity.php:468
 msgid "You lack sufficient permissions to vote on comments"
 msgstr ""
 
-#: inc/class-comment-popularity.php:463
+#: inc/class-comment-popularity.php:472
 msgid "You must be logged in to vote on comments"
 msgstr ""
 
-#: inc/class-comment-popularity.php:477
-msgid "You already %sd this comment"
+#: inc/class-comment-popularity.php:486
+msgid "You cannot %s this comment again."
 msgstr ""
 
-#: inc/class-comment-popularity.php:544
+#: inc/class-comment-popularity.php:553
 msgid "Invalid action"
 msgstr ""
 
-#: inc/class-comment-popularity.php:612
+#: inc/class-comment-popularity.php:621
 msgid "Thanks for voting!"
 msgstr ""
 
@@ -80,10 +80,6 @@ msgstr ""
 
 #: inc/templates/comment.php:8
 msgid "Edit"
-msgstr ""
-
-#: inc/templates/comment.php:46
-msgid "%1$s( User Karma: %2$s )%3$s"
 msgstr ""
 
 #: inc/templates/comment.php:64
@@ -135,9 +131,24 @@ msgstr ""
 msgid "http://humanmade.co.uk"
 msgstr ""
 
+#: inc/class-comment-popularity.php:127
+msgctxt "verb"
+msgid "upvote"
+msgstr ""
+
+#: inc/class-comment-popularity.php:128
+msgctxt "verb"
+msgid "downvote"
+msgstr ""
+
 #: inc/templates/comment.php:28
 msgctxt "1: date, 2: time"
 msgid "%1$s at %2$s"
+msgstr ""
+
+#: inc/templates/comment.php:46
+msgctxt "1: HTML tag 2: Karma value 3: HTML tag"
+msgid "%1$s( User Karma: %2$s )%3$s"
 msgstr ""
 
 #: inc/templates/comment.php:56
@@ -152,8 +163,8 @@ msgid_plural "%1$s comments"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/widgets/class-widget-most-voted.php:126
+#: inc/widgets/class-widget-most-voted.php:127
 #. translators: comments widget: 1: comment author, 2: post link
-msgctxt "widgets"
-msgid "%1$s on %2$s, ( Votes: %3$s )"
+msgctxt "1: Author 2: Post title 3: Weight"
+msgid "%1$s on %2$s, ( Weight: %3$s )"
 msgstr ""
