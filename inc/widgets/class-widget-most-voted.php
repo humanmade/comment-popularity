@@ -99,10 +99,11 @@ class HMN_CP_Widget_Most_Voted extends WP_Widget {
 
 		// WP_Comment_Query arguments
 		$get_comments_args = array (
-			'status'         => 'approve',
-			'type'           => 'comment',
-			'order'          => 'DESC',
-			'orderby'        => 'comment_karma',
+			'status'  => 'approve',
+			'type'    => 'comment',
+			'order'   => 'DESC',
+			'orderby' => 'comment_karma',
+			'number'  => $number
 		);
 
 		// The Comment Query
@@ -123,7 +124,7 @@ class HMN_CP_Widget_Most_Voted extends WP_Widget {
 			foreach ( (array) $comments as $comment ) {
 				$output .= '<li class="recentcomments">';
 				/* translators: comments widget: 1: comment author, 2: post link */
-				$output .= sprintf( _x( '%1$s on %2$s, ( Votes: %3$s )', 'widgets' ),
+				$output .= sprintf( _x( '%1$s on %2$s, ( Weight: %3$s )', '1: Author 2: Post title 3: Weight', 'comment-popularity' ),
 					'<span class="comment-author-link">' . get_comment_author_link( $comment->comment_ID ) . '</span>',
 					'<a href="' . esc_url( get_comment_link( $comment->comment_ID ) ) . '">' . get_the_title( $comment->comment_post_ID ) . '</a>',
 					'<span class="comment-weight">' . $comment->comment_karma . '</span>'
