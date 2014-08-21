@@ -83,6 +83,8 @@ class HMN_Comment_Popularity {
 
 		// Widgets
 		require_once plugin_dir_path( __FILE__ ) . 'widgets/class-widget-most-voted.php';
+		require_once plugin_dir_path( __FILE__ ) . 'widgets/experts/class-widget-experts.php';
+
 	}
 
 	/**
@@ -91,6 +93,7 @@ class HMN_Comment_Popularity {
 	public function register_widgets() {
 
 		register_widget( 'HMN_CP_Widget_Most_Voted' );
+		register_widget( 'HMN_CP_Widget_Experts' );
 
 	}
 
