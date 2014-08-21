@@ -22,6 +22,8 @@ class HMN_CP_Widget_Experts extends WP_Widget {
 
 	protected $defaults = array();
 
+	protected $twig;
+
 	/*--------------------------------------------------*/
 	/* Constructor
 	/*--------------------------------------------------*/
@@ -42,7 +44,7 @@ class HMN_CP_Widget_Experts extends WP_Widget {
 		);
 
 		$this->defaults = array(
-			'title'  => __( 'Expert commenters', 'comment-popularity' ),
+			'title'  => '',
 			'number' => 5
 		);
 
@@ -52,6 +54,18 @@ class HMN_CP_Widget_Experts extends WP_Widget {
 		add_action( 'switch_theme', array( $this, 'flush_widget_cache' ) );
 
 	} // end constructor
+
+	/**
+	 * Instantiates the Twig objects.
+	 */
+	public function init_twig() {
+
+		$template_path = apply_filters( 'hmn_cp_experts_widget_template_path', plugin_dir_path( __FILE__ ) . '/views' );
+
+		$loader = new Twig_Loader_Filesystem( $template_path );
+		$this->twig = new Twig_Environment( $loader );
+
+	}
 
 
 	/**
@@ -77,7 +91,7 @@ class HMN_CP_Widget_Experts extends WP_Widget {
 	 */
 	public function widget( $args, $instance ) {
 
-		$args = wp_parse_args( $instance, $this->defaults );
+		$args = wp_parse_args( $args, $this->defaults );
 
 		// Check if there is a cached output
 		$cache = wp_cache_get( $this->get_widget_slug(), 'widget' );
@@ -94,16 +108,25 @@ class HMN_CP_Widget_Experts extends WP_Widget {
 			return print $cache[ $args['widget_id'] ];
 		}
 
-		// go on with your widget logic, put everything into a string and …
-
-
 		extract( $args, EXTR_SKIP );
 
 		$widget_string = $before_widget;
 
-		// TODO: Here is where you manipulate your widget's values based on their input fields
+		/* If a title was input by the user, display it. */
+		if ( ! empty( $instance['title'] ) )
+			$widget_string .= $args['before_title'] . apply_filters( 'widget_title',  $instance['title'], $instance, $this->id_base ) . $args['after_title'];
+
+		$experts = $this->get_experts();
+		$plugin = HMN_Comment_Popularity::get_instance();
+		$this->init_twig();
+		$vars = array(
+			'experts' => $experts,
+		);
+
 		ob_start();
-		include( plugin_dir_path( __FILE__ ) . 'views/widget.php' );
+
+		echo $this->twig->render( 'experts-widget.html', $vars );
+
 		$widget_string .= ob_get_clean();
 		$widget_string .= $after_widget;
 
@@ -158,5 +181,42 @@ class HMN_CP_Widget_Experts extends WP_Widget {
 
 	} // end form
 
+	protected function get_experts( $args = array() ) {
+
+		/* Get the experts list. */
+		$args = array (
+			'number'         => '5',
+			'meta_query'     => array(
+				array(
+					'key'       => 'hmn_user_expert_status',
+					'value'     => '1',
+					'compare'   => '=',
+					'type'      => 'NUMERIC',
+				),
+			),
+			'orderby'  => 'meta_value',
+			'order'    => 'DESC',
+			'meta_key' => 'hmn_user_karma'
+		);
+
+		$experts = get_users( $args );
+
+		foreach ( $experts as $key => $expert ) {
+
+			$return[$key]['name'] = $expert->user_login;
+			$return[$key]['karma'] = get_user_option( 'hmn_user_karma', $expert->ID );
+			$return[$key]['avatar'] = $this->get_gravatar_url( $expert->user_email );
+
+		}
+
+		return $return;
+
+	}
+
+	public function get_gravatar_url( $email ) {
+
+		$hash = md5( strtolower( trim ( $email ) ) );
+		return 'http://gravatar.com/avatar/' . $hash;
+	}
 
 } // end class
