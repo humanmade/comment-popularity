@@ -1,0 +1,8 @@
+<ul>
+	{% for expert in experts %}
+	<li>
+		<img src="{{ expert.avatar }}" alt="" width="25" height="25" />
+		<span>{{ expert.name }}</span> - <span>Karma: {{ expert.karma }}</span>
+	</li>
+	{% endfor %}
+</ul>

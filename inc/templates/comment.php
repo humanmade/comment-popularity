@@ -43,7 +43,7 @@ if ( 'pingback' == $comment->comment_type || 'trackback' == $comment->comment_ty
 					$author_karma = $hmn_cp_plugin->get_user_karma( $author->ID );
 
 					if ( false !== $author_karma ) {
-						$karma_element = sprintf( __( '%1$s( User Karma: %2$s )%3$s', 'comment-popularity' ), '<small class="user-karma">', esc_html( $author_karma ), '</small>' );
+						$karma_element = sprintf( _x( '%1$s( User Karma: %2$s )%3$s', '1: HTML tag 2: Karma value 3: HTML tag', 'comment-popularity' ), '<small class="user-karma">', esc_html( $author_karma ), '</small>' );
 					}
 
 				}
