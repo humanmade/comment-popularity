@@ -427,25 +427,26 @@ class HMN_Comment_Popularity {
 	 *
 	 * @return string
 	 */
-	public function get_comments_sorted_by_weight( $args = array(), $comments = null ) {
+	public function get_comments_sorted_by_weight( $html = false, $args = array() ) {
 
-		$defaults = array( 'echo' => false );
+		// WP_Comment_Query arguments
+		$defaults = array (
+			'status'         => 'approve',
+			'type'           => 'comment',
+			'order'          => 'DESC',
+			'orderby'        => 'comment_karma',
+		);
 
-		$args = array_merge( $defaults, $args );
+		$get_comments_args = wp_parse_args( $args, $defaults );
 
-		if ( null == $comments ) {
+		// The Comment Query
+		$comment_query = new WP_Comment_Query;
+		$comments = $comment_query->query( $get_comments_args );
 
-			global $wp_query;
+		if ( $html )
+			return wp_list_comments( $args, $comments );
 
-			$comments = $wp_query->comments;
-
-		}
-
-		uasort( $comments, function( $a, $b ){
-			return $b->comment_karma > $a->comment_karma;
-		});
-
-		return wp_list_comments( $args, $comments );
+		return $comments;
 	}
 
 	/**

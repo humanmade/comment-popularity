@@ -96,19 +96,9 @@ class HMN_CP_Widget_Most_Voted extends WP_Widget {
 		if ( ! $number ) {
 			$number = 5;
 		}
-
-		// WP_Comment_Query arguments
-		$get_comments_args = array (
-			'status'  => 'approve',
-			'type'    => 'comment',
-			'order'   => 'DESC',
-			'orderby' => 'comment_karma',
-			'number'  => $number
-		);
-
-		// The Comment Query
-		$comment_query = new WP_Comment_Query;
-		$comments = $comment_query->query( $get_comments_args );
+		
+		$hmn_cp_plugin = HMN_Comment_Popularity::get_instance();
+		$comments = $hmn_cp_plugin->get_comments_sorted_by_weight( false, array( 'number' => $number, 'echo' => false ) );
 
 		$output .= $args['before_widget'];
 		if ( $title ) {
