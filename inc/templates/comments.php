@@ -30,14 +30,16 @@ endif;
 			$hmn_cp_obj = HMN_Comment_Popularity::get_instance();
 
 			global $comment;
+			global $post;
 
 			$args = array(
-				'echo' => true,
+				'post_id'  => $post->ID,
+				'echo'     => true,
 				'callback' => array( $hmn_cp_obj, 'comment_callback' ),
 				'style'    => 'ol'
 			);
 
-			$hmn_cp_obj->get_comments_sorted_by_weight( $args );
+			$hmn_cp_obj->get_comments_sorted_by_weight( true, $args );
 
 			?>
 
