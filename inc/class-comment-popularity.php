@@ -485,7 +485,7 @@ class HMN_Comment_Popularity {
 		// Is user trying to vote twice on same comment?
 		$last_action = $comments_voted_on[ 'comment_id_' . $comment_id ]['last_action'];
 
-		if ( isset( $action ) && $last_action === $action ) {
+		if ( $last_action === $action ) {
 			return new WP_Error( 'same_action', sprintf( __( 'You cannot %s this comment again.', 'comment-popularity' ), $labels[ $action ] ) );
 		}
 
