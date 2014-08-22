@@ -280,7 +280,7 @@ class HMN_Comment_Popularity {
 
 		$container_classes = array( 'comment-weight-container' );
 
-		if ( ! $this->user_can_vote( get_current_user_id(), $comment_id ) ) {
+		if ( ! current_user_can( 'vote_on_comments' ) ) {
 			$container_classes[] = 'voting-disabled';
 		}
 
@@ -464,12 +464,12 @@ class HMN_Comment_Popularity {
 
 		$comment = get_comment( $comment_id );
 
-		if ( $comment->user_id && ( $user_id === (int)$comment->user_id ) ) {
-			return new WP_Error( 'upvote_own_comment', sprintf( __( 'You cannot %s your own comments.', 'comment-popularity' ), $labels[ $action ] ) );
-		}
-
 		if ( ! current_user_can( 'vote_on_comments' ) ) {
 			return new WP_Error( 'insufficient_permissions', __( 'You lack sufficient permissions to vote on comments', 'comment-popularity' ) );
+		}
+
+		if ( $comment->user_id && ( $user_id === (int)$comment->user_id ) ) {
+			return new WP_Error( 'upvote_own_comment', sprintf( __( 'You cannot %s your own comments.', 'comment-popularity' ), $labels[ $action ] ) );
 		}
 
 		if ( ! is_user_logged_in() ) {
