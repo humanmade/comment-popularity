@@ -84,7 +84,7 @@ module.exports = function (grunt) {
 							'!**/.{svn,git,bowerrc,jshintrc,travis.yml,gitignore}/**',
 							'!**/.DS_Store/**',
 							'!**composer{.json,.lock}**',
-							'!**package.json**',
+							'!**{phpcompatinfo,package}.json**',
 							'!**Gruntfile.js**',
 							'!**{changelog,CONTRIBUTING,README}.md**',
 							'!**phpunit**',
@@ -92,6 +92,7 @@ module.exports = function (grunt) {
 							'!**/wp-assets/**',
 							'!**/tests/**',
 							'!**/build/**',
+							'!**/bin/**',
 							'!**/docs/**',
 							'!**phpdoc.xml**',
 							'!**/inc/lib/twig/twig/{test,doc}/**'
