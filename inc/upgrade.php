@@ -46,7 +46,7 @@ function hmn_cp_v121_upgrade() {
 			continue;
 
 		update_user_option( $user->ID, 'hmn_comments_voted_on', $hmn_comments_voted_on );
-		delete_user_option( 'comments_voted_on' );
+		delete_user_option( $user->ID, 'comments_voted_on', true );
 
 	}
 
