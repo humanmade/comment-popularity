@@ -1,4 +1,29 @@
 
+1.2.0 / 2014-08-24
+==================
+
+ * Merge pull request #77 from humanmade/fix-user-can-vote
+ * it should be set
+ * the user_can_vote function is triggered by a vote action. therefore we cannot use it to determines if a comment can be voted on on page load. we can just check if current user has sufficient permissions. unless we persist a user/comment relationship.
+ * Merge pull request #52 from humanmade/issue-52
+ * Merge branch 'master' into issue-52
+ * Refactor get comments by weight function
+ * Use exising function instead of another comment query
+ * USe the refactored function parameters
+ * Use the refactored function parameters
+ * Just add a newline
+ * Merge pull request #73 from humanmade/issue-73
+ * Merge pull request #58 from humanmade/issue-58
+ * clean up
+ * display gravatar
+ * adds an experts widget
+ * update translation files
+ * Limit number of comments by user widget setting
+ * Add context info for translators
+ * Make more strings translatable
+ * Recreate tests from WP CLI
+ * Update tested up to field
+
 1.1.5 / 2014-08-19
 ==================
 
