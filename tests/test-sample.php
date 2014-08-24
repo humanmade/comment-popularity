@@ -112,6 +112,8 @@ class Test_HMN_Comment_Popularity extends WP_UnitTestCase {
 
 		$ret = $this->plugin->comment_vote( 'downvote', $this->test_comment_id, $this->test_voter_id );
 
+		$this->assertArrayHasKey( 'error_code', $ret );
+
 		$this->assertEquals( 'voting_flood', $ret['error_code'] );
 
 	}
@@ -123,6 +125,8 @@ class Test_HMN_Comment_Popularity extends WP_UnitTestCase {
 		$ret = $this->plugin->comment_vote( 'upvote', $this->test_comment_id, $this->test_voter_id );
 
 		sleep( 7 );
+
+		$this->assertArrayHasKey( 'error_code', $ret );
 
 		$this->assertEquals( 'same_action', $ret['error_code'] );
 
