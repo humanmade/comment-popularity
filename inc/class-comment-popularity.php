@@ -387,7 +387,7 @@ class HMN_Comment_Popularity {
 
 		$user_karma += $value;
 
-		update_user_meta( $commenter_id, 'hmn_user_karma', $user_karma );
+		update_user_option( $commenter_id, 'hmn_user_karma', $user_karma );
 
 		$user_karma = get_user_option( 'hmn_user_karma', $commenter_id );
 
@@ -521,7 +521,7 @@ class HMN_Comment_Popularity {
 		$comments_voted_on[ 'comment_id_' . $comment_id ]['vote_time'] = current_time( 'timestamp' );
 		$comments_voted_on[ 'comment_id_' . $comment_id ]['last_action'] = $action;
 
-		update_user_meta( $user_id, 'hmn_comments_voted_on', $comments_voted_on );
+		update_user_option( $user_id, 'hmn_comments_voted_on', $comments_voted_on );
 
 		$comments_voted_on = get_user_option( 'hmn_comments_voted_on', $user_id );
 

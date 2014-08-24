@@ -251,9 +251,9 @@ class HMN_Comment_Popularity_Admin {
 
 		$user_expert_status = (bool)$_POST['hmn_user_expert_status'];
 
-		update_user_meta( $user_id, 'hmn_user_karma', $user_karma );
+		update_user_option( $user_id, 'hmn_user_karma', $user_karma );
 
-		update_user_meta( $user_id, 'hmn_user_expert_status', $user_expert_status );
+		update_user_option( $user_id, 'hmn_user_expert_status', $user_expert_status );
 
 	}
 
