@@ -16,14 +16,14 @@ class HMN_Comment_Popularity_Admin {
 		add_action( 'edit_user_profile_update', array( $this, 'save_user_meta' ) );
 
 		add_filter( 'manage_edit-comments_columns', array( $this, 'add_comment_columns' ) );
-		add_filter( 'manage_comments_custom_column', array( $this, 'populate_comment_column' ) );
+		add_filter( 'manage_comments_custom_column', array( $this, 'populate_comment_column' ), 10, 2 );
 
 		add_filter( 'manage_edit-comments_sortable_columns', array( $this, 'make_weight_column_sortable' ) );
 
 		add_action( 'admin_init', array( $this, 'register_plugin_settings' ) );
 
 		add_filter( 'manage_users_columns', array( $this, 'add_users_columns' ) );
-		add_filter( 'manage_users_custom_column', array( $this, 'populate_users_columns'), 10, 3  );
+		add_filter( 'manage_users_custom_column', array( $this, 'populate_users_columns'), 10, 3 );
 		add_filter( 'manage_users_sortable_columns', array( $this, 'make_karma_column_sortable' ) );
 
 	}
@@ -150,9 +150,11 @@ class HMN_Comment_Popularity_Admin {
 	 * @return array
 	 */
 	public function add_comment_columns( $columns ) {
+
 		return array_merge( $columns, array(
 			'comment_karma' => __( 'Weight', 'comment-popularity' ),
 		) );
+
 	}
 
 	/**
@@ -176,7 +178,11 @@ class HMN_Comment_Popularity_Admin {
 	 * @return array
 	 */
 	public function add_users_columns( $columns ) {
-		return array_merge( $columns, array( 'user_karma' => __( 'Karma', 'comment-popularity' ) ) );
+
+		return array_merge( $columns, array(
+			'user_karma' => __( 'Karma', 'comment-popularity' )
+		) );
+
 	}
 
 	/**
@@ -194,7 +200,7 @@ class HMN_Comment_Popularity_Admin {
 			return $empty;
 		}
 
-		$user_karma = get_user_meta( $user_id, 'hmn_user_karma', true );
+		$user_karma = get_user_option( 'hmn_user_karma', $user_id );
 
 		return $user_karma;
 
@@ -250,6 +256,5 @@ class HMN_Comment_Popularity_Admin {
 		update_user_meta( $user_id, 'hmn_user_expert_status', $user_expert_status );
 
 	}
-
 
 }

@@ -1,6 +1,4 @@
 <?php
-// Load our dependencies
-require_once plugin_dir_path( __FILE__ ) . '/lib/autoload.php';
 
 /**
  * Class HMN_Comment_Popularity
@@ -10,7 +8,7 @@ class HMN_Comment_Popularity {
 	/**
 	 * Plugin version number.
 	 */
-	const HMN_CP_PLUGIN_VERSION = '1.0.2';
+	const HMN_CP_PLUGIN_VERSION = '1.2.0';
 
 	/**
 	 * The minimum PHP version compatibility.
@@ -52,6 +50,8 @@ class HMN_Comment_Popularity {
 	 */
 	private function __construct() {
 
+		$this->includes();
+
 		$this->interval = apply_filters( 'hmn_cp_interval', 15 * MINUTE_IN_SECONDS );
 
 		$this->admin_roles = apply_filters( 'hmn_cp_roles', array( 'administrator', 'editor' ) );
@@ -67,8 +67,34 @@ class HMN_Comment_Popularity {
 
 		add_filter( 'comments_template', array( $this, 'custom_comments_template' ) );
 
+		add_action( 'widgets_init', array( $this, 'register_widgets' ) );
+
 		$this->init_twig();
 		$this->set_permissions();
+	}
+
+	/*
+	 * Include required files.
+	 */
+	protected function includes() {
+
+		// Load our dependencies
+		require_once plugin_dir_path( __FILE__ ) . 'lib/autoload.php';
+
+		// Widgets
+		require_once plugin_dir_path( __FILE__ ) . 'widgets/class-widget-most-voted.php';
+		require_once plugin_dir_path( __FILE__ ) . 'widgets/experts/class-widget-experts.php';
+
+	}
+
+	/**
+	 * Register the plugin widgets.
+	 */
+	public function register_widgets() {
+
+		register_widget( 'HMN_CP_Widget_Most_Voted' );
+		register_widget( 'HMN_CP_Widget_Experts' );
+
 	}
 
 	/**
@@ -87,7 +113,7 @@ class HMN_Comment_Popularity {
 				break;
 
 			case 'downvote':
-				$value = apply_filters( 'hmn_cp_downvote_value', 1 );
+				$value = apply_filters( 'hmn_cp_downvote_value', -1 );
 				break;
 
 			default:
@@ -99,21 +125,22 @@ class HMN_Comment_Popularity {
 		return $value;
 	}
 
+	public function get_vote_labels() {
+		return array(
+			'upvote'   => _x( 'upvote', 'verb', 'comment-popularity' ),
+			'downvote' => _x( 'downvote', 'verb', 'comment-popularity' ),
+		);
+	}
+
 	/**
 	 * Run checks on plugin activation.
 	 */
-	public function activate() {
-
-		// Check PHP version. We need at least 5.3.2 for Composer.
-		if ( version_compare( PHP_VERSION, self::HMN_CP_REQUIRED_PHP_VERSION, '<' ) ) {
-			deactivate_plugins( basename( __FILE__ ) );
-			wp_die( sprintf( __( 'This plugin requires PHP Version %s. Sorry about that.', 'comment-popularity' ), self::HMN_CP_REQUIRED_PHP_VERSION ), 'Comment Popularity', array( 'back_link' => true ) );
-		}
+	public static function activate() {
 
 		global $wp_version;
 
 		if ( version_compare( $wp_version, self::HMN_CP_REQUIRED_WP_VERSION, '<' ) ) {
-			deactivate_plugins( basename( __FILE__ ) );
+			deactivate_plugins( plugin_basename( __FILE__ ) );
 			wp_die( sprintf( __( 'This plugin requires WordPress version %s. Sorry about that.', 'comment-popularity' ), self::HMN_CP_REQUIRED_WP_VERSION ), 'Comment Popularity', array( 'back_link' => true ) );
 		}
 	}
@@ -197,7 +224,8 @@ class HMN_Comment_Popularity {
 
 		wp_enqueue_script( 'growl', plugins_url( '../assets/js/modules/growl/javascripts/jquery.growl.min.js', __FILE__ ), array( 'jquery' ), self::HMN_CP_PLUGIN_VERSION, true );
 
-		wp_register_script( 'comment-popularity', plugins_url( '../assets/js/voting.min.js', __FILE__ ), array( 'jquery', 'growl' ), self::HMN_CP_PLUGIN_VERSION );
+		$js_file = ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ? '../assets/js/voting.js' : '../assets/js/voting.min.js';
+		wp_register_script( 'comment-popularity', plugins_url( $js_file, __FILE__ ), array( 'jquery', 'growl' ), self::HMN_CP_PLUGIN_VERSION );
 
 		$args = array(
 			'hmn_vote_nonce' => wp_create_nonce( 'hmn_vote_submit' ),
@@ -225,7 +253,7 @@ class HMN_Comment_Popularity {
 
 		}
 
-		return plugin_dir_path( __FILE__ ) . 'templates/comments.php';
+		return apply_filters( 'hmn_cp_comments_template_path', plugin_dir_path( __FILE__ ) . 'templates/comments.php' );
 
 	}
 
@@ -239,89 +267,8 @@ class HMN_Comment_Popularity {
 	 */
 	function comment_callback( $comment, $args, $depth ) {
 
-		$GLOBALS['comment'] = $comment;
+		include apply_filters( 'hmn_cp_single_comment_template_path', plugin_dir_path( __FILE__ ) . 'templates/comment.php' );
 
-		if ( 'pingback' == $comment->comment_type || 'trackback' == $comment->comment_type ) : ?>
-
-			<li id="comment-<?php comment_ID(); ?>" <?php comment_class(); ?>>
-			<div class="comment-body">
-				<?php _e( 'Pingback:', 'comment-popularity' ); ?> <?php comment_author_link(); ?> <?php edit_comment_link( __( 'Edit', 'comment-popularity' ), '<span class="edit-link">', '</span>' ); ?>
-			</div>
-
-		<?php else : ?>
-
-		<li id="comment-<?php comment_ID(); ?>" <?php comment_class( empty( $args['has_children'] ) ? '' : 'comment-parent' ); ?>>
-			<article id="div-comment-<?php comment_ID(); ?>" class="comment-body">
-				<header class="comment-header">
-					<?php $this->render_ui( get_comment_ID() ); ?>
-					<?php // Avatar
-					if ( 0 != $args['avatar_size'] ) :
-						echo get_avatar( $comment, $args['avatar_size'] );
-					endif;
-
-					?>
-					<div class="comment-date">
-						<a href="<?php echo esc_url( get_comment_link( $comment->comment_ID ) ); ?>">
-							<time datetime="<?php comment_time( 'c' ); ?>">
-								<?php
-								printf(
-									_x( '%1$s at %2$s', '1: date, 2: time', 'comment-popularity' ),
-									get_comment_date(),
-									get_comment_time()
-								);
-								?>
-							</time>
-						</a>
-					</div>
-					<div class="comment-author vcard">
-						<?php
-						printf(
-							'%1$s <span class="says">%2$s</span>',
-							sprintf(
-								'<cite class="fn">%s</cite>',
-								get_comment_author_link()
-							),
-							_x( 'says:', 'e.g. Bob says hello.', 'comment-popularity' )
-						);
-
-						$comment_author_email = get_comment_author_email( $comment->comment_ID );
-						$author = get_user_by( 'email', $comment_author_email );
-
-						if ( false !== $author ) {
-
-							$author_karma = $this->get_user_karma( $comment_author_email );
-
-							if ( false !== $author_karma ) {
-								printf( __( '%1$s( User Karma: %2$s )%3$s', 'comment-popularity' ), '<small class="user-karma">', esc_html( $author_karma ), '</small>' );
-							}
-
-						}
-
-
-						?>
-					</div>
-
-					<?php if ( '0' == $comment->comment_approved ) : ?>
-						<p class="comment-awaiting-moderation"><?php _e( 'Your comment is awaiting moderation.', 'comment-popularity' ); ?></p>
-					<?php endif; ?>
-				</header>
-
-				<div class="comment-content">
-					<?php comment_text(); ?>
-				</div>
-
-				<?php
-				comment_reply_link( array_merge( $args, array(
-					'add_below' => 'div-comment',
-					'depth'     => $depth,
-					'max_depth' => $args['max_depth'],
-					'before'    => '<footer class="comment-reply">',
-					'after'     => '</footer>',
-				) ) );
-				?>
-			</article>
-
-		<?php endif;
 	}
 
 	/**
@@ -333,7 +280,7 @@ class HMN_Comment_Popularity {
 
 		$container_classes = array( 'comment-weight-container' );
 
-		if ( ! $this->user_can_vote( get_current_user_id(), $comment_id ) ) {
+		if ( ! current_user_can( 'vote_on_comments' ) ) {
 			$container_classes[] = 'voting-disabled';
 		}
 
@@ -369,25 +316,16 @@ class HMN_Comment_Popularity {
 	 *
 	 * @return int
 	 */
-	public function update_comment_weight( $vote, $comment_id ) {
+	public function update_comment_weight( $comment_id, $weight_value ) {
 
 		$comment_arr = get_comment( $comment_id, ARRAY_A );
 
-		if ( 'upvote' === $vote ) {
 
-			$weight_value = $comment_arr['comment_karma'] + $this->get_vote_value( $vote );
+		$comment_arr['comment_karma'] += $weight_value;
 
-		} else {
-
-			$weight_value = $comment_arr['comment_karma'] - $this->get_vote_value( $vote );
-
+		if ( 0 >= $comment_arr['comment_karma'] ) {
+			$comment_arr['comment_karma'] = 0;
 		}
-
-
-		if ( $weight_value <= 0 )
-			$weight_value = 0;
-
-		$comment_arr['comment_karma'] = $weight_value;
 
 		wp_update_comment( $comment_arr );
 
@@ -412,7 +350,7 @@ class HMN_Comment_Popularity {
 	 */
 	public function get_user_expert_status( $user_id ) {
 
-		return (bool) get_user_meta( $user_id, 'hmn_user_expert_status', true );
+		return (bool) get_user_option( 'hmn_user_expert_status',$user_id );
 	}
 
 	/**
@@ -425,16 +363,12 @@ class HMN_Comment_Popularity {
 
 		$user_id = get_current_user_id();
 
-		if ( ! $this->user_can_vote( $user_id, $comment_id ) ) {
-			return;
-		}
-
 		$is_expert = $this->get_user_expert_status( $user_id );
 
 		$user_karma = $this->get_user_karma( $user_id );
 
 		if ( $is_expert && ( 0 < $user_karma ) ) {
-			$this->update_comment_weight( $user_karma, $comment_id );
+			$this->update_comment_weight( $comment_id, $user_karma );
 		}
 
 	}
@@ -447,27 +381,15 @@ class HMN_Comment_Popularity {
 	 *
 	 * @return int|mixed|void
 	 */
-	public function update_user_karma( $commenter_id, $vote ) {
+	public function update_user_karma( $commenter_id, $value ) {
 
 		$user_karma = $this->get_user_karma( $commenter_id );
 
-		if ( 'upvote' === $vote ) {
-
-			$user_karma += $this->get_vote_value( $vote );
-
-		} else {
-
-			$user_karma -= $this->get_vote_value( $vote );
-			// Do not allow negative karma.
-			if ( $user_karma < 0 ) {
-				$user_karma = 0;
-			}
-
-		}
+		$user_karma += $value;
 
 		update_user_meta( $commenter_id, 'hmn_user_karma', $user_karma );
 
-		$user_karma = get_user_meta( $commenter_id, 'hmn_user_karma', true );
+		$user_karma = get_user_option( 'hmn_user_karma', $commenter_id );
 
 		/**
 		 * Fires once the user meta has been updated for the karma.
@@ -491,9 +413,9 @@ class HMN_Comment_Popularity {
 	public function get_user_karma( $user_id ) {
 
 		// get user meta for karma
-		$user_karma = get_user_meta( $user_id, 'hmn_user_karma', true );
+		$user_karma = get_user_option( 'hmn_user_karma', $user_id );
 
-		return ( '' !== $user_karma ) ? $user_karma : 0;
+		return ( '' !== $user_karma ) ? (int)$user_karma : 0;
 	}
 
 
@@ -505,25 +427,26 @@ class HMN_Comment_Popularity {
 	 *
 	 * @return string
 	 */
-	public function get_comments_sorted_by_weight( $args = array(), $comments = null ) {
+	public function get_comments_sorted_by_weight( $html = false, $args = array() ) {
 
-		$defaults = array( 'echo' => false );
+		// WP_Comment_Query arguments
+		$defaults = array (
+			'status'         => 'approve',
+			'type'           => 'comment',
+			'order'          => 'DESC',
+			'orderby'        => 'comment_karma',
+		);
 
-		$args = array_merge( $defaults, $args );
+		$get_comments_args = wp_parse_args( $args, $defaults );
 
-		if ( null == $comments ) {
+		// The Comment Query
+		$comment_query = new WP_Comment_Query;
+		$comments = $comment_query->query( $get_comments_args );
 
-			global $wp_query;
+		if ( $html )
+			return wp_list_comments( $args, $comments );
 
-			$comments = $wp_query->comments;
-
-		}
-
-		uasort( $comments, function( $a, $b ){
-			return $b->comment_karma > $a->comment_karma;
-		});
-
-		return wp_list_comments( $args, $comments );
+		return $comments;
 	}
 
 	/**
@@ -537,15 +460,23 @@ class HMN_Comment_Popularity {
 	 */
 	public function user_can_vote( $user_id, $comment_id, $action = '' ) {
 
+		$labels = $this->get_vote_labels();
+
+		$comment = get_comment( $comment_id );
+
 		if ( ! current_user_can( 'vote_on_comments' ) ) {
 			return new WP_Error( 'insufficient_permissions', __( 'You lack sufficient permissions to vote on comments', 'comment-popularity' ) );
+		}
+
+		if ( $comment->user_id && ( $user_id === (int)$comment->user_id ) ) {
+			return new WP_Error( 'upvote_own_comment', sprintf( __( 'You cannot %s your own comments.', 'comment-popularity' ), $labels[ $action ] ) );
 		}
 
 		if ( ! is_user_logged_in() ) {
 			return new WP_Error( 'not_logged_in', __( 'You must be logged in to vote on comments', 'comment-popularity' ) );
 		}
 
-		$comments_voted_on = get_user_meta( $user_id, 'hmn_comments_voted_on', true );
+		$comments_voted_on = get_user_option( 'comments_voted_on', $user_id );
 
 		// User has not yet voted on this comment
 		if ( empty( $comments_voted_on[ 'comment_id_' . $comment_id ] ) ) {
@@ -556,7 +487,7 @@ class HMN_Comment_Popularity {
 		$last_action = $comments_voted_on[ 'comment_id_' . $comment_id ]['last_action'];
 
 		if ( $last_action === $action ) {
-			return new WP_Error( 'same_action', sprintf( __( 'You already %sd this comment', 'comment-popularity' ), $action ) );
+			return new WP_Error( 'same_action', sprintf( __( 'You cannot %s this comment again.', 'comment-popularity' ), $labels[ $action ] ) );
 		}
 
 		// Is user trying to vote too fast?
@@ -585,14 +516,14 @@ class HMN_Comment_Popularity {
 	 */
 	public function update_comments_voted_on_for_user( $user_id, $comment_id, $action ) {
 
-		$comments_voted_on = get_user_meta( $user_id, 'hmn_comments_voted_on', true );
+		$comments_voted_on = get_user_option( 'comments_voted_on', $user_id );
 
 		$comments_voted_on[ 'comment_id_' . $comment_id ]['vote_time'] = current_time( 'timestamp' );
 		$comments_voted_on[ 'comment_id_' . $comment_id ]['last_action'] = $action;
 
 		update_user_meta( $user_id, 'hmn_comments_voted_on', $comments_voted_on );
 
-		$comments_voted_on = get_user_meta( $user_id, 'hmn_comments_voted_on', true );
+		$comments_voted_on = get_user_option( 'comments_voted_on', $user_id );
 
 		$updated = $comments_voted_on[ 'comment_id_' . $comment_id ];
 
@@ -675,7 +606,7 @@ class HMN_Comment_Popularity {
 
 		}
 
-		$this->update_comment_weight( $vote, $comment_id );
+		$this->update_comment_weight( $comment_id, $this->get_vote_value( $vote ) );
 
 		// Get the comment author object.
 		$email = get_comment_author_email( $comment_id );
@@ -683,10 +614,12 @@ class HMN_Comment_Popularity {
 
 		// update comment author karma if registered user.
 		if ( false !== $author ) {
-			$this->update_user_karma( $author->ID, $vote );
+			$this->update_user_karma( $author->ID, $this->get_vote_value( $vote ) );
 		}
 
 		$this->update_comments_voted_on_for_user( $user_id, $comment_id, $vote );
+
+		do_action( 'hmn_cp_comment_vote', $user_id, $comment_id, $vote );
 
 		$return = array(
 			'success_message'    => __( 'Thanks for voting!', 'comment-popularity' ),
@@ -705,7 +638,7 @@ class HMN_Comment_Popularity {
 	public function load_textdomain() {
 
 		// Set filter for plugin's languages directory
-		$hmn_cp_lang_dir = basename( plugin_dir_path( dirname( __FILE__ ) ) ) . '/languages/';
+		$hmn_cp_lang_dir = dirname( plugin_basename( __DIR__ ) ) . '/languages/';
 		$hmn_cp_lang_dir = apply_filters( 'hmn_cp_languages_directory', $hmn_cp_lang_dir );
 
 		// Traditional WordPress plugin locale filter

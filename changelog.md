@@ -1,4 +1,141 @@
 
+1.2.0 / 2014-08-24
+==================
+
+ * Merge pull request #77 from humanmade/fix-user-can-vote
+ * it should be set
+ * the user_can_vote function is triggered by a vote action. therefore we cannot use it to determines if a comment can be voted on on page load. we can just check if current user has sufficient permissions. unless we persist a user/comment relationship.
+ * Merge pull request #52 from humanmade/issue-52
+ * Merge branch 'master' into issue-52
+ * Refactor get comments by weight function
+ * Use exising function instead of another comment query
+ * USe the refactored function parameters
+ * Use the refactored function parameters
+ * Just add a newline
+ * Merge pull request #73 from humanmade/issue-73
+ * Merge pull request #58 from humanmade/issue-58
+ * clean up
+ * display gravatar
+ * adds an experts widget
+ * update translation files
+ * Limit number of comments by user widget setting
+ * Add context info for translators
+ * Make more strings translatable
+ * Recreate tests from WP CLI
+ * Update tested up to field
+
+1.1.5 / 2014-08-19
+==================
+
+ * Update tests to reflect refactoring
+ * Change how comment weight is calculated
+ * Use a multisite compatible function for user meta
+ * Fix up tests config
+ * Use appropriate WordPress functions
+ * Remove debugging function
+ * Make debugging easier
+
+1.1.4 / 2014-08-18
+==================
+
+ * Check PHP version before evaluating any code
+ * Include and register widgets from main plugin class
+ * Add a tag
+ * Use function instead of constant
+ * Composer udpates
+ * Use 5.2 compatible code here
+ * Update minified script
+ * Throttle clicking events
+ * Add a tag
+ * Use function instead of constant
+ * Composer udpates
+ * Use 5.2 compatible code here
+ * Update CONTRIBUTING.md
+
+1.1.3 / 2014-08-16
+==================
+
+ * Add dotorg banners
+ * Bump version to 1.1.3
+ * Fix PHP error
+ * Switch statement order
+ * Add min PHP version
+ * Use html entities
+ * Ignore non build files
+ * Igonre contributing.md from build
+ * Remove some unused code
+ * Fix a PHP notice
+ * Update readme and changelog
+
+1.1.2 / 2014-08-15
+==================
+
+ * Bump version
+ * Merge pull request #60 from humanmade/fix-bug-display-karma
+ * Pass user ID as param instead of email
+ * Add RTD config
+ * fix to readme
+
+1.1.1 / 2014-08-13
+==================
+
+ * Bump to version 1.1.1
+ * Fix a PHP notice
+
+1.1.0 / 2014-08-13
+==================
+
+ * Bump to version 1.1.0
+ * Merge pull request #39 from humanmade/issue-39
+ * Make the paths filterable
+ * Fix how we call comments template
+ * Add a comment template file
+ * Move comments to own file
+ * Fix a PHP notice
+ * Merge pull request #56 from humanmade/edit-readme
+ * Regenerate readme
+ * Add link to github
+ * Fix some spacing and formatting
+ * Update CONTRIBUTING.md
+ * Merge pull request #32 from humanmade/issue-32
+ * Update CONTRIBUTING.md
+ * Fix composer.json
+ * Merge pull request #53 from humanmade/add-contributors
+ * Regenerate readme.md
+ * Fix Readme file and add contributors
+ * Merge pull request #25 from humanmade/issue-25
+ * Prevent users from upvoting their comments
+ * No need to check if user can vote
+ * Merge pull request #30 from humanmade/issue-30
+ * Register widget
+ * Add a most voted comments widget
+ * Update min WordPress version in readme
+ * Add Matt as contributor
+ * Merge pull request #16 from humanmade/issue-16
+ * Add sortable karma column to users view
+ * Merge pull request #7 from humanmade/issue-7
+ * Return just the values
+ * Add task to update class plugin version
+ * Update version
+ * Add some actions
+ * Update function desc
+ * Use prefixed constant VERSION
+ * Improve activation checks
+ * Change required WP Version
+ * Prefix filters
+ * Rename constants
+ * Merge pull request #49 from humanmade/issue-49
+ * Add Travis badge
+ * Update tests to account for downvoting a comment with no karma
+ * Rename function
+ * Return comment weight
+ * Rename callback
+ * Return as integer
+ * Bump version
+ * Merge pull request #47 from humanmade/contributing-guidelines
+ * First version of instructions
+ * Add contributing.md file
+
 ## 1.0.2 / 2014-08-08
 
  * Add tests for comment weight update
