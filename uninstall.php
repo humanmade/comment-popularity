@@ -71,7 +71,6 @@ if ( ! empty( $user_query->results ) ) {
 
 	foreach ( $user_query->results as $user ) {
 
-		delete_user_meta( $user->ID, 'comments_voted_on' );
 		delete_user_option( $user->ID, 'hmn_comments_voted_on' );
 	}
 

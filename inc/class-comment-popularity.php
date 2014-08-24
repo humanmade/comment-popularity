@@ -476,7 +476,7 @@ class HMN_Comment_Popularity {
 			return new WP_Error( 'not_logged_in', __( 'You must be logged in to vote on comments', 'comment-popularity' ) );
 		}
 
-		$comments_voted_on = get_user_option( 'comments_voted_on', $user_id );
+		$comments_voted_on = get_user_option( 'hmn_comments_voted_on', $user_id );
 
 		// User has not yet voted on this comment
 		if ( empty( $comments_voted_on[ 'comment_id_' . $comment_id ] ) ) {
@@ -516,14 +516,14 @@ class HMN_Comment_Popularity {
 	 */
 	public function update_comments_voted_on_for_user( $user_id, $comment_id, $action ) {
 
-		$comments_voted_on = get_user_option( 'comments_voted_on', $user_id );
+		$comments_voted_on = get_user_option( 'hmn_comments_voted_on', $user_id );
 
 		$comments_voted_on[ 'comment_id_' . $comment_id ]['vote_time'] = current_time( 'timestamp' );
 		$comments_voted_on[ 'comment_id_' . $comment_id ]['last_action'] = $action;
 
 		update_user_meta( $user_id, 'hmn_comments_voted_on', $comments_voted_on );
 
-		$comments_voted_on = get_user_option( 'comments_voted_on', $user_id );
+		$comments_voted_on = get_user_option( 'hmn_comments_voted_on', $user_id );
 
 		$updated = $comments_voted_on[ 'comment_id_' . $comment_id ];
 
