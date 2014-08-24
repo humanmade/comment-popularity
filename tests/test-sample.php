@@ -76,7 +76,7 @@ class Test_HMN_Comment_Popularity extends WP_UnitTestCase {
 
 		wp_delete_post( $this->test_post_id );
 
-		delete_user_meta( $this->test_voter_id, 'comments_voted_on' );
+		delete_user_option( $this->test_voter_id, 'hmn_comments_voted_on' );
 
 		wp_delete_user( $this->test_voter_id );
 		wp_delete_user( $this->test_commenter_id );
@@ -112,6 +112,8 @@ class Test_HMN_Comment_Popularity extends WP_UnitTestCase {
 
 		$ret = $this->plugin->comment_vote( 'downvote', $this->test_comment_id, $this->test_voter_id );
 
+		$this->assertArrayHasKey( 'error_code', $ret );
+
 		$this->assertEquals( 'voting_flood', $ret['error_code'] );
 
 	}
@@ -123,6 +125,8 @@ class Test_HMN_Comment_Popularity extends WP_UnitTestCase {
 		$ret = $this->plugin->comment_vote( 'upvote', $this->test_comment_id, $this->test_voter_id );
 
 		sleep( 7 );
+
+		$this->assertArrayHasKey( 'error_code', $ret );
 
 		$this->assertEquals( 'same_action', $ret['error_code'] );
 
@@ -161,7 +165,7 @@ class Test_HMN_Comment_Popularity extends WP_UnitTestCase {
 
 		$vote = 'downvote';
 
-		update_user_meta( $this->test_commenter_id, 'hmn_user_karma', 2 );
+		update_user_option( $this->test_commenter_id, 'hmn_user_karma', 2 );
 
 		// Current comment author karma value
 		$current_value = $this->plugin->get_user_karma( $this->test_commenter_id );
@@ -177,7 +181,7 @@ class Test_HMN_Comment_Popularity extends WP_UnitTestCase {
 
 		$vote = 'downvote';
 
-		update_user_meta( $this->test_commenter_id, 'hmn_user_karma', 0 );
+		update_user_option( $this->test_commenter_id, 'hmn_user_karma', 0 );
 
 		// Current comment author karma value
 		$current_value = $this->plugin->get_user_karma( $this->test_commenter_id );

@@ -26,6 +26,7 @@ if ( ! empty( $user_query->results ) ) {
 	foreach ( $user_query->results as $user ) {
 
 		delete_user_meta( $user->ID, 'hmn_user_expert_status' );
+		delete_user_option( $user->ID, 'hmn_user_expert_status' );
 
 	}
 
@@ -48,7 +49,29 @@ if ( ! empty( $user_query->results ) ) {
 	foreach ( $user_query->results as $user ) {
 
 		delete_user_meta( $user->ID, 'hmn_user_karma' );
+		delete_user_option( $user->ID, 'hmn_user_karma' );
 
+	}
+
+}
+
+$args = array(
+	'meta_query' => array(
+		array(
+			'key'     => 'hmn_comments_voted_on',
+			'compare' => 'EXISTS',
+		),
+	),
+	'fields'     => 'all',
+);
+
+$user_query = new WP_User_Query( $args );
+
+if ( ! empty( $user_query->results ) ) {
+
+	foreach ( $user_query->results as $user ) {
+
+		delete_user_option( $user->ID, 'hmn_comments_voted_on' );
 	}
 
 }
