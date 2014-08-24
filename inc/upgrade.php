@@ -25,6 +25,9 @@ function hmn_cp_trigger_upgrades() {
 	if ( version_compare( $hmn_cp_plugin_version, $current_version, '<' ) ) {
 		hmn_cp_v121_upgrade();
 	}
+
+	// Bump the version number in the DB.
+	update_option( 'hmn_cp_plugin_version', HMN_Comment_Popularity::HMN_CP_PLUGIN_VERSION );
 }
 add_action( 'admin_init', 'hmn_cp_trigger_upgrades' );
 
