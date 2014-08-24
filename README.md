@@ -3,8 +3,8 @@
 **Contributors:** pauldewouters, mattheu,humanmade,cfo-publishing  
 **Tags:** comments,vote,upvote,karma,widget  
 **Requires at least:** 3.8.4  
-**Tested up to:** 4.0-beta2  
-**Stable tag:** 1.1.5  
+**Tested up to:** 4.0-beta4  
+**Stable tag:** 1.2.0  
 **License:** GPLv2 or later  
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -102,10 +102,32 @@ To display the comment author karma:
 
 ## Upgrade Notice ##
 
+### 1.2.0 ###
+
+* Adds a new Experts widget.
+* Fixes misc bugs.
+
 ### 1.1.2 ###
 * Fixes a bug which prevented the user karma to appear in the single comment template.
 
 ## Changelog ##
+
+### 1.2.0 / 2014-08-24 ###
+
+ * the user_can_vote function is triggered by a vote action. therefore we cannot use it to determines if a comment can be voted on on page load. we can just check if current user has sufficient permissions. unless we persist a user/comment relationship.
+ * Refactor get comments by weight function
+ * Use exising function instead of another comment query
+ * USe the refactored function parameters
+ * Just add a newline
+ * clean up
+ * display gravatar
+ * adds an experts widget
+ * update translation files
+ * Limit number of comments by user widget setting
+ * Add context info for translators
+ * Make more strings translatable
+ * Recreate tests from WP CLI
+ * Update tested up to field
 
 ### 1.1.5 / 2014-08-19 ###
 
