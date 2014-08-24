@@ -21,7 +21,7 @@ Obviously you'll need contributor access to the WordPress.org repository.
 - Run `git changelog` ( requires git-extras ) and copy changelog.md to the README.txt
 - Run `grunt wp_readme_to_markdown`
 - Run `grunt shell`
-- Run `git push --tags`
+- Run `git push && git push --tags`
 - Run `grunt copy:build`
 - Test plugin from build
 - Run `grunt wp_deploy`
