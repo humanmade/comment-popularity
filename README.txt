@@ -4,7 +4,7 @@ Contributors: pauldewouters, mattheu,humanmade,cfo-publishing
 Tags: comments,vote,upvote,karma,widget
 Requires at least: 3.8.4
 Tested up to: 4.0-beta4
-Stable tag: 1.2.0
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -19,7 +19,7 @@ Comments are sorted by weight in a descending order.
 
 Each commenter is allocated karma each time that one of their comments are upvoted.
 
-Admin users can give users the \"expert\" label which will attribute more weight to their comments.
+Admin users can give users the "expert" label which will attribute more weight to their comments.
 
 You'll find an option under discussion for the default expert karma and it can also be changed on the user's profile.
 
@@ -96,6 +96,10 @@ To display the comment author karma:
 
 == Upgrade Notice ==
 
+= 1.2.1 =
+
+* Fixes a fatal error on uninstall
+
 = 1.2.0 =
 
 * Adds a new Experts widget.
@@ -105,6 +109,23 @@ To display the comment author karma:
 * Fixes a bug which prevented the user karma to appear in the single comment template.
 
 == Changelog ==
+
+= 1.2.1 / 2014-08-27 =
+
+ * Load main plugin class to fix uninstall fatal error.
+ * Use the *user_option functions
+ * Add some assertions
+ * Rename user meta
+ * Update uninstall routine
+ * We're deleting a global option
+ * Update the option to match current plugin version after upgrade
+ * Add an upgrade routine
+ * More exclude rules for build process
+ * Version 1.2.0
+ * Update CONTRIBUTING.md
+ * Delete user voting history
+ * Update user meta key
+ * Prefix user meta key
 
 = 1.2.0 / 2014-08-24 =
 

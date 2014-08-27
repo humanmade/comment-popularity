@@ -1,4 +1,22 @@
 
+1.2.1 / 2014-08-27
+==================
+
+ * Load main plugin class to fix uninstall fatal error.
+ * Use the *user_option functions
+ * Add some assertions
+ * Rename user meta
+ * Update uninstall routine
+ * We're deleting a global option
+ * Update the option to match current plugin version after upgrade
+ * Add an upgrade routine
+ * More exclude rules for build process
+ * Version 1.2.0
+ * Update CONTRIBUTING.md
+ * Delete user voting history
+ * Update user meta key
+ * Prefix user meta key
+
 1.2.0 / 2014-08-24
 ==================
 
