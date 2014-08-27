@@ -7,11 +7,13 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 // Remove plugin settings
 delete_option( 'comment_popularity_prefs' );
 
+global $wpdb;
+
 // Remove User meta
 $args = array(
 	'meta_query' => array(
 		array(
-			'key'     => 'hmn_user_expert_status',
+			'key'     => $wpdb->get_blog_prefix() . 'hmn_user_expert_status',
 			'compare' => 'EXISTS',
 		),
 	),
@@ -35,7 +37,7 @@ if ( ! empty( $user_query->results ) ) {
 $args = array(
 	'meta_query' => array(
 		array(
-			'key'     => 'hmn_user_karma',
+			'key'     => $wpdb->get_blog_prefix() . 'hmn_user_karma',
 			'compare' => 'EXISTS',
 		),
 	),
@@ -58,7 +60,7 @@ if ( ! empty( $user_query->results ) ) {
 $args = array(
 	'meta_query' => array(
 		array(
-			'key'     => 'hmn_comments_voted_on',
+			'key'     => $wpdb->get_blog_prefix() .  'hmn_comments_voted_on',
 			'compare' => 'EXISTS',
 		),
 	),
@@ -77,7 +79,6 @@ if ( ! empty( $user_query->results ) ) {
 }
 
 // Select all comments with karma > 0, and reset value to zero.
-global $wpdb;
 
 $wpdb->query(
 	$wpdb->prepare(
