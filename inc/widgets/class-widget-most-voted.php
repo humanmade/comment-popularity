@@ -1,9 +1,9 @@
-<?php
+<?php namespace CommentPopularity;
 
 /**
  * Class HMN_CP_Widget_Most_voted
  */
-class HMN_CP_Widget_Most_Voted extends WP_Widget {
+class HMN_CP_Widget_Most_Voted extends \WP_Widget {
 
 	/**
 	 *

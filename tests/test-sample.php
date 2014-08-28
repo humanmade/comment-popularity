@@ -1,4 +1,5 @@
 <?php
+use CommentPopularity\HMN_Comment_Popularity;
 
 /**
  * Class Test_HMN_Comment_Popularity
