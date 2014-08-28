@@ -1,5 +1,7 @@
 <?php
 
+use CommentPopularity\HMN_Comment_Popularity;
+
 if ( post_password_required() ) :
 	return;
 endif;

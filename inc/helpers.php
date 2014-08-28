@@ -1,4 +1,7 @@
 <?php
+
+use CommentPopularity\HMN_Comment_Popularity;
+
 /**
  * Helper functions for use in themes.
  */

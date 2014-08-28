@@ -1,5 +1,7 @@
 <?php
 
+use CommentPopularity\HMN_Comment_Popularity;
+
 defined( 'ABSPATH' ) || exit;
 
 /**

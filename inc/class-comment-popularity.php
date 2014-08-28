@@ -1,4 +1,4 @@
-<?php
+<?php namespace CommentPopularity;
 
 /**
  * Class HMN_Comment_Popularity
@@ -92,8 +92,8 @@ class HMN_Comment_Popularity {
 	 */
 	public function register_widgets() {
 
-		register_widget( 'HMN_CP_Widget_Most_Voted' );
-		register_widget( 'HMN_CP_Widget_Experts' );
+		register_widget( 'CommentPopularity\HMN_CP_Widget_Most_Voted' );
+		register_widget( 'CommentPopularity\HMN_CP_Widget_Experts' );
 
 	}
 
@@ -117,7 +117,7 @@ class HMN_Comment_Popularity {
 				break;
 
 			default:
-				$value = new WP_Error( 'invalid_vote_type', __( 'Sorry, invalid vote type', 'comment-popularity' ) );
+				$value = new \WP_Error( 'invalid_vote_type', __( 'Sorry, invalid vote type', 'comment-popularity' ) );
 				break;
 
 		}
@@ -152,8 +152,8 @@ class HMN_Comment_Popularity {
 
 		$template_path = apply_filters( 'hmn_cp_template_path', plugin_dir_path( __FILE__ ) . '/templates' );
 
-		$loader = new Twig_Loader_Filesystem( $template_path );
-		$this->twig = new Twig_Environment( $loader );
+		$loader = new \Twig_Loader_Filesystem( $template_path );
+		$this->twig = new \Twig_Environment( $loader );
 
 	}
 
@@ -440,7 +440,7 @@ class HMN_Comment_Popularity {
 		$get_comments_args = wp_parse_args( $args, $defaults );
 
 		// The Comment Query
-		$comment_query = new WP_Comment_Query;
+		$comment_query = new \WP_Comment_Query;
 		$comments = $comment_query->query( $get_comments_args );
 
 		if ( $html )
@@ -465,15 +465,15 @@ class HMN_Comment_Popularity {
 		$comment = get_comment( $comment_id );
 
 		if ( ! current_user_can( 'vote_on_comments' ) ) {
-			return new WP_Error( 'insufficient_permissions', __( 'You lack sufficient permissions to vote on comments', 'comment-popularity' ) );
+			return new \WP_Error( 'insufficient_permissions', __( 'You lack sufficient permissions to vote on comments', 'comment-popularity' ) );
 		}
 
 		if ( $comment->user_id && ( $user_id === (int)$comment->user_id ) ) {
-			return new WP_Error( 'upvote_own_comment', sprintf( __( 'You cannot %s your own comments.', 'comment-popularity' ), $labels[ $action ] ) );
+			return new \WP_Error( 'upvote_own_comment', sprintf( __( 'You cannot %s your own comments.', 'comment-popularity' ), $labels[ $action ] ) );
 		}
 
 		if ( ! is_user_logged_in() ) {
-			return new WP_Error( 'not_logged_in', __( 'You must be logged in to vote on comments', 'comment-popularity' ) );
+			return new \WP_Error( 'not_logged_in', __( 'You must be logged in to vote on comments', 'comment-popularity' ) );
 		}
 
 		$comments_voted_on = get_user_option( 'hmn_comments_voted_on', $user_id );
@@ -487,7 +487,7 @@ class HMN_Comment_Popularity {
 		$last_action = $comments_voted_on[ 'comment_id_' . $comment_id ]['last_action'];
 
 		if ( $last_action === $action ) {
-			return new WP_Error( 'same_action', sprintf( __( 'You cannot %s this comment again.', 'comment-popularity' ), $labels[ $action ] ) );
+			return new \WP_Error( 'same_action', sprintf( __( 'You cannot %s this comment again.', 'comment-popularity' ), $labels[ $action ] ) );
 		}
 
 		// Is user trying to vote too fast?
@@ -500,7 +500,7 @@ class HMN_Comment_Popularity {
 		if ( $elapsed_time > $this->interval ) {
 			return true; // user can vote, has been over 15 minutes since last vote.
 		} else {
-			return new WP_Error( 'voting_flood', __( 'You cannot vote again so soon on this comment, please wait ' . human_time_diff( $last_voted + $this->interval, $current_time ), 'comment-popularity' ) );
+			return new \WP_Error( 'voting_flood', __( 'You cannot vote again so soon on this comment, please wait ' . human_time_diff( $last_voted + $this->interval, $current_time ), 'comment-popularity' ) );
 		}
 
 	}

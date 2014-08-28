@@ -1,4 +1,4 @@
-<?php
+<?php namespace CommentPopularity;
 
 /**
  * Class HMN_Comment_Popularity_Admin

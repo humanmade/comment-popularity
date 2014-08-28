@@ -1,9 +1,9 @@
-<?php
+<?php namespace CommentPopularity;
 
 /**
  * Class HMN_CP_Widget_Experts
  */
-class HMN_CP_Widget_Experts extends WP_Widget {
+class HMN_CP_Widget_Experts extends \WP_Widget {
 
 	/**
 	 *
@@ -62,8 +62,8 @@ class HMN_CP_Widget_Experts extends WP_Widget {
 
 		$template_path = apply_filters( 'hmn_cp_experts_widget_template_path', plugin_dir_path( __FILE__ ) . '/views' );
 
-		$loader = new Twig_Loader_Filesystem( $template_path );
-		$this->twig = new Twig_Environment( $loader );
+		$loader = new \Twig_Loader_Filesystem( $template_path );
+		$this->twig = new \Twig_Environment( $loader );
 
 	}
 

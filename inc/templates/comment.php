@@ -1,4 +1,6 @@
 <?php
+use CommentPopularity\HMN_Comment_Popularity;
+
 $GLOBALS['comment'] = $comment;
 
 if ( 'pingback' == $comment->comment_type || 'trackback' == $comment->comment_type ) : ?>
