@@ -62,6 +62,11 @@ installed. There are plans to integrate social network authentication such as Tw
 
 Under Settings > Discussion, and Users > Profile
 
+= Can I disable the sorting by comment weight? =
+
+Yes, add this snippet to your functions.php file or mu plugin:
+`add_filter( 'hmn_cp_sort_comments_by_weight', '__return_false' );`
+
 = Advanced Usage =
 
 **I want to use this with a custom comment template.**
