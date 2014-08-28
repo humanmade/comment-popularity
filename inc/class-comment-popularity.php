@@ -45,6 +45,8 @@ class HMN_Comment_Popularity {
 	 */
 	protected $admin_roles;
 
+	protected $sort_comments_by_weight = true;
+
 	/**
 	 * Creates a new HMN_Comment_Popularity object, and registers with WP hooks.
 	 */
@@ -617,9 +619,11 @@ class HMN_Comment_Popularity {
 			$this->update_user_karma( $author->ID, $this->get_vote_value( $vote ) );
 		}
 
+		$labels = $this->get_vote_labels();
+
 		$this->update_comments_voted_on_for_user( $user_id, $comment_id, $vote );
 
-		do_action( 'hmn_cp_comment_vote', $user_id, $comment_id, $vote );
+		do_action( 'hmn_cp_comment_vote', $user_id, $comment_id, $labels[ $vote ] );
 
 		$return = array(
 			'success_message'    => __( 'Thanks for voting!', 'comment-popularity' ),
@@ -665,6 +669,15 @@ class HMN_Comment_Popularity {
 			load_plugin_textdomain( 'comment-popularity', false, $hmn_cp_lang_dir );
 
 		}
+	}
+
+	/**
+	 * Determine if comments are sorted by weight.
+	 *
+	 * @return mixed|void
+	 */
+	public function are_comments_sorted_by_weight() {
+		return apply_filters( 'hmn_cp_sort_comments_by_weight', $this->sort_comments_by_weight );
 	}
 
 }
