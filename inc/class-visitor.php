@@ -29,7 +29,6 @@ abstract class HMN_CP_Visitor {
 
 		$this->visitor_id = $visitor_id;
 
-
 		$this->interval = apply_filters( 'hmn_cp_interval', 15 * MINUTE_IN_SECONDS );
 
 	}
@@ -39,7 +38,7 @@ abstract class HMN_CP_Visitor {
 	 */
 	abstract function log_vote( $comment_id, $action );
 
-	abstract function can_vote( $comment_id, $action = '' );
+	abstract function is_vote_valid( $comment_id, $action = '' );
 
 	/**
 	 * @return string
@@ -57,9 +56,13 @@ abstract class HMN_CP_Visitor {
 class HMN_CP_Visitor_Guest extends HMN_CP_Visitor {
 
 	/**
+	 * Stores the IP address.
+	 *
 	 * @var string
 	 */
 	protected $cookie;
+
+	protected $logged_votes;
 
 	/**
 	 * @param $visitor_id
@@ -69,6 +72,8 @@ class HMN_CP_Visitor_Guest extends HMN_CP_Visitor {
 		parent::__construct( $visitor_id );
 
 		$this->set_cookie();
+
+		$this->retrieve_logged_votes();
 	}
 
 	/**
@@ -96,7 +101,7 @@ class HMN_CP_Visitor_Guest extends HMN_CP_Visitor {
 	}
 
 	/**
-	 * Save the user's vote to user meta.
+	 * Save the user's vote to an option.
 	 *
 	 * @param $visitor_id
 	 * @param $comment_id
@@ -106,11 +111,72 @@ class HMN_CP_Visitor_Guest extends HMN_CP_Visitor {
 	 */
 	public function log_vote( $comment_id, $action ) {
 
+		$logged_votes = $this->retrieve_logged_votes();
+
+		$logged_votes[ 'comment_id_' . $comment_id ]['vote_time'] = current_time( 'timestamp' );
+		$logged_votes[ 'comment_id_' . $comment_id ]['last_action'] = $action;
+
+		$this->save_logged_votes( $logged_votes );
+
+		$logged_votes = $this->retrieve_logged_votes();
+
+		$updated = $logged_votes[ 'comment_id_' . $comment_id ];
+
+		/**
+		 * Fires once the user meta has been updated.
+		 *
+		 * @param int   $visitor_id
+		 * @param int   $comment_id
+		 * @param array $updated
+		 */
+		do_action( 'hmn_cp_logged_guest_vote', $this->visitor_id, $comment_id, $updated );
+
+		return $updated;
 
 	}
 
 	/**
-	 * Determine if the user can vote.
+	 * Retrieves the logged votes from the DB option and returns those belonging to
+	 * the IP address in the cookie.
+	 *
+	 * @return mixed
+	 */
+	protected function retrieve_logged_votes() {
+
+		if ( is_multisite() ) {
+
+			$blog_id = get_current_blog_id();
+			$hmn_cp_guests_logged_votes = get_blog_option( $blog_id, 'hmn_cp_guests_logged_votes' );
+
+		} else {
+
+			$hmn_cp_guests_logged_votes = get_option( 'hmn_cp_guests_logged_votes' );
+
+		}
+
+		return $hmn_cp_guests_logged_votes[ $this->cookie ];
+	}
+
+	/**
+	 * Save the votes for the current guest to the DB option.
+	 *
+	 * @param $votes
+	 */
+	protected function save_logged_votes( $votes ) {
+
+		if ( is_multisite() ) {
+			$blog_id = get_current_blog_id();
+			$logged_votes = get_blog_option( $blog_id, 'hmn_cp_guests_logged_votes' );
+			$logged_votes[ $this->visitor_id ] = $votes;
+			update_blog_option( $blog_id, 'hmn_cp_guests_logged_votes', $logged_votes );
+		} else {
+			$logged_votes[ $this->visitor_id ] = $votes;
+			update_option( 'hmn_cp_guests_logged_votes', $logged_votes );
+		}
+	}
+
+	/**
+	 * Determine if the guest visitor can vote.
 	 *
 	 * @param        $visitor_id
 	 * @param        $comment_id
@@ -118,7 +184,38 @@ class HMN_CP_Visitor_Guest extends HMN_CP_Visitor {
 	 *
 	 * @return bool|WP_Error
 	 */
-	public function can_vote( $comment_id, $action = '' ) {
+	public function is_vote_valid( $comment_id, $action = '' ) {
+
+		// @TODO: can we check cookies for a WP cookie matching current domain. If so, then ask user to log in.
+
+		$comment = get_comment( $comment_id );
+
+		$logged_votes = $this->retrieve_logged_votes();
+
+		// User has not yet voted on this comment
+		if ( empty( $logged_votes[ 'comment_id_' . $comment_id ] ) ) {
+			return array();
+		}
+
+		// Is user trying to vote twice on same comment?
+		$last_action = $logged_votes[ 'comment_id_' . $comment_id ]['last_action'];
+
+		if ( $last_action === $action ) {
+			return new \WP_Error( 'same_action', sprintf( __( 'You cannot %s this comment again.', 'comment-popularity' ), $action ) );
+		}
+
+		// Is user trying to vote too fast?
+		$last_voted = $logged_votes[ 'comment_id_' . $comment_id ]['vote_time'];
+
+		$current_time = current_time( 'timestamp' );
+
+		$elapsed_time = $current_time - $last_voted;
+
+		if ( $elapsed_time > $this->interval ) {
+			return true; // user can vote, has been over 15 minutes since last vote.
+		} else {
+			return new \WP_Error( 'voting_flood', __( 'You cannot vote again so soon on this comment, please wait ' . human_time_diff( $last_voted + $this->interval, $current_time ), 'comment-popularity' ) );
+		}
 
 	}
 
@@ -159,7 +256,7 @@ class HMN_CP_Visitor_Member extends HMN_CP_Visitor {
 	 *
 	 * @return bool|WP_Error
 	 */
-	public function can_vote( $comment_id, $action = '' ) {
+	public function is_vote_valid( $comment_id, $action = '' ) {
 
 		$comment = get_comment( $comment_id );
 
@@ -175,22 +272,22 @@ class HMN_CP_Visitor_Member extends HMN_CP_Visitor {
 			return new \WP_Error( 'not_logged_in', __( 'You must be logged in to vote on comments', 'comment-popularity' ) );
 		}
 
-		$comments_voted_on = get_user_option( 'hmn_comments_voted_on', $this->visitor_id );
+		$logged_votes = get_user_option( 'hmn_comments_voted_on', $this->visitor_id );
 
 		// User has not yet voted on this comment
-		if ( empty( $comments_voted_on[ 'comment_id_' . $comment_id ] ) ) {
+		if ( empty( $logged_votes[ 'comment_id_' . $comment_id ] ) ) {
 			return array();
 		}
 
 		// Is user trying to vote twice on same comment?
-		$last_action = $comments_voted_on[ 'comment_id_' . $comment_id ]['last_action'];
+		$last_action = $logged_votes[ 'comment_id_' . $comment_id ]['last_action'];
 
 		if ( $last_action === $action ) {
 			return new \WP_Error( 'same_action', sprintf( __( 'You cannot %s this comment again.', 'comment-popularity' ), $action ) );
 		}
 
 		// Is user trying to vote too fast?
-		$last_voted = $comments_voted_on[ 'comment_id_' . $comment_id ]['vote_time'];
+		$last_voted = $logged_votes[ 'comment_id_' . $comment_id ]['vote_time'];
 
 		$current_time = current_time( 'timestamp' );
 

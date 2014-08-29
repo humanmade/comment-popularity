@@ -293,18 +293,20 @@ class HMN_Comment_Popularity {
 
 		$container_classes = array( 'comment-weight-container' );
 
-		if ( ( is_null( $this->visitor ) ) || ! current_user_can( 'vote_on_comments' ) ) {
-			$container_classes[] = 'voting-disabled';
-		}
-
 		$vars = array(
 			'container_classes' => $container_classes,
 			'comment_id'        => $comment_id,
 			'comment_weight'    => $this->get_comment_weight( $comment_id ),
-			'display_arrows'    => ( ! is_null( $this->visitor ) && current_user_can( 'vote_on_comments' ) )
+			'enable_voting'    => $this->visitor_can_vote()
 		);
 
 		echo $this->twig->render( 'voting-system.html', $vars );
+	}
+
+	protected function visitor_can_vote() {
+
+		// Visitor can vote if guest voting is enabled, if user is logged in and has correct permission
+		return ( ! is_null( $this->visitor ) ) && ( $this->is_guest_voting_allowed() || ( is_user_logged_in() && current_user_can( 'vote_on_comments' ) ) );
 	}
 
 	/**
@@ -501,12 +503,12 @@ class HMN_Comment_Popularity {
 
 		$labels = $this->get_vote_labels();
 
-		$visitor_can_vote = $this->visitor->can_vote( $comment_id, $labels[ $vote ] );
+		$vote_is_valid = $this->get_visitor()->is_vote_valid( $comment_id, $labels[ $vote ] );
 
-		if ( is_wp_error( $visitor_can_vote ) ) {
+		if ( is_wp_error( $vote_is_valid ) ) {
 
-			$error_code = $visitor_can_vote->get_error_code();
-			$error_msg = $visitor_can_vote->get_error_message( $error_code );
+			$error_code = $vote_is_valid->get_error_code();
+			$error_msg = $vote_is_valid->get_error_message( $error_code );
 
 			$return = array(
 				'error_code'    => $error_code,
