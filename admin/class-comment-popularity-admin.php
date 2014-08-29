@@ -54,7 +54,12 @@ class HMN_Comment_Popularity_Admin {
 	 */
 	public function render_expert_karma_input() {
 
-		$prefs = get_option( 'comment_popularity_prefs', array( 'default_expert_karma' => 0 ) );
+		if ( is_multisite() ) {
+			$blog_id = get_current_blog_id();
+			$prefs = get_blog_option( $blog_id, 'comment_popularity_prefs', array( 'default_expert_karma' => 0 ) );
+		} else {
+			$prefs = get_option( 'comment_popularity_prefs', array( 'default_expert_karma' => 0 ) );
+		}
 
 		$default_expert_karma = array_key_exists( 'default_expert_karma', $prefs ) ? $prefs['default_expert_karma'] : 0;
 
@@ -88,15 +93,20 @@ class HMN_Comment_Popularity_Admin {
 			return;
 		}
 
-		$prefs = get_option( 'comment_popularity_prefs', array( 'default_expert_karma' => 0 ) );
+		if ( is_multisite() ) {
+			$blog_id = get_current_blog_id();
+			$prefs = get_blog_option( $blog_id, 'comment_popularity_prefs', array( 'default_expert_karma' => 0 ) );
+		} else {
+			$prefs = get_option( 'comment_popularity_prefs', array( 'default_expert_karma' => 0 ) );
+		}
 
 		$default_karma = $prefs['default_expert_karma'];
 
-		$current_karma = get_the_author_meta( 'hmn_user_karma', $user->ID );
+		$current_karma = get_user_option( 'hmn_user_karma', $user->ID );
 
 		$user_karma = ( empty( $current_karma ) ) ? $default_karma : $current_karma;
 
-		$user_expert_status = get_the_author_meta( 'hmn_user_expert_status', $user->ID );
+		$user_expert_status = get_user_option( 'hmn_user_expert_status', $user->ID );
 
 		?>
 
