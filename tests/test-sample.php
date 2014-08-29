@@ -2,6 +2,7 @@
 
 use CommentPopularity\HMN_Comment_Popularity;
 use CommentPopularity\HMN_CP_Visitor;
+use CommentPopularity\HMN_CP_Visitor_Member;
 
 /**
  * Class Test_HMN_Comment_Popularity
@@ -22,9 +23,8 @@ class Test_HMN_Comment_Popularity extends \WP_UnitTestCase {
 
 		parent::setUp();
 
-		add_filter( 'hmn_cp_hmn_cp_allow_guest_voting', '__return_true' );
-
 		$this->plugin = HMN_Comment_Popularity::get_instance();
+
 
 		$this->test_voter_id = $this->factory->user->create(
 			array(
@@ -35,6 +35,9 @@ class Test_HMN_Comment_Popularity extends \WP_UnitTestCase {
 		);
 		wp_set_current_user( $this->test_voter_id );
 
+		$visitor = new HMN_CP_Visitor_Member( $this->test_voter_id );
+
+		$this->plugin->set_visitor( $visitor );
 
 		$this->test_commenter_id = $this->factory->user->create(
 			array(
@@ -113,9 +116,9 @@ class Test_HMN_Comment_Popularity extends \WP_UnitTestCase {
 
 	public function test_too_soon_to_vote_again() {
 
-		$this->plugin->comment_vote( 'upvote', $this->test_comment_id, $this->test_voter_id );
+		$this->plugin->comment_vote( $this->test_voter_id,  $this->test_comment_id, 'upvote' );
 
-		$ret = $this->plugin->comment_vote( 'downvote', $this->test_comment_id, $this->test_voter_id );
+		$ret = $this->plugin->comment_vote( $this->test_voter_id, $this->test_comment_id, 'downvote' );
 
 		$this->assertArrayHasKey( 'error_code', $ret );
 
@@ -125,9 +128,9 @@ class Test_HMN_Comment_Popularity extends \WP_UnitTestCase {
 
 	public function test_prevent_same_vote_twice() {
 
-		$this->plugin->comment_vote( 'upvote', $this->test_comment_id, $this->test_voter_id );
+		$this->plugin->comment_vote( $this->test_voter_id, $this->test_comment_id, 'upvote' );
 
-		$ret = $this->plugin->comment_vote( 'upvote', $this->test_comment_id, $this->test_voter_id );
+		$ret = $this->plugin->comment_vote( $this->test_voter_id, $this->test_comment_id, 'upvote' );
 
 		sleep( 7 );
 
@@ -143,7 +146,7 @@ class Test_HMN_Comment_Popularity extends \WP_UnitTestCase {
 
 		$action = 'upvote';
 
-		$result = $this->plugin->update_comments_voted_on_for_user( $this->test_voter_id, $this->test_comment_id, $action );
+		$result = $this->plugin->get_visitor()->log_vote( $this->test_comment_id, $action );
 
 		$expected = array(
 			'vote_time' => $vote_time,
@@ -159,9 +162,9 @@ class Test_HMN_Comment_Popularity extends \WP_UnitTestCase {
 		$vote = 'upvote';
 
 		// Current comment author karma value
-		$current_value = $this->plugin->get_user_karma( $this->test_commenter_id );
+		$current_value = $this->plugin->get_comment_author_karma( $this->test_commenter_id );
 
-		$new_value = $this->plugin->update_user_karma( $this->test_commenter_id, $this->plugin->get_vote_value( $vote ) );
+		$new_value = $this->plugin->update_comment_author_karma( $this->test_commenter_id, $this->plugin->get_vote_value( $vote ) );
 
 		$this->assertGreaterThan( $current_value, $new_value );
 	}
@@ -173,11 +176,11 @@ class Test_HMN_Comment_Popularity extends \WP_UnitTestCase {
 		update_user_option( $this->test_commenter_id, 'hmn_user_karma', 2 );
 
 		// Current comment author karma value
-		$current_value = $this->plugin->get_user_karma( $this->test_commenter_id );
+		$current_value = $this->plugin->get_comment_author_karma( $this->test_commenter_id );
 
 		// Downvote twice so we check negative values
-		$this->plugin->update_user_karma( $this->test_commenter_id, $this->plugin->get_vote_value( $vote ) );
-		$new_value = $this->plugin->update_user_karma( $this->test_commenter_id, $this->plugin->get_vote_value( $vote ) );
+		$this->plugin->update_comment_author_karma( $this->test_commenter_id, $this->plugin->get_vote_value( $vote ) );
+		$new_value = $this->plugin->update_comment_author_karma( $this->test_commenter_id, $this->plugin->get_vote_value( $vote ) );
 
 		$this->assertLessThan( $current_value, $new_value );
 	}
@@ -189,12 +192,12 @@ class Test_HMN_Comment_Popularity extends \WP_UnitTestCase {
 		update_user_option( $this->test_commenter_id, 'hmn_user_karma', 0 );
 
 		// Current comment author karma value
-		$current_value = $this->plugin->get_user_karma( $this->test_commenter_id );
+		$current_value = $this->plugin->get_comment_author_karma( $this->test_commenter_id );
 
 		// Downvote twice so we check negative values
-		$this->plugin->update_user_karma( $this->test_commenter_id, $vote );
+		$this->plugin->update_comment_author_karma( $this->test_commenter_id, $vote );
 
-		$new_value = $this->plugin->update_user_karma( $this->test_commenter_id, $vote );
+		$new_value = $this->plugin->update_comment_author_karma( $this->test_commenter_id, $vote );
 
 		$this->assertEquals( $current_value, $new_value );
 		$this->assertEquals( 0, $new_value );
@@ -249,17 +252,6 @@ class Test_HMN_Comment_Popularity extends \WP_UnitTestCase {
 
 		$this->assertEquals( $current_value, $new_value );
 		$this->assertEquals( 0, $new_value );
-	}
-
-	public function test_creating_visitor() {
-
-		$visitor = HMN_CP_Visitor::get_instance( $_SERVER['REMOTE_ADDR'] );
-
-		assertInstanceOf( 'HMN_CP_Visitor', $visitor );
-
-		$cookie = $this->plugin->set_visitor( $visitor );
-
-		$this->assertRegExp('/\d+\.\d+\.\d+\.\d+/',$cookie );
 	}
 
 }

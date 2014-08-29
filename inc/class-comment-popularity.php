@@ -32,13 +32,6 @@ class HMN_Comment_Popularity {
 	protected $twig = null;
 
 	/**
-	 * Time needed between 2 votes by user on same comment.
-	 *
-	 * @var mixed|void
-	 */
-	protected $interval;
-
-	/**
 	 * User roles allowed to manage karma settings.
 	 *
 	 * @var mixed|void
@@ -57,8 +50,6 @@ class HMN_Comment_Popularity {
 	private function __construct() {
 
 		$this->includes();
-
-		$this->interval = apply_filters( 'hmn_cp_interval', 15 * MINUTE_IN_SECONDS );
 
 		$this->admin_roles = apply_filters( 'hmn_cp_roles', array( 'administrator', 'editor' ) );
 
@@ -87,8 +78,10 @@ class HMN_Comment_Popularity {
 	 */
 	public function set_visitor( $visitor ) {
 		$this->visitor = $visitor;
+	}
 
-		return $this->visitor->get_cookie();
+	public function get_visitor() {
+		return $this->visitor;
 	}
 
 	/*
@@ -103,9 +96,8 @@ class HMN_Comment_Popularity {
 		require_once plugin_dir_path( __FILE__ ) . 'widgets/class-widget-most-voted.php';
 		require_once plugin_dir_path( __FILE__ ) . 'widgets/experts/class-widget-experts.php';
 
-		if ( $this->is_guest_voting_allowed() ) {
-			require_once plugin_dir_path( __FILE__ ) . 'class-visitor.php';
-		}
+		// Visitor
+		require_once plugin_dir_path( __FILE__ ) . 'class-visitor.php';
 	}
 
 	/**
@@ -301,14 +293,15 @@ class HMN_Comment_Popularity {
 
 		$container_classes = array( 'comment-weight-container' );
 
-		if ( ! current_user_can( 'vote_on_comments' ) ) {
+		if ( ( is_null( $this->visitor ) ) || ! current_user_can( 'vote_on_comments' ) ) {
 			$container_classes[] = 'voting-disabled';
 		}
 
 		$vars = array(
 			'container_classes' => $container_classes,
 			'comment_id'        => $comment_id,
-			'comment_weight'    => $this->get_comment_weight( $comment_id )
+			'comment_weight'    => $this->get_comment_weight( $comment_id ),
+			'display_arrows'    => ( ! is_null( $this->visitor ) && current_user_can( 'vote_on_comments' ) )
 		);
 
 		echo $this->twig->render( 'voting-system.html', $vars );
@@ -341,7 +334,6 @@ class HMN_Comment_Popularity {
 
 		$comment_arr = get_comment( $comment_id, ARRAY_A );
 
-
 		$comment_arr['comment_karma'] += $weight_value;
 
 		if ( 0 >= $comment_arr['comment_karma'] ) {
@@ -363,18 +355,6 @@ class HMN_Comment_Popularity {
 	}
 
 	/**
-	 * Determine if a user has been granted expert status.
-	 *
-	 * @param $user_id
-	 *
-	 * @return bool
-	 */
-	public function get_user_expert_status( $user_id ) {
-
-		return (bool) get_user_option( 'hmn_user_expert_status',$user_id );
-	}
-
-	/**
 	 * Sets the initial comment karma.
 	 *
 	 * @param $comment_id
@@ -382,63 +362,20 @@ class HMN_Comment_Popularity {
 	 */
 	public function insert_comment_callback( $comment_id, $comment ) {
 
-		$user_id = get_current_user_id();
+		if ( is_null( $this->visitor ) )
+			return;
 
-		$is_expert = $this->get_user_expert_status( $user_id );
+		$user_id = $this->visitor->get_id();
 
-		$user_karma = $this->get_user_karma( $user_id );
+		$is_expert = $this->visitor->get_expert_status();
+
+		$user_karma = $this->get_comment_author_karma( $user_id );
 
 		if ( $is_expert && ( 0 < $user_karma ) ) {
 			$this->update_comment_weight( $comment_id, $user_karma );
 		}
 
 	}
-
-	/**
-	 * Updates the comment author karma when a comment is voted on.
-	 *
-	 * @param $commenter_id
-	 * @param $vote
-	 *
-	 * @return int|mixed|void
-	 */
-	public function update_user_karma( $commenter_id, $value ) {
-
-		$user_karma = $this->get_user_karma( $commenter_id );
-
-		$user_karma += $value;
-
-		update_user_option( $commenter_id, 'hmn_user_karma', $user_karma );
-
-		$user_karma = get_user_option( 'hmn_user_karma', $commenter_id );
-
-		/**
-		 * Fires once the user meta has been updated for the karma.
-		 *
-		 * @param int $commenter_id
-		 * @param int $user_karma
-		 */
-		do_action( 'hmn_cp_update_user_karma', $commenter_id, $user_karma );
-
-		return $user_karma;
-	}
-
-
-	/**
-	 * Fetches the karma for the current user from the database.
-	 *
-	 * @param $user_id
-	 *
-	 * @return int
-	 */
-	public function get_user_karma( $user_id ) {
-
-		// get user meta for karma
-		$user_karma = get_user_option( 'hmn_user_karma', $user_id );
-
-		return ( '' !== $user_karma ) ? (int)$user_karma : 0;
-	}
-
 
 	/**
 	 * Sorts the comments by weight and returns them.
@@ -471,96 +408,6 @@ class HMN_Comment_Popularity {
 	}
 
 	/**
-	 * Determine if the user can vote.
-	 *
-	 * @param        $user_id
-	 * @param        $comment_id
-	 * @param string $action
-	 *
-	 * @return bool|WP_Error
-	 */
-	public function user_can_vote( $user_id, $comment_id, $action = '' ) {
-
-		$labels = $this->get_vote_labels();
-
-		$comment = get_comment( $comment_id );
-
-		if ( ! current_user_can( 'vote_on_comments' ) ) {
-			return new \WP_Error( 'insufficient_permissions', __( 'You lack sufficient permissions to vote on comments', 'comment-popularity' ) );
-		}
-
-		if ( $comment->user_id && ( $user_id === (int)$comment->user_id ) ) {
-			return new \WP_Error( 'upvote_own_comment', sprintf( __( 'You cannot %s your own comments.', 'comment-popularity' ), $labels[ $action ] ) );
-		}
-
-		if ( ! is_user_logged_in() ) {
-			return new \WP_Error( 'not_logged_in', __( 'You must be logged in to vote on comments', 'comment-popularity' ) );
-		}
-
-		$comments_voted_on = get_user_option( 'hmn_comments_voted_on', $user_id );
-
-		// User has not yet voted on this comment
-		if ( empty( $comments_voted_on[ 'comment_id_' . $comment_id ] ) ) {
-			return array();
-		}
-
-		// Is user trying to vote twice on same comment?
-		$last_action = $comments_voted_on[ 'comment_id_' . $comment_id ]['last_action'];
-
-		if ( $last_action === $action ) {
-			return new \WP_Error( 'same_action', sprintf( __( 'You cannot %s this comment again.', 'comment-popularity' ), $labels[ $action ] ) );
-		}
-
-		// Is user trying to vote too fast?
-		$last_voted = $comments_voted_on[ 'comment_id_' . $comment_id ]['vote_time'];
-
-		$current_time = current_time( 'timestamp' );
-
-		$elapsed_time = $current_time - $last_voted;
-
-		if ( $elapsed_time > $this->interval ) {
-			return true; // user can vote, has been over 15 minutes since last vote.
-		} else {
-			return new \WP_Error( 'voting_flood', __( 'You cannot vote again so soon on this comment, please wait ' . human_time_diff( $last_voted + $this->interval, $current_time ), 'comment-popularity' ) );
-		}
-
-	}
-
-	/**
-	 * Save the user's vote to user meta.
-	 *
-	 * @param $user_id
-	 * @param $comment_id
-	 * @param $action
-	 *
-	 * @return mixed
-	 */
-	public function update_comments_voted_on_for_user( $user_id, $comment_id, $action ) {
-
-		$comments_voted_on = get_user_option( 'hmn_comments_voted_on', $user_id );
-
-		$comments_voted_on[ 'comment_id_' . $comment_id ]['vote_time'] = current_time( 'timestamp' );
-		$comments_voted_on[ 'comment_id_' . $comment_id ]['last_action'] = $action;
-
-		update_user_option( $user_id, 'hmn_comments_voted_on', $comments_voted_on );
-
-		$comments_voted_on = get_user_option( 'hmn_comments_voted_on', $user_id );
-
-		$updated = $comments_voted_on[ 'comment_id_' . $comment_id ];
-
-		/**
-		 * Fires once the user meta has been updated.
-		 *
-		 * @param int   $user_id
-		 * @param int   $comment_id
-		 * @param array $updated
-		 */
-		do_action( 'hmn_cp_update_comments_voted_on_for_user', $user_id, $comment_id, $updated );
-
-		return $updated;
-	}
-
-	/**
 	 * Ajax handler for the vote action.
 	 */
 	public function comment_vote_callback() {
@@ -582,9 +429,7 @@ class HMN_Comment_Popularity {
 			wp_send_json_error( $return );
 		}
 
-		$user_id = get_current_user_id();
-
-		$result = $this->comment_vote( $vote, $comment_id, $user_id );
+		$result = $this->comment_vote( $this->visitor->get_id(), $comment_id, $vote );
 
 		if ( array_key_exists( 'error_message', $result ) ) {
 
@@ -599,6 +444,50 @@ class HMN_Comment_Popularity {
 	}
 
 	/**
+	 * Fetches the karma for the current user from the database.
+	 *
+	 * @param $user_id
+	 *
+	 * @return int
+	 */
+	public function get_comment_author_karma( $user_id ) {
+
+		// get user meta for karma
+		$user_karma = get_user_option( 'hmn_user_karma', $user_id );
+
+		return ( '' !== $user_karma ) ? (int)$user_karma : 0;
+	}
+
+	/**
+	 * Updates the comment author karma when a comment is voted on.
+	 *
+	 * @param $commenter_id
+	 * @param $vote
+	 *
+	 * @return int|mixed|void
+	 */
+	public function update_comment_author_karma( $commenter_id, $value ) {
+
+		$user_karma = $this->get_comment_author_karma( $commenter_id );
+
+		$user_karma += $value;
+
+		update_user_option( $commenter_id, 'hmn_user_karma', $user_karma );
+
+		$user_karma = get_user_option( 'hmn_user_karma', $commenter_id );
+
+		/**
+		 * Fires once the user meta has been updated for the karma.
+		 *
+		 * @param int $commenter_id
+		 * @param int $user_karma
+		 */
+		do_action( 'hmn_cp_update_user_karma', $commenter_id, $user_karma );
+
+		return $user_karma;
+	}
+
+	/**
 	 * Processes the comment vote logic.
 	 *
 	 * @param $vote
@@ -608,14 +497,16 @@ class HMN_Comment_Popularity {
 	 *
 	 * @return array
 	 */
-	public function comment_vote( $vote, $comment_id, $user_id ) {
+	public function comment_vote( $user_id, $comment_id, $vote ) {
 
-		$user_can_vote = $this->user_can_vote( $user_id, $comment_id, $vote );
+		$labels = $this->get_vote_labels();
 
-		if ( is_wp_error( $user_can_vote ) ) {
+		$visitor_can_vote = $this->visitor->can_vote( $comment_id, $labels[ $vote ] );
 
-			$error_code = $user_can_vote->get_error_code();
-			$error_msg = $user_can_vote->get_error_message( $error_code );
+		if ( is_wp_error( $visitor_can_vote ) ) {
+
+			$error_code = $visitor_can_vote->get_error_code();
+			$error_msg = $visitor_can_vote->get_error_message( $error_code );
 
 			$return = array(
 				'error_code'    => $error_code,
@@ -635,12 +526,10 @@ class HMN_Comment_Popularity {
 
 		// update comment author karma if registered user.
 		if ( false !== $author ) {
-			$this->update_user_karma( $author->ID, $this->get_vote_value( $vote ) );
+			$this->update_comment_author_karma( $author->ID, $this->get_vote_value( $vote ) );
 		}
 
-		$labels = $this->get_vote_labels();
-
-		$this->update_comments_voted_on_for_user( $user_id, $comment_id, $vote );
+		$this->get_visitor()->log_vote( $comment_id, $vote );
 
 		do_action( 'hmn_cp_comment_vote', $user_id, $comment_id, $labels[ $vote ] );
 
@@ -705,7 +594,7 @@ class HMN_Comment_Popularity {
 	 * @return mixed|void
 	 */
 	public function is_guest_voting_allowed() {
-		return apply_filters( 'hmn_cp_hmn_cp_allow_guest_voting', $this->allow_guest_voting );
+		return apply_filters( 'hmn_cp_allow_guest_voting', $this->allow_guest_voting );
 	}
 
 }

@@ -16,12 +16,13 @@ if ( 'pingback' == $comment->comment_type || 'trackback' == $comment->comment_ty
 	<article id="div-comment-<?php comment_ID(); ?>" class="comment-body">
 		<header class="comment-header">
 			<?php $hmn_cp_plugin = HMN_Comment_Popularity::get_instance(); $hmn_cp_plugin->render_ui( get_comment_ID() ); ?>
-					<?php // Avatar
+			<?php // Avatar
 			if ( 0 != $args['avatar_size'] ) :
 			echo get_avatar( $comment, $args['avatar_size'] );
 			endif;
 
 			?>
+
 			<div class="comment-date">
 				<a href="<?php echo esc_url( get_comment_link( $comment->comment_ID ) ); ?>">
 					<time datetime="<?php comment_time( 'c' ); ?>">
@@ -42,7 +43,7 @@ if ( 'pingback' == $comment->comment_type || 'trackback' == $comment->comment_ty
 				$karma_element = '';
 				if ( false !== $author ) {
 
-					$author_karma = $hmn_cp_plugin->get_user_karma( $author->ID );
+					$author_karma = $hmn_cp_plugin->get_comment_author_karma( $author->ID );
 
 					if ( false !== $author_karma ) {
 						$karma_element = sprintf( _x( '%1$s( User Karma: %2$s )%3$s', '1: HTML tag 2: Karma value 3: HTML tag', 'comment-popularity' ), '<small class="user-karma">', esc_html( $author_karma ), '</small>' );
