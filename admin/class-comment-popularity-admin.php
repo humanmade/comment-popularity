@@ -30,7 +30,7 @@ class HMN_Comment_Popularity_Admin {
 
 	public static function get_instance() {
 
-		if ( ! self::$instance instanceof HMN_Comment_Popularity ) {
+		if ( ! self::$instance instanceof HMN_Comment_Popularity_Admin ) {
 			self::$instance = new HMN_Comment_Popularity_Admin();
 
 		}
