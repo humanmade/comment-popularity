@@ -47,6 +47,10 @@ class HMN_Comment_Popularity {
 
 	protected $sort_comments_by_weight = true;
 
+	protected $allow_guest_voting = false;
+
+	protected $visitor = null;
+
 	/**
 	 * Creates a new HMN_Comment_Popularity object, and registers with WP hooks.
 	 */
@@ -73,6 +77,18 @@ class HMN_Comment_Popularity {
 
 		$this->init_twig();
 		$this->set_permissions();
+
+	}
+
+	/**
+	 * Initialize the visitor object.
+	 *
+	 * @param HMN_CP_Visitor $visitor
+	 */
+	public function set_visitor( $visitor ) {
+		$this->visitor = $visitor;
+
+		return $this->visitor->get_cookie();
 	}
 
 	/*
@@ -87,6 +103,9 @@ class HMN_Comment_Popularity {
 		require_once plugin_dir_path( __FILE__ ) . 'widgets/class-widget-most-voted.php';
 		require_once plugin_dir_path( __FILE__ ) . 'widgets/experts/class-widget-experts.php';
 
+		if ( $this->is_guest_voting_allowed() ) {
+			require_once plugin_dir_path( __FILE__ ) . 'class-visitor.php';
+		}
 	}
 
 	/**
@@ -678,6 +697,15 @@ class HMN_Comment_Popularity {
 	 */
 	public function are_comments_sorted_by_weight() {
 		return apply_filters( 'hmn_cp_sort_comments_by_weight', $this->sort_comments_by_weight );
+	}
+
+	/**
+	 * Determine if guest voting is allowed.
+	 *
+	 * @return mixed|void
+	 */
+	public function is_guest_voting_allowed() {
+		return apply_filters( 'hmn_cp_hmn_cp_allow_guest_voting', $this->allow_guest_voting );
 	}
 
 }

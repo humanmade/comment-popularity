@@ -27,6 +27,13 @@ register_activation_hook( __FILE__, array( 'CommentPopularity\HMN_Comment_Popula
 
 add_action( 'plugins_loaded', array( 'CommentPopularity\HMN_Comment_Popularity', 'get_instance' ) );
 
+$comment_popularity = CommentPopularity\HMN_Comment_Popularity::get_instance();
+
+if ( $comment_popularity->is_guest_voting_allowed() ) {
+	$visitor = CommentPopularity\HMN_CP_Visitor::get_instance( $_SERVER['REMOTE_ADDR'] );
+	$comment_popularity->set_visitor( $visitor );
+}
+
 // Template tags
 include_once plugin_dir_path( __FILE__ ) . 'inc/helpers.php';
 

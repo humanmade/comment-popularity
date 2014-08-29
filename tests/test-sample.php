@@ -1,10 +1,12 @@
-<?php
+<?php namespace CommentPopularity;
+
 use CommentPopularity\HMN_Comment_Popularity;
+use CommentPopularity\HMN_CP_Visitor;
 
 /**
  * Class Test_HMN_Comment_Popularity
  */
-class Test_HMN_Comment_Popularity extends WP_UnitTestCase {
+class Test_HMN_Comment_Popularity extends \WP_UnitTestCase {
 
 	protected $test_voter_id;
 	protected $test_commenter_id;
@@ -19,6 +21,8 @@ class Test_HMN_Comment_Popularity extends WP_UnitTestCase {
 	public function setUp() {
 
 		parent::setUp();
+
+		add_filter( 'hmn_cp_hmn_cp_allow_guest_voting', '__return_true' );
 
 		$this->plugin = HMN_Comment_Popularity::get_instance();
 
@@ -245,6 +249,17 @@ class Test_HMN_Comment_Popularity extends WP_UnitTestCase {
 
 		$this->assertEquals( $current_value, $new_value );
 		$this->assertEquals( 0, $new_value );
+	}
+
+	public function test_creating_visitor() {
+
+		$visitor = HMN_CP_Visitor::get_instance( $_SERVER['REMOTE_ADDR'] );
+
+		assertInstanceOf( 'HMN_CP_Visitor', $visitor );
+
+		$cookie = $this->plugin->set_visitor( $visitor );
+
+		$this->assertRegExp('/\d+\.\d+\.\d+\.\d+/',$cookie );
 	}
 
 }
