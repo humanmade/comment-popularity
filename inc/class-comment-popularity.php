@@ -367,9 +367,12 @@ class HMN_Comment_Popularity {
 		if ( is_null( $this->visitor ) )
 			return;
 
-		$user_id = $this->visitor->get_id();
+		if ( ! is_user_logged_in() )
+			return;
 
-		$is_expert = $this->visitor->get_expert_status();
+		$user_id = $this->get_visitor()->get_id();
+
+		$is_expert = $this->get_visitor()->get_expert_status();
 
 		$user_karma = $this->get_comment_author_karma( $user_id );
 
