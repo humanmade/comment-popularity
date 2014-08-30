@@ -37,7 +37,9 @@ function hmbkp_cp_init() {
 		$visitor = null;
 	}
 
-	$comment_popularity->set_visitor( $visitor );
+	if ( is_null( $comment_popularity->get_visitor() ) ) {
+		$comment_popularity->set_visitor( $visitor );
+	}
 
 }
 add_action( 'plugins_loaded', 'hmbkp_cp_init' );
