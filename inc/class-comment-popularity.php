@@ -152,9 +152,15 @@ class HMN_Comment_Popularity {
 
 		global $wp_version;
 
-		if ( version_compare( $wp_version, self::HMN_CP_REQUIRED_WP_VERSION, '<' ) ) {
-			deactivate_plugins( plugin_basename( __FILE__ ) );
-			wp_die( sprintf( __( 'This plugin requires WordPress version %s. Sorry about that.', 'comment-popularity' ), self::HMN_CP_REQUIRED_WP_VERSION ), 'Comment Popularity', array( 'back_link' => true ) );
+		if ( version_compare( floatval( $wp_version ), self::HMN_CP_REQUIRED_WP_VERSION, '<' ) ) {
+
+			if ( current_user_can( 'activate_plugins' ) ) {
+
+				deactivate_plugins( plugin_basename( __FILE__ ) );
+				wp_die( sprintf( __( 'This plugin requires WordPress version %s. Sorry about that.', 'comment-popularity' ), self::HMN_CP_REQUIRED_WP_VERSION ), 'Comment Popularity', array( 'back_link' => true ) );
+
+			}
+
 		}
 	}
 
