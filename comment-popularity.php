@@ -25,10 +25,24 @@ require_once plugin_dir_path( __FILE__ ) . 'inc/class-comment-popularity.php';
 
 register_activation_hook( __FILE__, array( 'CommentPopularity\HMN_Comment_Popularity', 'activate' ) );
 
-add_action( 'plugins_loaded', array( 'CommentPopularity\HMN_Comment_Popularity', 'get_instance' ) );
+function hmbkp_cp_init() {
 
-// Template tags
-include_once plugin_dir_path( __FILE__ ) . 'inc/helpers.php';
+	$comment_popularity = CommentPopularity\HMN_Comment_Popularity::get_instance();
+
+	if ( is_user_logged_in() ) {
+		$visitor = new CommentPopularity\HMN_CP_Visitor_Member( get_current_user_id() );
+	} elseif ( $comment_popularity->is_guest_voting_allowed() ) {
+		$visitor = new CommentPopularity\HMN_CP_Visitor_Guest( $_SERVER['REMOTE_ADDR'] );
+	} else {
+		$visitor = null;
+	}
+
+	if ( is_null( $comment_popularity->get_visitor() ) ) {
+		$comment_popularity->set_visitor( $visitor );
+	}
+
+}
+add_action( 'plugins_loaded', 'hmbkp_cp_init' );
 
 // Admin class
 if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
@@ -37,5 +51,8 @@ if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
 	add_action( 'plugins_loaded', array( 'CommentPopularity\HMN_Comment_Popularity_Admin', 'get_instance' ) );
 
 }
+
+// Template tags
+include_once plugin_dir_path( __FILE__ ) . 'inc/helpers.php';
 
 require_once plugin_dir_path( __FILE__ ) . 'inc/upgrade.php';

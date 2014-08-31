@@ -6,6 +6,7 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 
 // Remove plugin settings
 delete_option( 'comment_popularity_prefs' );
+delete_option( 'hmn_cp_plugin_version' );
 
 global $wpdb;
 
