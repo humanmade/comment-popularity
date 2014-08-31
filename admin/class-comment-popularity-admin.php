@@ -1,5 +1,7 @@
 <?php namespace CommentPopularity;
 
+use CommentPopularity\HMN_Comment_Popularity;
+
 /**
  * Class HMN_Comment_Popularity_Admin
  */
