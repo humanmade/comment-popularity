@@ -10,9 +10,6 @@
  */
 abstract class HMN_CP_Visitor {
 
-	/**
-	 * @var string
-	 */
 	protected $visitor_id;
 
 	/**
