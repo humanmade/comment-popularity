@@ -420,6 +420,18 @@ class HMN_Comment_Popularity {
 	}
 
 	/**
+	 * Determine if a comment author has been granted expert status.
+	 *
+	 * @param int $user_id
+	 *
+	 * @return bool
+	 */
+	public function get_comment_author_expert_status( $user_id ) {
+
+		return (bool) get_user_option( 'hmn_user_expert_status', $user_id );
+	}
+
+	/**
 	 * Sorts the comments by weight and returns them.
 	 *
 	 * @param array $args
