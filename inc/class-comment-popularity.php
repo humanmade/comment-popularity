@@ -2,6 +2,7 @@
 
 /**
  * Class HMN_Comment_Popularity
+ * @package CommentPopularity
  */
 class HMN_Comment_Popularity {
 
@@ -15,6 +16,9 @@ class HMN_Comment_Popularity {
 	 */
 	const HMN_CP_REQUIRED_PHP_VERSION = '5.3.2';
 
+	/**
+	 *
+	 */
 	const HMN_CP_REQUIRED_WP_VERSION = '3.8.4';
 
 	/**
@@ -38,10 +42,24 @@ class HMN_Comment_Popularity {
 	 */
 	protected $admin_roles;
 
+	/**
+	 * @var bool
+	 */
 	protected $sort_comments_by_weight = true;
 
+	/**
+	 * @var bool
+	 */
 	protected $allow_guest_voting = false;
 
+	/**
+	 * @var bool
+	 */
+	protected $allow_negative_comment_weight = false;
+
+	/**
+	 * @var null
+	 */
 	protected $visitor = null;
 
 	/**
@@ -80,12 +98,18 @@ class HMN_Comment_Popularity {
 		$this->visitor = $visitor;
 	}
 
+	/**
+	 * @return null
+	 */
 	public function get_visitor() {
 		return $this->visitor;
 	}
 
 	/*
 	 * Include required files.
+	 */
+	/**
+	 *
 	 */
 	protected function includes() {
 
@@ -138,6 +162,9 @@ class HMN_Comment_Popularity {
 		return $value;
 	}
 
+	/**
+	 * @return array
+	 */
 	public function get_vote_labels() {
 		return array(
 			'upvote'   => _x( 'upvote', 'verb', 'comment-popularity' ),
@@ -309,6 +336,9 @@ class HMN_Comment_Popularity {
 		echo $this->twig->render( 'voting-system.html', $vars );
 	}
 
+	/**
+	 * @return bool
+	 */
 	protected function visitor_can_vote() {
 
 		// Visitor can vote if guest voting is enabled, if user is logged in and has correct permission
@@ -344,7 +374,8 @@ class HMN_Comment_Popularity {
 
 		$comment_arr['comment_karma'] += $weight_value;
 
-		if ( 0 >= $comment_arr['comment_karma'] ) {
+		// Prevent negative weight if not allowed.
+		if ( ( ! $this->is_negative_comment_weight_allowed() ) && 0 >= $comment_arr['comment_karma'] ) {
 			$comment_arr['comment_karma'] = 0;
 		}
 
@@ -606,6 +637,15 @@ class HMN_Comment_Popularity {
 	 */
 	public function is_guest_voting_allowed() {
 		return apply_filters( 'hmn_cp_allow_guest_voting', $this->allow_guest_voting );
+	}
+
+	/**
+	 * Determine if negative commentweight is allowed
+	 *
+	 * @return mixed|void
+	 */
+	public function is_negative_comment_weight_allowed() {
+		return apply_filters( 'hmn_cp_allow_negative_comment_weight', $this->allow_negative_comment_weight );
 	}
 
 }
