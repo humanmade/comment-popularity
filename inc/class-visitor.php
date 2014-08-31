@@ -233,18 +233,6 @@ class HMN_CP_Visitor_Member extends HMN_CP_Visitor {
 	}
 
 	/**
-	 * Determine if a user has been granted expert status.
-	 *
-	 * @param $visitor_id
-	 *
-	 * @return bool
-	 */
-	public function get_expert_status() {
-
-		return (bool) get_user_option( 'hmn_user_expert_status', $this->visitor_id );
-	}
-
-	/**
 	 * Determine if the user can vote.
 	 *
 	 * @param        $visitor_id
