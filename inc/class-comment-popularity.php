@@ -401,22 +401,32 @@ class HMN_Comment_Popularity {
 	 */
 	public function insert_comment_callback( $comment_id, $comment ) {
 
-		if ( is_null( $this->visitor ) )
+		if ( ! $comment->user_id )
 			return;
 
-		if ( ! is_user_logged_in() )
+		if ( ! $user = get_userdata( $comment->user_id ) )
 			return;
 
-		$user_id = $this->get_visitor()->get_id();
+		$is_expert = $this->get_comment_author_expert_status( $user->ID );
 
-		$is_expert = $this->get_visitor()->get_expert_status();
-
-		$user_karma = $this->get_comment_author_karma( $user_id );
+		$user_karma = $this->get_comment_author_karma( $user->ID );
 
 		if ( $is_expert && ( 0 < $user_karma ) ) {
 			$this->update_comment_weight( $comment_id, $user_karma );
 		}
 
+	}
+
+	/**
+	 * Determine if a comment author has been granted expert status.
+	 *
+	 * @param int $user_id
+	 *
+	 * @return bool
+	 */
+	public function get_comment_author_expert_status( $user_id ) {
+
+		return (bool) get_user_option( 'hmn_user_expert_status', $user_id );
 	}
 
 	/**
