@@ -129,8 +129,7 @@ To display the comment author karma:
 
 == Changelog ==
 
-1.3.0 / 2014-09-01
-==================
+= 1.3.0 / 2014-09-01 =
 
  * namespaces
  * Fix insert comment hook
