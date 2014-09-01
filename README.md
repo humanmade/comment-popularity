@@ -3,8 +3,8 @@
 **Contributors:** pauldewouters, mattheu,humanmade,cfo-publishing  
 **Tags:** comments,vote,upvote,karma,widget  
 **Requires at least:** 3.8.4  
-**Tested up to:** 4.0-beta4  
-**Stable tag:** 1.2.1  
+**Tested up to:** 4.0  
+**Stable tag:** 1.3.0  
 **License:** GPLv2 or later  
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -55,12 +55,25 @@ Requires PHP `5.3.2` or newer.
 
 ### Can anonymous visitors vote on comments? ###
 
-No, they can't. Currently, the only way to be able to vote is to be a registered member of the site where the plugin is
-installed. There are plans to integrate social network authentication such as Twitter/Facebook... in the future.
+Yes, you can enable guest voting by adding this snippet to your `functions.php` or mu-plugin:
+`add_filter( 'hmn_cp_allow_guest_voting', '__return_true' );`
+
+Please note that it uses cookies and IP addresses to identify a visitor. This is not as reliable as
+requiring a user to create an account. Cookies can be deleted, and IP addresses can be shared.
+
+### Can comment weight be negative ###
+
+Yes, you can enable guest voting by adding this snippet to your `functions.php` or mu-plugin:
+`add_filter( 'hmn_cp_allow_negative_comment_weight', '__return_true' );`
 
 ### Where do I find the plugin settings? ###
 
 Under Settings > Discussion, and Users > Profile
+
+### Can I disable the sorting by comment weight? ###
+
+Yes, add this snippet to your functions.php file or mu plugin:
+`add_filter( 'hmn_cp_sort_comments_by_weight', '__return_false' );`
 
 ### Advanced Usage ###
 
@@ -102,6 +115,12 @@ To display the comment author karma:
 
 ## Upgrade Notice ##
 
+### 1.3.0 ###
+
+* Guest visitors can now vote ( requires setting a flag )
+* Negative comment weight is now possible ( requires setting a flag )
+* Fixes a few bugs ( user karma settings )
+
 ### 1.2.1 ###
 
 * Fixes a fatal error on uninstall
@@ -115,6 +134,31 @@ To display the comment author karma:
 * Fixes a bug which prevented the user karma to appear in the single comment template.
 
 ## Changelog ##
+
+1.3.0 / 2014-09-01
+==================
+
+ * namespaces
+ * Fix insert comment hook
+ * add expert status method
+ * remove non visitor specific function
+ * Delete option on uninstall
+ * child class can define type
+ * add filter for negative comment weight
+ * only set visitor object if it doesn't exist
+ * check permissions before deactivating plugin
+ * Delete version DB option on uninstall
+ * Use get_user_option instead of get_author_meta
+ * Fix a bug in class name
+ * only proceed if user is logged in
+ * Guest voting works
+** * Refactor:** introduce visitor classes  
+ * Begin allowing guest voting
+ * Add namespace
+ * Add instructions for disabling custom sorting to the readme FAQ
+ * Allow user to disable sorting by weight
+ * Change tested up to version to 4.0
+ * Add database prefix to meta key in user query.
 
 ### 1.2.1 / 2014-08-27 ###
 

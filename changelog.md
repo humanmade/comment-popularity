@@ -1,4 +1,34 @@
 
+1.3.0 / 2014-09-01
+==================
+
+ * Merge pull request #84 from humanmade/issue-80
+ * namespaces
+ * Fix insert comment hook
+ * add expert status method
+ * remove non visitor specific functioin
+ * Merge pull request #82 from humanmade/issue-80
+ * Delete option on uninstall
+ * Merge pull request #80 from humanmade/issue-80
+ * child class can define type
+ * add filter for negative comment weight
+ * only set visitor object if it doesn't exist
+ * check permissions before deactivating plugin
+ * Delete version DB option on uninstall
+ * Use get_user_option instead of get_author_meta
+ * Fix a bug in class name
+ * only proceed if user is logged in
+ * Guest voting works
+ * Refactor: introduce visitor classes
+ * Begin allowing guest voting
+ * Merge pull request #71 from humanmade/issue-71
+ * Merge pull request #75 from humanmade/issue-75
+ * Add namespace
+ * Add instructions for disabling custom sorting to the readme FAQ
+ * Allow user to disable sorting by weight
+ * Change tested up to version to 4.0
+ * Add database prefix to meta key in user query.
+
 1.2.1 / 2014-08-27
 ==================
 
