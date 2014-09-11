@@ -1,7 +1,5 @@
 <?php
 
-use CommentPopularity\HMN_Comment_Popularity;
-
 /**
  * Helper functions for use in themes.
  */
@@ -11,9 +9,9 @@ use CommentPopularity\HMN_Comment_Popularity;
  */
 function hmn_cp_the_comment_upvote_form() {
 
-	if ( class_exists( 'HMN_Comment_Popularity' ) ) {
+	if ( class_exists( 'CommentPopularity\HMN_Comment_Popularity' ) ) {
 
-		$hmn_cp_obj = HMN_Comment_Popularity::get_instance();
+		$hmn_cp_obj = CommentPopularity\HMN_Comment_Popularity::get_instance();
 
 		$hmn_cp_obj->render_ui( get_comment_ID() );
 
@@ -26,9 +24,9 @@ function hmn_cp_the_comment_upvote_form() {
  */
 function hmn_cp_the_comment_author_karma() {
 
-	if ( class_exists( 'HMN_Comment_Popularity' ) ) {
+	if ( class_exists( 'CommentPopularity\HMN_Comment_Popularity' ) ) {
 
-		$hmn_cp_obj = HMN_Comment_Popularity::get_instance();
+		$hmn_cp_obj = CommentPopularity\HMN_Comment_Popularity::get_instance();
 
 		$author_karma = $hmn_cp_obj->get_comment_author_karma( get_comment_author_email( get_comment_ID() ) );
 
@@ -53,9 +51,9 @@ function hmn_cp_the_sorted_comments( $args = array() ) {
 		$args['post_id'] = $post->ID;
 	}
 
-	if ( class_exists( 'HMN_Comment_Popularity' ) ) {
+	if ( class_exists( 'CommentPopularity\HMN_Comment_Popularity' ) ) {
 
-		$hmn_cp_obj = HMN_Comment_Popularity::get_instance();
+		$hmn_cp_obj = CommentPopularity\HMN_Comment_Popularity::get_instance();
 
 		echo $hmn_cp_obj->get_comments_sorted_by_weight( true, $args );
 
