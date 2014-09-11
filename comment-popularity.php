@@ -25,7 +25,7 @@ require_once plugin_dir_path( __FILE__ ) . 'inc/class-comment-popularity.php';
 
 register_activation_hook( __FILE__, array( 'CommentPopularity\HMN_Comment_Popularity', 'activate' ) );
 
-function hmbkp_cp_init() {
+function hmn_cp_init() {
 
 	$comment_popularity = CommentPopularity\HMN_Comment_Popularity::get_instance();
 
@@ -42,7 +42,7 @@ function hmbkp_cp_init() {
 	}
 
 }
-add_action( 'plugins_loaded', 'hmbkp_cp_init' );
+add_action( 'plugins_loaded', 'hmn_cp_init' );
 
 // Admin class
 if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
