@@ -4,7 +4,7 @@
 **Tags:** comments,vote,upvote,karma,widget  
 **Requires at least:** 3.8.4  
 **Tested up to:** 4.0  
-**Stable tag:** 1.3.0  
+**Stable tag:** 1.3.1  
 **License:** GPLv2 or later  
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -55,25 +55,25 @@ Requires PHP `5.3.2` or newer.
 
 ### Can anonymous visitors vote on comments? ###
 
-Yes, you can enable guest voting by adding this snippet to your `functions.php` or mu-plugin:
+Yes, you can enable guest voting by adding this snippet to a mu-plugin:
 `add_filter( 'hmn_cp_allow_guest_voting', '__return_true' );`
 
 Please note that it uses cookies and IP addresses to identify a visitor. This is not as reliable as
 requiring a user to create an account. Cookies can be deleted, and IP addresses can be shared.
 
-### Can comment weight be negative ###
+### Can comment weight be negative? ###
 
-Yes, you can enable guest voting by adding this snippet to your `functions.php` or mu-plugin:
+Yes, you can enable negative weight by adding this snippet to a mu-plugin:
 `add_filter( 'hmn_cp_allow_negative_comment_weight', '__return_true' );`
-
-### Where do I find the plugin settings? ###
-
-Under Settings > Discussion, and Users > Profile
 
 ### Can I disable the sorting by comment weight? ###
 
 Yes, add this snippet to your functions.php file or mu plugin:
 `add_filter( 'hmn_cp_sort_comments_by_weight', '__return_false' );`
+
+### Where do I find the plugin settings? ###
+
+Under Settings > Discussion, and Users > Profile
 
 ### Advanced Usage ###
 
@@ -131,193 +131,200 @@ To display the comment author karma:
 * Fixes misc bugs.
 
 ### 1.1.2 ###
+
 * Fixes a bug which prevented the user karma to appear in the single comment template.
 
 ## Changelog ##
 
-1.3.0 / 2014-09-01
-==================
+### 1.3.1 / 2014-09-11 ###
 
- * namespaces
- * Fix insert comment hook
- * add expert status method
- * remove non visitor specific function
- * Delete option on uninstall
- * child class can define type
- * add filter for negative comment weight
- * only set visitor object if it doesn't exist
- * check permissions before deactivating plugin
- * Delete version DB option on uninstall
- * Use get_user_option instead of get_author_meta
- * Fix a bug in class name
- * only proceed if user is logged in
- * Guest voting works
-** * Refactor:** introduce visitor classes  
- * Begin allowing guest voting
- * Add namespace
- * Add instructions for disabling custom sorting to the readme FAQ
- * Allow user to disable sorting by weight
- * Change tested up to version to 4.0
- * Add database prefix to meta key in user query.
+ * Load on init and fix namespacing issue
+ * Fix function prefix
+ * Adjustments to readme
+ * Fix readme markdown
+
+### 1.3.0 / 2014-09-01 ###
+
+* namespaces
+* Fix insert comment hook
+* add expert status method
+* remove non visitor specific function
+* Delete option on uninstall
+* child class can define type
+* add filter for negative comment weight
+* only set visitor object if it doesn't exist
+* check permissions before deactivating plugin
+* Delete version DB option on uninstall
+* Use get_user_option instead of get_author_meta
+* Fix a bug in class name
+* only proceed if user is logged in
+* Guest voting works
+* Refactor: introduce visitor classes
+* Begin allowing guest voting
+* Add namespace
+* Add instructions for disabling custom sorting to the readme FAQ
+* Allow user to disable sorting by weight
+* Change tested up to version to 4.0
+* Add database prefix to meta key in user query.
 
 ### 1.2.1 / 2014-08-27 ###
 
- * Load main plugin class to fix uninstall fatal error.
- * Use the *user_option functions
- * Add some assertions
- * Rename user meta
- * Update uninstall routine
- * We're deleting a global option
- * Update the option to match current plugin version after upgrade
- * Add an upgrade routine
- * More exclude rules for build process
- * Version 1.2.0
- * Update CONTRIBUTING.md
- * Delete user voting history
- * Update user meta key
- * Prefix user meta key
+* Load main plugin class to fix uninstall fatal error.
+* Use the *user_option functions
+* Add some assertions
+* Rename user meta
+* Update uninstall routine
+* We're deleting a global option
+* Update the option to match current plugin version after upgrade
+* Add an upgrade routine
+* More exclude rules for build process
+* Version 1.2.0
+* Update CONTRIBUTING.md
+* Delete user voting history
+* Update user meta key
+* Prefix user meta key
 
 ### 1.2.0 / 2014-08-24 ###
 
- * the user_can_vote function is triggered by a vote action. therefore we cannot use it to determines if a comment can be voted on on page load. we can just check if current user has sufficient permissions. unless we persist a user/comment relationship.
- * Refactor get comments by weight function
- * Use exising function instead of another comment query
- * USe the refactored function parameters
- * Just add a newline
- * clean up
- * display gravatar
- * adds an experts widget
- * update translation files
- * Limit number of comments by user widget setting
- * Add context info for translators
- * Make more strings translatable
- * Recreate tests from WP CLI
- * Update tested up to field
+* the user_can_vote function is triggered by a vote action. therefore we cannot use it to determines if a comment can be voted on on page load. we can just check if current user has sufficient permissions. unless we persist a user/comment relationship.
+* Refactor get comments by weight function
+* Use exising function instead of another comment query
+* USe the refactored function parameters
+* Just add a newline
+* clean up
+* display gravatar
+* adds an experts widget
+* update translation files
+* Limit number of comments by user widget setting
+* Add context info for translators
+* Make more strings translatable
+* Recreate tests from WP CLI
+* Update tested up to field
 
 ### 1.1.5 / 2014-08-19 ###
 
- * Update tests to reflect refactoring
- * Change how comment weight is calculated
- * Use a multisite compatible function for user meta
- * Fix up tests config
- * Use appropriate WordPress functions
- * Remove debugging function
- * Make debugging easier
+* Update tests to reflect refactoring
+* Change how comment weight is calculated
+* Use a multisite compatible function for user meta
+* Fix up tests config
+* Use appropriate WordPress functions
+* Remove debugging function
+* Make debugging easier
 
 ### 1.1.4 / 2014-08-18 ###
 
- * Check PHP version before evaluating any code
- * Include and register widgets from main plugin class
- * Add a tag
- * Use function instead of constant
- * Composer udpates
- * Use 5.2 compatible code here
- * Update minified script
- * Throttle clicking events
- * Add a tag
- * Use function instead of constant
- * Composer udpates
- * Use 5.2 compatible code here
- * Update CONTRIBUTING.md
+* Check PHP version before evaluating any code
+* Include and register widgets from main plugin class
+* Add a tag
+* Use function instead of constant
+* Composer udpates
+* Use 5.2 compatible code here
+* Update minified script
+* Throttle clicking events
+* Add a tag
+* Use function instead of constant
+* Composer udpates
+* Use 5.2 compatible code here
+* Update CONTRIBUTING.md
 
 ### 1.1.3 / 2014-08-16 ###
 
- * Add dotorg banners
- * Bump version to 1.1.3
- * Fix PHP error
- * Switch statement order
- * Add min PHP version
- * Use html entities
- * Ignore non build files
- * Igonre contributing.md from build
- * Remove some unused code
- * Fix a PHP notice
- * Update readme and changelog
+* Add dotorg banners
+* Bump version to 1.1.3
+* Fix PHP error
+* Switch statement order
+* Add min PHP version
+* Use html entities
+* Ignore non build files
+* Igonre contributing.md from build
+* Remove some unused code
+* Fix a PHP notice
+* Update readme and changelog
 
 ### 1.1.2 / 2014-08-15 ###
 
- * Bump version
- * Pass user ID as param instead of email
- * Add RTD config
- * fix to readme
+* Bump version
+* Pass user ID as param instead of email
+* Add RTD config
+* fix to readme
 
 ### 1.1.1 / 2014-08-13 ###
 
- * Bump to version 1.1.1
- * Fix a PHP notice
+* Bump to version 1.1.1
+* Fix a PHP notice
 
 ### 1.1.0 / 2014-08-13 ###
 
- * Bump to version 1.1.0
- * Make the paths filterable
- * Fix how we call comments template
- * Add a comment template file
- * Move comments to own file
- * Fix a PHP notice
- * Regenerate readme
- * Add link to github
- * Fix some spacing and formatting
- * Update CONTRIBUTING.md
- * Fix composer.json
- * Regenerate readme.md
- * Fix Readme file and add contributors
- * Prevent users from upvoting their comments
- * No need to check if user can vote
- * Register widget
- * Add a most voted comments widget
- * Update min WordPress version in readme
- * Add Matt as contributor
- * Add sortable karma column to users view
- * Return just the values
- * Add task to update class plugin version
- * Update version
- * Add some actions
- * Update function desc
- * Use prefixed constant VERSION
- * Improve activation checks
- * Change required WP Version
- * Prefix filters
- * Rename constants
- * Add Travis badge
- * Update tests to account for downvoting a comment with no karma
- * Rename function
- * Return comment weight
- * Rename callback
- * Return as integer
- * Bump version
- * First version of instructions
- * Add contributing.md file
+* Bump to version 1.1.0
+* Make the paths filterable
+* Fix how we call comments template
+* Add a comment template file
+* Move comments to own file
+* Fix a PHP notice
+* Regenerate readme
+* Add link to github
+* Fix some spacing and formatting
+* Update CONTRIBUTING.md
+* Fix composer.json
+* Regenerate readme.md
+* Fix Readme file and add contributors
+* Prevent users from upvoting their comments
+* No need to check if user can vote
+* Register widget
+* Add a most voted comments widget
+* Update min WordPress version in readme
+* Add Matt as contributor
+* Add sortable karma column to users view
+* Return just the values
+* Add task to update class plugin version
+* Update version
+* Add some actions
+* Update function desc
+* Use prefixed constant VERSION
+* Improve activation checks
+* Change required WP Version
+* Prefix filters
+* Rename constants
+* Add Travis badge
+* Update tests to account for downvoting a comment with no karma
+* Rename function
+* Return comment weight
+* Rename callback
+* Return as integer
+* Bump version
+* First version of instructions
+* Add contributing.md file
 
 ### 1.0.2 / 2014-08-08 ###
 
- * Add tests for comment weight update
- * disallow negative karma
- * Fix code after refactor method
- * Return the database value
- * Fix issue where we were adding downvotes
- * Subtract karma if comment is downvoted
- * Add tests for commenter karma update
- * Update tests
- * Allow overriding vote value
- * Use the literal vote values
- * Minified CSS
- * remove build
- * Merge pull request #44 from humanmade/build-tasks
- * Add minified scripts
- * JSHint config
- * Ignore build dir
- * Merge branch 'master' into build-tasks
- * add comments
- * Changelog file
- * Add build tasks
- * Add task plugins
- * Use minified scripts and styles
- * add comments
- * Merge pull request #45 from humanmade/docs
- * Merge branch 'master' into docs
- * Update readme
- * Add readme to markdown task
- * Documentation for how to remove the built in comment template
+* Add tests for comment weight update
+* disallow negative karma
+* Fix code after refactor method
+* Return the database value
+* Fix issue where we were adding downvotes
+* Subtract karma if comment is downvoted
+* Add tests for commenter karma update
+* Update tests
+* Allow overriding vote value
+* Use the literal vote values
+* Minified CSS
+* remove build
+* Merge pull request #44 from humanmade/build-tasks
+* Add minified scripts
+* JSHint config
+* Ignore build dir
+* Merge branch 'master' into build-tasks
+* add comments
+* Changelog file
+* Add build tasks
+* Add task plugins
+* Use minified scripts and styles
+* add comments
+* Merge pull request #45 from humanmade/docs
+* Merge branch 'master' into docs
+* Update readme
+* Add readme to markdown task
+* Documentation for how to remove the built in comment template
  
 ### 1.0.1 ###
 

@@ -1,4 +1,12 @@
 
+n.n.n / 2014-09-11 
+==================
+
+ * Load on init and fix namespacing issue
+ * Fix function prefix
+ * Adjustments to readmi
+ * Fix readme markdown
+
 1.3.0 / 2014-09-01
 ==================
 
