@@ -26,6 +26,7 @@ require_once plugin_dir_path( __FILE__ ) . 'inc/class-comment-popularity.php';
 register_activation_hook( __FILE__, array( 'CommentPopularity\HMN_Comment_Popularity', 'activate' ) );
 
 function hmn_cp_init() {
+	global $comment_popularity;
 
 	$comment_popularity = CommentPopularity\HMN_Comment_Popularity::get_instance();
 
