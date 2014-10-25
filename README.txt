@@ -130,11 +130,11 @@ To display the comment author karma:
 
 == Changelog ==
 
-= 1.3.3 / 2014-10-25
+= 1.3.3 / 2014-10-25 =
 
 * Fix fatal error on uninstall
 
-= 1.3.2 / 2014-10-10
+= 1.3.2 / 2014-10-10 =
 
 * Init plugin earlier
 
