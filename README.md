@@ -4,7 +4,7 @@
 **Tags:** comments,vote,upvote,karma,widget  
 **Requires at least:** 3.8.4  
 **Tested up to:** 4.0  
-**Stable tag:** 1.3.2  
+**Stable tag:** 1.3.3  
 **License:** GPLv2 or later  
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -136,12 +136,20 @@ To display the comment author karma:
 
 ## Changelog ##
 
+### 1.3.3 / 2014-10-25
+
+* Fix fatal error on uninstall
+###
+### 1.3.2 / 2014-10-10
+
+* Init plugin earlier
+###
 ### 1.3.1 / 2014-09-11 ###
 
- * Load on init and fix namespacing issue
- * Fix function prefix
- * Adjustments to readme
- * Fix readme markdown
+* Load on init and fix namespacing issue
+* Fix function prefix
+* Adjustments to readme
+* Fix readme markdown
 
 ### 1.3.0 / 2014-09-01 ###
 

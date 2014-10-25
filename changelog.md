@@ -1,5 +1,10 @@
 
-n.n.n / 2014-10-10
+1.3.3 / 2014-10-25
+==================
+
+  * Add namespace
+
+1.3.2 / 2014-10-10
 ==================
 
   * Merge pull request #93 from humanmade/issue-93
@@ -7,7 +12,7 @@ n.n.n / 2014-10-10
   * Merge pull request #92 from humanmade/fix-helpers-namespace
   * Merge pull request #86 from humanmade/fix-helpers-namespace
 
-n.n.n / 2014-09-11 
+1.3.1 / 2014-09-11
 ==================
 
  * Load on init and fix namespacing issue
