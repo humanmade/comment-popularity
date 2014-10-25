@@ -90,7 +90,7 @@ $wpdb->query(
 
 // Remove custom capabilities
 require_once plugin_dir_path( __FILE__ ) . 'inc/class-comment-popularity.php';
-$cp_plugin = HMN_Comment_Popularity::get_instance();
+$cp_plugin = CommentPopularity\HMN_Comment_Popularity::get_instance();
 
 $roles = $cp_plugin->get_roles();
 
