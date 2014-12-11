@@ -78,6 +78,8 @@ class HMN_Comment_Popularity_Admin {
 	 */
 	public function validate_settings( $input ) {
 
+		$valid = array();
+
 		$valid['default_expert_karma'] = absint( $input['default_expert_karma'] );
 
 		return $valid;

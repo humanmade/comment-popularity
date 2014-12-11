@@ -161,6 +161,8 @@ class HMN_CP_Visitor_Guest extends HMN_CP_Visitor {
 	 */
 	protected function save_logged_votes( $votes ) {
 
+		$logged_votes = array();
+
 		if ( is_multisite() ) {
 			$blog_id = get_current_blog_id();
 			$logged_votes = get_blog_option( $blog_id, 'hmn_cp_guests_logged_votes' );
@@ -184,8 +186,6 @@ class HMN_CP_Visitor_Guest extends HMN_CP_Visitor {
 	public function is_vote_valid( $comment_id, $action = '' ) {
 
 		// @TODO: can we check cookies for a WP cookie matching current domain. If so, then ask user to log in.
-
-		$comment = get_comment( $comment_id );
 
 		$logged_votes = $this->retrieve_logged_votes();
 
