@@ -24,7 +24,7 @@ class HMN_Comment_Popularity {
 	/**
 	 * The instance of HMN_Comment_Popularity.
 	 *
-	 * @var the single class instance.
+	 * @var HMN_Comment_Popularity the single class instance.
 	 */
 	private static $instance;
 
@@ -33,7 +33,7 @@ class HMN_Comment_Popularity {
 	 *
 	 * @var null
 	 */
-	protected $twig = null;
+	protected $twig;
 
 	/**
 	 * User roles allowed to manage karma settings.
@@ -58,9 +58,24 @@ class HMN_Comment_Popularity {
 	protected $allow_negative_comment_weight = false;
 
 	/**
-	 * @var null
+	 * @var HMN_CP_Visitor
 	 */
-	protected $visitor = null;
+	protected $visitor;
+
+	/**
+	 * Provides access to the class instance
+	 *
+	 * @return HMN_Comment_Popularity
+	 */
+	public static function get_instance() {
+
+		if ( ! self::$instance instanceof HMN_Comment_Popularity ) {
+			self::$instance = new HMN_Comment_Popularity();
+
+		}
+
+		return self::$instance;
+	}
 
 	/**
 	 * Creates a new HMN_Comment_Popularity object, and registers with WP hooks.
@@ -99,7 +114,7 @@ class HMN_Comment_Popularity {
 	}
 
 	/**
-	 * @return null
+	 * @return HMN_CP_Visitor
 	 */
 	public function get_visitor() {
 		return $this->visitor;
@@ -245,21 +260,6 @@ class HMN_Comment_Popularity {
 	 * Disallow object cloning
 	 */
 	private function __clone() {}
-
-	/**
-	 * Provides access to the class instance
-	 *
-	 * @return HMN_Comment_Popularity
-	 */
-	public static function get_instance() {
-
-		if ( ! self::$instance instanceof HMN_Comment_Popularity ) {
-			self::$instance = new HMN_Comment_Popularity();
-
-		}
-
-		return self::$instance;
-	}
 
 	/**
 	 * Load the Javascripts

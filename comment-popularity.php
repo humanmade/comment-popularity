@@ -34,10 +34,10 @@ function hmn_cp_init() {
 	} elseif ( $comment_popularity->is_guest_voting_allowed() ) {
 		$visitor = new CommentPopularity\HMN_CP_Visitor_Guest( $_SERVER['REMOTE_ADDR'] );
 	} else {
-		$visitor = null;
+		return;
 	}
 
-	if ( is_null( $comment_popularity->get_visitor() ) ) {
+	if ( ! ( $comment_popularity->get_visitor() instanceof CommentPopularity\HMN_CP_Visitor ) ) {
 		$comment_popularity->set_visitor( $visitor );
 	}
 
