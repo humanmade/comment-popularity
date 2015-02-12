@@ -86,8 +86,8 @@ class HMN_CP_Widget_Experts extends \WP_Widget {
 	/**
 	 * Outputs the content of the widget.
 	 *
-	 * @param array args  The array of form elements
-	 * @param array instance The current instance of the widget
+	 * @param array $args  The array of form elements
+	 * @param array $instance The current instance of the widget
 	 */
 	public function widget( $args, $instance ) {
 
@@ -150,8 +150,8 @@ class HMN_CP_Widget_Experts extends \WP_Widget {
 	/**
 	 * Processes the widget's options to be saved.
 	 *
-	 * @param array new_instance The new instance of values to be generated via the update.
-	 * @param array old_instance The previous instance of values before the update.
+	 * @param array $new_instance The new instance of values to be generated via the update.
+	 * @param array $old_instance The previous instance of values before the update.
 	 */
 	public function update( $new_instance, $old_instance ) {
 
@@ -167,7 +167,7 @@ class HMN_CP_Widget_Experts extends \WP_Widget {
 	/**
 	 * Generates the administration form for the widget.
 	 *
-	 * @param array instance The array of keys and values for the widget.
+	 * @param array $instance The array of keys and values for the widget.
 	 */
 	public function form( $instance ) {
 
@@ -203,7 +203,12 @@ class HMN_CP_Widget_Experts extends \WP_Widget {
 
 		foreach ( $experts as $key => $expert ) {
 
-			$return[$key]['name'] = $expert->user_login;
+			$name = $expert->user_login;
+
+			if ( ! empty( $expert->first_name ) && ! empty( $expert->last_name ) ) {
+				$name = $expert->first_name . ' ' . $expert->last_name;
+			}
+			$return[$key]['name'] = $name;
 			$return[$key]['karma'] = get_user_option( 'hmn_user_karma', $expert->ID );
 			$return[$key]['avatar'] = $this->get_gravatar_url( $expert->user_email );
 
