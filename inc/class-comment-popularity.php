@@ -36,13 +36,6 @@ class HMN_Comment_Popularity {
 	protected $twig;
 
 	/**
-	 * User roles allowed to manage karma settings.
-	 *
-	 * @var mixed|void
-	 */
-	protected $admin_roles;
-
-	/**
 	 * @var bool
 	 */
 	protected $sort_comments_by_weight = true;
@@ -84,8 +77,6 @@ class HMN_Comment_Popularity {
 
 		$this->includes();
 
-		$this->admin_roles = apply_filters( 'hmn_cp_roles', array( 'administrator', 'editor' ) );
-
 		add_action( 'wp_insert_comment', array( $this, 'insert_comment_callback' ), 10, 2 );
 
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
@@ -100,7 +91,6 @@ class HMN_Comment_Popularity {
 		add_action( 'widgets_init', array( $this, 'register_widgets' ) );
 
 		$this->init_twig();
-		$this->set_permissions();
 
 	}
 
@@ -194,7 +184,7 @@ class HMN_Comment_Popularity {
 
 		global $wp_version;
 
-		if ( version_compare( floatval( $wp_version ), self::HMN_CP_REQUIRED_WP_VERSION, '<' ) ) {
+		if ( version_compare( $wp_version, self::HMN_CP_REQUIRED_WP_VERSION, '<' ) ) {
 
 			if ( current_user_can( 'activate_plugins' ) ) {
 
@@ -204,6 +194,33 @@ class HMN_Comment_Popularity {
 			}
 
 		}
+
+		self::set_permissions();
+	}
+
+	/**
+	 * Tasks to perform when plugin is deactivated.
+	 */
+	public static function deactivate() {
+
+		foreach ( get_editable_roles() as $role ) {
+
+			$role_obj = get_role( strtolower( $role['name'] ) );
+
+			if ( ! empty( $role_obj ) ) {
+
+				if ( in_array( 'manage_user_karma_settings', $role_obj->capabilities) ) {
+					$role_obj->remove_cap( 'manage_user_karma_settings' );
+				}
+
+				if ( in_array( 'vote_on_comments', $role_obj->capabilities ) ) {
+					$role_obj->remove_cap( 'vote_on_comments' );
+				}
+
+			}
+
+		}
+
 	}
 
 	/**
@@ -219,20 +236,13 @@ class HMN_Comment_Popularity {
 	}
 
 	/**
-	 * Returns the plugin roles array.
-	 *
-	 * @return mixed|void
-	 */
-	public function get_roles() {
-		return $this->admin_roles;
-	}
-
-	/**
 	 * Add custom capabilities to allowed roles.
 	 */
-	public function set_permissions() {
+	public static function set_permissions() {
 
-		foreach ( $this->admin_roles as $role ) {
+		$admin_roles = apply_filters( 'hmn_cp_roles', array( 'administrator', 'editor' ) );
+
+		foreach ( $admin_roles as $role ) {
 
 			$role = get_role( $role );
 
