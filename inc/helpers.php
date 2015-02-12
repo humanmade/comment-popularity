@@ -42,7 +42,6 @@ function hmn_cp_the_comment_author_karma() {
  * Displays the post comments sorted by weight/karma DESC.
  *
  * @param array $args
- * @param null  $comments
  */
 function hmn_cp_the_sorted_comments( $args = array() ) {
 

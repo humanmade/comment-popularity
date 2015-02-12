@@ -443,7 +443,6 @@ class HMN_Comment_Popularity {
 	 * Sorts the comments by weight and returns them.
 	 *
 	 * @param array $args
-	 * @param null  $comments
 	 *
 	 * @return string
 	 */
@@ -524,7 +523,7 @@ class HMN_Comment_Popularity {
 	 * Updates the comment author karma when a comment is voted on.
 	 *
 	 * @param $commenter_id
-	 * @param $vote
+	 * @param $value
 	 *
 	 * @return int|mixed|void
 	 */
@@ -660,7 +659,7 @@ class HMN_Comment_Popularity {
 	}
 
 	/**
-	 * Determine if negative commentweight is allowed
+	 * Determine if negative comment weight is allowed
 	 *
 	 * @return mixed|void
 	 */
