@@ -24,6 +24,7 @@ if ( version_compare( phpversion(), '5.3.2', '<' ) ) {
 require_once plugin_dir_path( __FILE__ ) . 'inc/class-comment-popularity.php';
 
 register_activation_hook( __FILE__, array( 'CommentPopularity\HMN_Comment_Popularity', 'activate' ) );
+register_deactivation_hook( __FILE__, array( 'CommentPopularity\HMN_Comment_Popularity', 'deactivate' ) );
 
 function hmn_cp_init() {
 
