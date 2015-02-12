@@ -1,10 +1,10 @@
 === Comment Popularity ===
 
-Contributors: pauldewouters, mattheu,humanmade,cfo-publishing
+Contributors: pauldewouters,mattheu,humanmade,cfo-publishing
 Tags: comments,vote,upvote,karma,widget
-Requires at least: 3.8.4
-Tested up to: 4.0
-Stable tag: 1.3.3
+Requires at least: 3.9
+Tested up to: 4.2-alpha
+Stable tag: 1.3.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -129,6 +129,11 @@ To display the comment author karma:
 * Fixes a bug which prevented the user karma to appear in the single comment template.
 
 == Changelog ==
+
+= 1.3.4 / 2015-02-12 =
+
+* Only add capabilities on activation
+* Display user first and last names in widget if available
 
 = 1.3.3 / 2014-10-25 =
 
