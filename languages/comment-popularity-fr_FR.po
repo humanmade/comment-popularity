@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Comment Popularity 1.0.0\n"
 "Report-Msgid-Bugs-To: support@humanmade.co.uk\n"
-"POT-Creation-Date: 2014-08-20 21:53:21+00:00\n"
-"PO-Revision-Date: 2014-08-20 18:57-0300\n"
+"POT-Creation-Date: 2015-02-15 09:56:47+00:00\n"
+"PO-Revision-Date: 2015-02-15 09:58-0000\n"
 "Last-Translator: Human Made Limited <hello@hmn.md>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -18,33 +18,33 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 
 # @ comment-popularity
-#: admin/class-comment-popularity-admin.php:49
+#: admin/class-comment-popularity-admin.php:51
 msgid "Default karma value for expert users"
 msgstr "Valeur par défaut pour le karma des utilisateurs experts"
 
 # @ comment-popularity
-#: admin/class-comment-popularity-admin.php:61
+#: admin/class-comment-popularity-admin.php:68
 msgid "Enter value"
 msgstr "Saisir une valeur"
 
 # @ comment-popularity
-#: admin/class-comment-popularity-admin.php:103
+#: admin/class-comment-popularity-admin.php:117
 msgid "Comment popularity settings"
 msgstr "Réglages de Comment Popularity"
 
 # @ comment-popularity
-#: admin/class-comment-popularity-admin.php:111
+#: admin/class-comment-popularity-admin.php:125
 msgid "Expert Commenter"
 msgstr "Participant expert"
 
 # @ comment-popularity
-#: admin/class-comment-popularity-admin.php:128
-#: admin/class-comment-popularity-admin.php:183
+#: admin/class-comment-popularity-admin.php:142
+#: admin/class-comment-popularity-admin.php:197
 msgid "Karma"
 msgstr "Karma"
 
 # @ comment-popularity
-#: admin/class-comment-popularity-admin.php:155
+#: admin/class-comment-popularity-admin.php:169
 msgid "Weight"
 msgstr "Poids"
 
@@ -52,55 +52,55 @@ msgstr "Poids"
 msgid "This plugin requires PHP Version %s. Sorry about that."
 msgstr "Ce plugin requiert la version %s de PHP. Désolé."
 
-#: inc/class-comment-popularity.php:117
+#: inc/class-comment-popularity.php:162
 msgid "Sorry, invalid vote type"
 msgstr "Type de vote incorrect."
 
-#: inc/class-comment-popularity.php:141
+#: inc/class-comment-popularity.php:192
 msgid "This plugin requires WordPress version %s. Sorry about that."
 msgstr "Ce plugin requiert la version %s de WordPress."
 
-#: inc/class-comment-popularity.php:464
-msgid "You cannot %s your own comments."
-msgstr "Vous ne pouvez pas %s vos propres commentaires."
-
-#: inc/class-comment-popularity.php:468
-msgid "You lack sufficient permissions to vote on comments"
-msgstr "Vous n'avez pas le droit de voter sur les commentaires"
-
-#: inc/class-comment-popularity.php:472
-msgid "You must be logged in to vote on comments"
-msgstr "Vous devez etre identifié pour voter sur les commentaires"
-
 #: inc/class-comment-popularity.php:486
-msgid "You cannot %s this comment again."
-msgstr "Vous ne pouvez plus %s ce commentaire."
-
-#: inc/class-comment-popularity.php:553
 msgid "Invalid action"
 msgstr "Action invalide"
 
-#: inc/class-comment-popularity.php:621
+#: inc/class-comment-popularity.php:598
 msgid "Thanks for voting!"
 msgstr "Merci pour votre vote !"
 
-#: inc/templates/comment.php:8
+#: inc/class-visitor.php:205 inc/class-visitor.php:274
+msgid "You cannot %s this comment again."
+msgstr "Vous ne pouvez plus %s ce commentaire."
+
+#: inc/class-visitor.php:252
+msgid "You lack sufficient permissions to vote on comments"
+msgstr "Vous n'avez pas le droit de voter sur les commentaires"
+
+#: inc/class-visitor.php:256
+msgid "You cannot %s your own comments."
+msgstr "Vous ne pouvez pas %s vos propres commentaires."
+
+#: inc/class-visitor.php:260
+msgid "You must be logged in to vote on comments"
+msgstr "Vous devez etre identifié pour voter sur les commentaires"
+
+#: inc/templates/comment.php:10
 msgid "Pingback:"
 msgstr "Pingback:"
 
-#: inc/templates/comment.php:8
+#: inc/templates/comment.php:10
 msgid "Edit"
 msgstr "Modifier"
 
-#: inc/templates/comment.php:64
+#: inc/templates/comment.php:67
 msgid "Your comment is awaiting moderation."
 msgstr "Votre commentaire est en modération."
 
-#: inc/templates/comments.php:21 inc/templates/comments.php:48
+#: inc/templates/comments.php:23 inc/templates/comments.php:56
 msgid "Comment navigation"
 msgstr "Naviguer les commentaires"
 
-#: inc/templates/comments.php:57
+#: inc/templates/comments.php:65
 msgid "Comments are closed."
 msgstr "Les commentaires sont fermés."
 
@@ -110,6 +110,7 @@ msgid "Most voted comments"
 msgstr "Commentaires les plus votés"
 
 #: inc/widgets/class-widget-most-voted.php:30
+#: inc/widgets/experts/views/admin.php:3
 msgid "Title:"
 msgstr "Titre:"
 
@@ -120,6 +121,16 @@ msgstr "Nombre de commentaires à afficher:"
 #: inc/widgets/class-widget-most-voted.php:90
 msgid "Most voted Comments"
 msgstr "Commentaires les plus votés"
+
+# @ comment-popularity
+#: inc/widgets/experts/class-widget-experts.php:39
+#, fuzzy
+msgid "Expert commenters"
+msgstr "Participant expert"
+
+#: inc/widgets/experts/class-widget-experts.php:42
+msgid "Display expert commenters with their karma."
+msgstr "Afficher les participants expert avec leur karma"
 
 #. Plugin Name of the plugin/theme
 msgid "Comment Popularity"
@@ -141,33 +152,33 @@ msgstr "Human Made Limited"
 msgid "http://humanmade.co.uk"
 msgstr "http://humanmade.co.uk"
 
-#: inc/class-comment-popularity.php:127
+#: inc/class-comment-popularity.php:175
 msgctxt "verb"
 msgid "upvote"
 msgstr "plussoyer"
 
-#: inc/class-comment-popularity.php:128
+#: inc/class-comment-popularity.php:176
 msgctxt "verb"
 msgid "downvote"
 msgstr "moinssoyer"
 
-#: inc/templates/comment.php:28
+#: inc/templates/comment.php:31
 msgctxt "1: date, 2: time"
 msgid "%1$s at %2$s"
 msgstr "%2$s, le %1$s"
 
-#: inc/templates/comment.php:46
+#: inc/templates/comment.php:49
 #, fuzzy
 msgctxt "1: HTML tag 2: Karma value 3: HTML tag"
 msgid "%1$s( User Karma: %2$s )%3$s"
 msgstr "%1$s(Karma de l'auteur: %2$s )%3$s"
 
-#: inc/templates/comment.php:56
+#: inc/templates/comment.php:59
 msgctxt "e.g. Bob says hello."
 msgid "says:"
 msgstr "dit:"
 
-#: inc/templates/comments.php:13
+#: inc/templates/comments.php:15
 msgctxt "comments title"
 msgid "One comment"
 msgid_plural "%1$s comments"
@@ -175,7 +186,7 @@ msgstr[0] "Un commentaire"
 msgstr[1] "%1$s commentaires"
 
 #. translators: comments widget: 1: comment author, 2: post link
-#: inc/widgets/class-widget-most-voted.php:127
+#: inc/widgets/class-widget-most-voted.php:117
 msgctxt "1: Author 2: Post title 3: Weight"
 msgid "%1$s on %2$s, ( Weight: %3$s )"
 msgstr "%1$s sur %2$s, ( Poids: %3$s )"
