@@ -8,7 +8,7 @@ Stable tag: 1.3.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Comment Popularity adds the ability for logged in users to vote on comments.
+Comment Popularity adds the ability for visitors to vote on comments.
 
 == Description ==
 
