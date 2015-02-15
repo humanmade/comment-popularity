@@ -25,6 +25,7 @@ class Test_HMN_Comment_Popularity extends \WP_UnitTestCase {
 
 		$this->plugin = HMN_Comment_Popularity::get_instance();
 
+		$this->plugin->activate();
 
 		$this->test_voter_id = $this->factory->user->create(
 			array(

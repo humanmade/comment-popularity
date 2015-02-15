@@ -81,9 +81,15 @@ class HMN_CP_Visitor_Guest extends HMN_CP_Visitor {
 		// Set a cookie with the visitor IP address that expires in a week.
 		$expiry = apply_filters( 'hmn_cp_cookie_expiry', time() + ( 7 * DAY_IN_SECONDS ) );
 
-		setcookie( 'hmn_cp_visitor', $this->visitor_id, $expiry );
+		//Set a cookie now to see if they are supported by the browser.
+		$secure = ( 'https' === parse_url( site_url(), PHP_URL_SCHEME ) && 'https' === parse_url( home_url(), PHP_URL_SCHEME ) );
 
-		// Make cookie available immediately by settng value manually.
+		setcookie( 'hmn_cp_visitor', $this->visitor_id, $expiry, COOKIEPATH, COOKIE_DOMAIN, $secure );
+		if ( SITECOOKIEPATH != COOKIEPATH ) {
+			setcookie( 'hmn_cp_visitor', $this->visitor_id, $expiry, SITECOOKIEPATH, COOKIE_DOMAIN, $secure );
+		}
+
+		// Make cookie available immediately by setting value manually.
 		$_COOKIE['hmn_cp_visitor'] = $this->visitor_id;
 
 		$this->cookie = $_COOKIE['hmn_cp_visitor'];
@@ -100,7 +106,6 @@ class HMN_CP_Visitor_Guest extends HMN_CP_Visitor {
 	/**
 	 * Save the user's vote to an option.
 	 *
-	 * @param $visitor_id
 	 * @param $comment_id
 	 * @param $action
 	 *
@@ -177,7 +182,6 @@ class HMN_CP_Visitor_Guest extends HMN_CP_Visitor {
 	/**
 	 * Determine if the guest visitor can vote.
 	 *
-	 * @param        $visitor_id
 	 * @param        $comment_id
 	 * @param string $action
 	 *
@@ -235,7 +239,6 @@ class HMN_CP_Visitor_Member extends HMN_CP_Visitor {
 	/**
 	 * Determine if the user can vote.
 	 *
-	 * @param        $visitor_id
 	 * @param        $comment_id
 	 * @param string $action
 	 *
@@ -289,7 +292,6 @@ class HMN_CP_Visitor_Member extends HMN_CP_Visitor {
 	/**
 	 * Save the user's vote to user meta.
 	 *
-	 * @param $visitor_id
 	 * @param $comment_id
 	 * @param $action
 	 *

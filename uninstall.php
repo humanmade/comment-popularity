@@ -91,20 +91,3 @@ $wpdb->query(
 // Remove custom capabilities
 require_once plugin_dir_path( __FILE__ ) . 'inc/class-comment-popularity.php';
 $cp_plugin = CommentPopularity\HMN_Comment_Popularity::get_instance();
-
-$roles = $cp_plugin->get_roles();
-
-foreach ( $roles as $role ) {
-
-	$role = get_role( $role );
-
-	if ( ! empty( $role ) ) {
-
-		if ( 'administrator' === $role ) {
-			$role->remove_cap( 'manage_user_karma_settings' );
-		}
-
-		$role->remove_cap( 'vote_on_comments' );
-	}
-
-}
