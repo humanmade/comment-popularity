@@ -336,11 +336,22 @@ class HMN_Comment_Popularity {
 
 		$container_classes = array( 'comment-weight-container' );
 
+		if ( ! $this->visitor ) {
+			return;
+		}
+		$votes = $this->visitor->retrieve_user_votes();
+
+		$comment_ids_voted_on = array();
+		foreach ( $votes as $key => $vote ) {
+			$comment_ids_voted_on[ str_replace( 'comment_id_', '', $key ) ] = $vote['last_action'];
+		}
+
 		$vars = array(
 			'container_classes' => $container_classes,
 			'comment_id'        => $comment_id,
 			'comment_weight'    => $this->get_comment_weight( $comment_id ),
-			'enable_voting'    => $this->visitor_can_vote()
+			'enable_voting'     => $this->visitor_can_vote(),
+			'vote_type'         => in_array( $comment_id, array_keys( $comment_ids_voted_on ) ) ? $comment_ids_voted_on[ $comment_id ] : '',
 		);
 
 		echo $this->twig->render( 'voting-system.html', $vars );
@@ -366,7 +377,7 @@ class HMN_Comment_Popularity {
 
 		$comment = get_comment( $comment_id );
 
-		return (int)$comment->comment_karma;
+		return (int) $comment->comment_karma;
 
 	}
 
@@ -598,6 +609,7 @@ class HMN_Comment_Popularity {
 			'success_message'    => __( 'Thanks for voting!', 'comment-popularity' ),
 			'weight'     => $this->get_comment_weight( $comment_id ),
 			'comment_id' => $comment_id,
+			'vote_type'  => $labels[ $vote ],
 		);
 
 		return $return;

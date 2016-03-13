@@ -28,12 +28,14 @@
 				);
 
 			post.done( function( data ) {
-
+				var commentWeightContainer = $( '#comment-weight-value-' + data.data.comment_id );
 				if ( data.success === false ) {
 					$.growl.error({ message: data.data.error_message });
 				} else {
 					// update karma
-					$( '#comment-weight-value-' + data.data.comment_id ).text( data.data.weight );
+					commentWeightContainer.text( data.data.weight );
+					commentWeightContainer.addClass( data.data.vote_type );
+					commentWeightContainer.siblings().addClass( data.data.vote_type );
 					$.growl.notice({ message: data.data.success_message });
 				}
 
