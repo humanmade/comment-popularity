@@ -143,7 +143,7 @@ class HMN_CP_Visitor_Guest extends HMN_CP_Visitor {
 	 *
 	 * @return mixed
 	 */
-	protected function retrieve_logged_votes() {
+	public function retrieve_logged_votes() {
 
 		if ( is_multisite() ) {
 
@@ -252,7 +252,7 @@ class HMN_CP_Visitor_Member extends HMN_CP_Visitor {
 			return new \WP_Error( 'insufficient_permissions', __( 'You lack sufficient permissions to vote on comments', 'comment-popularity' ) );
 		}
 
-		if ( $comment->user_id && ( $this->visitor_id === (int)$comment->user_id ) ) {
+		if ( $comment->user_id && ( $this->visitor_id === (int) $comment->user_id ) ) {
 			return new \WP_Error( 'upvote_own_comment', sprintf( __( 'You cannot %s your own comments.', 'comment-popularity' ), $action ) );
 		}
 
@@ -320,6 +320,15 @@ class HMN_CP_Visitor_Member extends HMN_CP_Visitor {
 		do_action( 'hmn_cp_update_comments_voted_on_for_user', $this->visitor_id, $comment_id, $updated );
 
 		return $updated;
+	}
+
+	/**
+	 * Retrieves the list of comments the user has voted on.
+	 *
+	 * @return mixed
+	 */
+	public function retrieve_user_votes() {
+		return get_user_option( 'hmn_comments_voted_on', $this->get_id() );
 	}
 
 }

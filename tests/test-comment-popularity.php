@@ -154,7 +154,8 @@ class Test_HMN_Comment_Popularity extends \WP_UnitTestCase {
 			'last_action' => $action
 		);
 
-		$this->assertEquals( $expected, $result );
+		$this->assertEquals( $expected['vote_time'], $result['vote_time'], 30 );
+		$this->assertEquals( $expected['last_action'], $result['last_action'] );
 
 	}
 
