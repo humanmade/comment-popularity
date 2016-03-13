@@ -252,7 +252,7 @@ class HMN_CP_Visitor_Member extends HMN_CP_Visitor {
 			return new \WP_Error( 'insufficient_permissions', __( 'You lack sufficient permissions to vote on comments', 'comment-popularity' ) );
 		}
 
-		if ( $comment->user_id && ( $this->visitor_id === (int)$comment->user_id ) ) {
+		if ( $comment->user_id && ( $this->visitor_id === (int) $comment->user_id ) ) {
 			return new \WP_Error( 'upvote_own_comment', sprintf( __( 'You cannot %s your own comments.', 'comment-popularity' ), $action ) );
 		}
 
@@ -323,7 +323,7 @@ class HMN_CP_Visitor_Member extends HMN_CP_Visitor {
 	}
 
 	/**
-	 * @param HMN_CP_Visitor $visitor
+	 * Retrieves the list of comments the user has voted on.
 	 *
 	 * @return mixed
 	 */
