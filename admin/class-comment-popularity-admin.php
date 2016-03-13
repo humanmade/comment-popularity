@@ -25,9 +25,8 @@ class HMN_Comment_Popularity_Admin {
 		add_action( 'admin_init', array( $this, 'register_plugin_settings' ) );
 
 		add_filter( 'manage_users_columns', array( $this, 'add_users_columns' ) );
-		add_filter( 'manage_users_custom_column', array( $this, 'populate_users_columns'), 10, 3 );
+		add_filter( 'manage_users_custom_column', array( $this, 'populate_users_columns' ), 10, 3 );
 		add_filter( 'manage_users_sortable_columns', array( $this, 'make_karma_column_sortable' ) );
-
 	}
 
 	public static function get_instance() {
@@ -178,6 +177,10 @@ class HMN_Comment_Popularity_Admin {
 	 * @param $comment_ID
 	 */
 	public function populate_comment_column( $column, $comment_ID ) {
+
+		if ( 'comment_karma' !== $column ) {
+			return;
+		}
 
 		$comment = get_comment( $comment_ID );
 
