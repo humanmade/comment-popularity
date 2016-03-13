@@ -27,6 +27,7 @@ register_activation_hook( __FILE__, array( 'CommentPopularity\HMN_Comment_Popula
 register_deactivation_hook( __FILE__, array( 'CommentPopularity\HMN_Comment_Popularity', 'deactivate' ) );
 
 function hmn_cp_init() {
+	global $comment_popularity;
 
 	$comment_popularity = CommentPopularity\HMN_Comment_Popularity::get_instance();
 
