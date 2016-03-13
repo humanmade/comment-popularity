@@ -143,7 +143,7 @@ class HMN_CP_Visitor_Guest extends HMN_CP_Visitor {
 	 *
 	 * @return mixed
 	 */
-	protected function retrieve_logged_votes() {
+	public function retrieve_logged_votes() {
 
 		if ( is_multisite() ) {
 
@@ -320,6 +320,15 @@ class HMN_CP_Visitor_Member extends HMN_CP_Visitor {
 		do_action( 'hmn_cp_update_comments_voted_on_for_user', $this->visitor_id, $comment_id, $updated );
 
 		return $updated;
+	}
+
+	/**
+	 * @param HMN_CP_Visitor $visitor
+	 *
+	 * @return mixed
+	 */
+	public function retrieve_user_votes() {
+		return get_user_option( 'hmn_comments_voted_on', $this->get_id() );
 	}
 
 }
