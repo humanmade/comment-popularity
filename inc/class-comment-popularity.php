@@ -90,8 +90,15 @@ class HMN_Comment_Popularity {
 
 		add_action( 'widgets_init', array( $this, 'register_widgets' ) );
 
+		add_action( 'wp_head', array( $this, 'styles' ) );
+
 		$this->init_twig();
 
+	}
+
+	public function styles() {
+		$styles = '<style>.comment-weight-container .upvote a, .comment-weight-container .downvote a, .comment-weight-container span.upvote, .comment-weight-container span.downvote {color:red !important;}</style>';
+		echo apply_filters( 'hmn_cp_inline_styles', $styles );
 	}
 
 	/**

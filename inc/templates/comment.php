@@ -28,9 +28,9 @@ if ( 'pingback' == $comment->comment_type || 'trackback' == $comment->comment_ty
 					<time datetime="<?php comment_time( 'c' ); ?>">
 						<?php
 						printf(
-						_x( '%1$s at %2$s', '1: date, 2: time', 'comment-popularity' ),
-						get_comment_date(),
-						get_comment_time()
+							_x( '%1$s at %2$s', '1: date, 2: time', 'comment-popularity' ),
+							get_comment_date(),
+							get_comment_time()
 						);
 						?>
 					</time>
@@ -51,19 +51,19 @@ if ( 'pingback' == $comment->comment_type || 'trackback' == $comment->comment_ty
 
 				}
 				printf(
-				'%1$s %3$s <span class="says">%2$s</span>',
-				sprintf(
-				'<cite class="fn">%s</cite>',
-				get_comment_author_link()
-				),
-				_x( 'says:', 'e.g. Bob says hello.', 'comment-popularity' ),
-				$karma_element
+					'%1$s %3$s <span class="says">%2$s</span>',
+					sprintf(
+						'<cite class="fn">%s</cite>',
+						get_comment_author_link()
+					),
+					_x( 'says:', 'e.g. Bob says hello.', 'comment-popularity' ),
+					$karma_element
 				);
 
 				?>
 			</div>
 
-			<?php if ( '0' == $comment->comment_approved ) : ?>
+			<?php if ( '0' === $comment->comment_approved ) : ?>
 			<p class="comment-awaiting-moderation"><?php _e( 'Your comment is awaiting moderation.', 'comment-popularity' ); ?></p>
 			<?php endif; ?>
 		</header>
@@ -74,11 +74,11 @@ if ( 'pingback' == $comment->comment_type || 'trackback' == $comment->comment_ty
 
 		<?php
 		comment_reply_link( array_merge( $args, array(
-		'add_below' => 'div-comment',
-		'depth'     => $depth,
-		'max_depth' => $args['max_depth'],
-		'before'    => '<footer class="comment-reply">',
-		'after'     => '</footer>',
+			'add_below' => 'div-comment',
+			'depth'     => $depth,
+			'max_depth' => $args['max_depth'],
+			'before'    => '<footer class="comment-reply">',
+			'after'     => '</footer>',
 		) ) );
 		?>
 	</article>
