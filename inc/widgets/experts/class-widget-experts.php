@@ -39,13 +39,13 @@ class HMN_CP_Widget_Experts extends \WP_Widget {
 			__( 'Expert commenters', 'comment-popularity' ),
 			array(
 				'classname'   => $this->get_widget_slug() . '-class',
-				'description' => __( 'Display expert commenters with their karma.', 'comment-popularity' )
+				'description' => __( 'Display expert commenters with their karma.', 'comment-popularity' ),
 			)
 		);
 
 		$this->defaults = array(
 			'title'  => '',
-			'number' => 5
+			'number' => 5,
 		);
 
 		// Refreshing the widget's cached output with each new post
@@ -100,11 +100,11 @@ class HMN_CP_Widget_Experts extends \WP_Widget {
 			$cache = array();
 		}
 
-		if ( ! isset ( $args['widget_id'] ) ) {
+		if ( ! isset( $args['widget_id'] ) ) {
 			$args['widget_id'] = $this->id;
 		}
 
-		if ( isset ( $cache[ $args['widget_id'] ] ) ) {
+		if ( isset( $cache[ $args['widget_id'] ] ) ) {
 			return print $cache[ $args['widget_id'] ];
 		}
 
@@ -113,8 +113,9 @@ class HMN_CP_Widget_Experts extends \WP_Widget {
 		$widget_string = $before_widget;
 
 		/* If a title was input by the user, display it. */
-		if ( ! empty( $instance['title'] ) )
-			$widget_string .= $args['before_title'] . apply_filters( 'widget_title',  $instance['title'], $instance, $this->id_base ) . $args['after_title'];
+		if ( ! empty( $instance['title'] ) ) {
+			$widget_string .= $args['before_title'] . apply_filters( 'widget_title', $instance['title'], $instance, $this->id_base ) . $args['after_title'];
+		}
 
 		$experts = $this->get_experts();
 		$plugin = HMN_Comment_Popularity::get_instance();
@@ -196,21 +197,23 @@ class HMN_CP_Widget_Experts extends \WP_Widget {
 			),
 			'orderby'  => 'meta_value',
 			'order'    => 'DESC',
-			'meta_key' => 'hmn_user_karma'
+			'meta_key' => 'hmn_user_karma',
 		);
 
 		$experts = get_users( $args );
 
 		foreach ( $experts as $key => $expert ) {
 
-			$name = $expert->user_login;
+			$return[ $key ]['name'] = $expert->user_login;
 
 			if ( ! empty( $expert->first_name ) && ! empty( $expert->last_name ) ) {
-				$name = $expert->first_name . ' ' . $expert->last_name;
+				$return[ $key ]['name']  = $expert->first_name . ' ' . $expert->last_name;
+			} elseif ( ! empty( $expert->display_name ) ) {
+				$return[ $key ]['name'] = $expert->display_name;
 			}
-			$return[$key]['name'] = $name;
-			$return[$key]['karma'] = get_user_option( 'hmn_user_karma', $expert->ID );
-			$return[$key]['avatar'] = $this->get_gravatar_url( $expert->user_email );
+
+			$return[ $key ]['karma'] = get_user_option( 'hmn_user_karma', $expert->ID );
+			$return[ $key ]['avatar'] = $this->get_gravatar_url( $expert->user_email );
 
 		}
 
@@ -220,7 +223,7 @@ class HMN_CP_Widget_Experts extends \WP_Widget {
 
 	public function get_gravatar_url( $email ) {
 
-		$hash = md5( strtolower( trim ( $email ) ) );
+		$hash = md5( strtolower( trim( $email ) ) );
 		return 'http://gravatar.com/avatar/' . $hash;
 	}
 
