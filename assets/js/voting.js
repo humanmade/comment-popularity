@@ -34,8 +34,21 @@
 				} else {
 					// update karma
 					commentWeightContainer.text( data.data.weight );
+
+					commentWeightContainer.closest( '.comment-weight-container ' ).children().removeClass();
+
 					commentWeightContainer.addClass( data.data.vote_type );
-					commentWeightContainer.siblings().addClass( data.data.vote_type );
+					switch ( data.data.vote_type ) {
+						case 'upvote':
+							commentWeightContainer.prev().addClass( data.data.vote_type );
+							break;
+						case 'downvote':
+							commentWeightContainer.next().addClass( data.data.vote_type );
+							break;
+						default:
+							break;
+					}
+
 					$.growl.notice({ message: data.data.success_message });
 				}
 

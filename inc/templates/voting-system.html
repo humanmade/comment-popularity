@@ -2,15 +2,23 @@
 
 	{% if enable_voting == true %}
 
-		<span class="{{ vote_type }}">
-			<a data-comment-id="{{ comment_id }}" class="vote-up" href="#">&#9650;</a>
-		</span>
+		{% if vote_type == 'upvote' %}
+			<span class="{{ vote_type }}">
+		{% else %}
+			<span>
+		{% endif %}
+				<a data-comment-id="{{ comment_id }}" class="vote-up" href="#">&#9650;</a>
+			</span>
 
 		<span id="comment-weight-value-{{ comment_id }}"  class="{{ vote_type }}">{{ comment_weight }}</span>
 
-		<span class="{{ vote_type }}">
-			<a data-comment-id="{{ comment_id }}" class="vote-down" href="#">&#9660;</a>
-		</span>
+		{% if vote_type == 'downvote' %}
+			<span class="{{ vote_type }}">
+		{% else %}
+			<span>
+		{% endif %}
+				<a data-comment-id="{{ comment_id }}" class="vote-down" href="#">&#9660;</a>
+			</span>
 
 	{% else %}
 
