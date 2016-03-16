@@ -70,7 +70,7 @@ class Test_HMN_Comment_Popularity extends \WP_UnitTestCase {
 		$this->test_comment_id = $this->factory->comment->create( array(
 			'comment_date'    => $comment_date,
 			'comment_post_ID' => $this->test_post_id,
-			'comment_author_email' => 'commenter@kgb.ru'
+			'comment_author_email' => 'commenter@kgb.ru',
 		) );
 
 	}
@@ -151,7 +151,7 @@ class Test_HMN_Comment_Popularity extends \WP_UnitTestCase {
 
 		$expected = array(
 			'vote_time' => $vote_time,
-			'last_action' => $action
+			'last_action' => $action,
 		);
 
 		$this->assertEquals( $expected['vote_time'], $result['vote_time'], 30 );

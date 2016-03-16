@@ -1,3 +1,14 @@
+1.3.5 / 2016-03-16
+==================
+
+  * Fix a bug which updated all comment columns with karma value.
+  * Now visually shows upvotes/downvotes
+  * Global plugin variable
+
+1.3.4 / 2015-02-12
+==================
+
+  * Misc fixes
 
 1.3.3 / 2014-10-25
 ==================
