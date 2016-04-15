@@ -138,6 +138,17 @@ class HMN_CP_Visitor_Guest extends HMN_CP_Visitor {
 	}
 
 	/**
+	 * Delete vote.
+	 *
+	 * @param $comment_id
+	 */
+	public function unlog_vote( $comment_id ) {
+		$logged_votes = $this->retrieve_logged_votes();
+		unset( $logged_votes[ 'comment_id_' . $comment_id ] );
+		$this->save_logged_votes( $logged_votes );
+	}
+
+	/**
 	 * Retrieves the logged votes from the DB option and returns those belonging to
 	 * the IP address in the cookie.
 	 *
@@ -189,34 +200,8 @@ class HMN_CP_Visitor_Guest extends HMN_CP_Visitor {
 	 */
 	public function is_vote_valid( $comment_id, $action = '' ) {
 
-		// @TODO: can we check cookies for a WP cookie matching current domain. If so, then ask user to log in.
-
-		$logged_votes = $this->retrieve_logged_votes();
-
-		// User has not yet voted on this comment
-		if ( empty( $logged_votes[ 'comment_id_' . $comment_id ] ) ) {
-			return array();
-		}
-
-		// Is user trying to vote twice on same comment?
-		$last_action = $logged_votes[ 'comment_id_' . $comment_id ]['last_action'];
-
-		if ( $last_action === $action ) {
-			return new \WP_Error( 'same_action', sprintf( __( 'You cannot %s this comment again.', 'comment-popularity' ), $action ) );
-		}
-
-		// Is user trying to vote too fast?
-		$last_voted = $logged_votes[ 'comment_id_' . $comment_id ]['vote_time'];
-
-		$current_time = current_time( 'timestamp' );
-
-		$elapsed_time = $current_time - $last_voted;
-
-		if ( $elapsed_time > $this->interval ) {
-			return true; // user can vote, has been over 15 minutes since last vote.
-		} else {
-			return new \WP_Error( 'voting_flood', __( 'You cannot vote again so soon on this comment, please wait ' . human_time_diff( $last_voted + $this->interval, $current_time ), 'comment-popularity' ) );
-		}
+		// For now, all votes are valid.
+		return true;
 
 	}
 
@@ -227,14 +212,6 @@ class HMN_CP_Visitor_Guest extends HMN_CP_Visitor {
  * @package CommentPopularity
  */
 class HMN_CP_Visitor_Member extends HMN_CP_Visitor {
-
-	/**
-	 * @param $visitor_id WP User ID.
-	 */
-	public function __construct( $visitor_id ) {
-
-		parent::__construct( $visitor_id );
-	}
 
 	/**
 	 * Determine if the user can vote.
@@ -252,7 +229,7 @@ class HMN_CP_Visitor_Member extends HMN_CP_Visitor {
 			return new \WP_Error( 'insufficient_permissions', __( 'You lack sufficient permissions to vote on comments', 'comment-popularity' ) );
 		}
 
-		if ( $comment->user_id && ( $this->visitor_id === (int) $comment->user_id ) ) {
+		if ( $comment->user_id && ( $this->get_id() === (int) $comment->user_id ) ) {
 			return new \WP_Error( 'upvote_own_comment', sprintf( __( 'You cannot %s your own comments.', 'comment-popularity' ), $action ) );
 		}
 
@@ -260,32 +237,8 @@ class HMN_CP_Visitor_Member extends HMN_CP_Visitor {
 			return new \WP_Error( 'not_logged_in', __( 'You must be logged in to vote on comments', 'comment-popularity' ) );
 		}
 
-		$logged_votes = get_user_option( 'hmn_comments_voted_on', $this->visitor_id );
-
-		// User has not yet voted on this comment
-		if ( empty( $logged_votes[ 'comment_id_' . $comment_id ] ) ) {
-			return array();
-		}
-
-		// Is user trying to vote twice on same comment?
-		$last_action = $logged_votes[ 'comment_id_' . $comment_id ]['last_action'];
-
-		if ( $last_action === $action ) {
-			return new \WP_Error( 'same_action', sprintf( __( 'You cannot %s this comment again.', 'comment-popularity' ), $action ) );
-		}
-
-		// Is user trying to vote too fast?
-		$last_voted = $logged_votes[ 'comment_id_' . $comment_id ]['vote_time'];
-
-		$current_time = current_time( 'timestamp' );
-
-		$elapsed_time = $current_time - $last_voted;
-
-		if ( $elapsed_time > $this->interval ) {
-			return true; // user can vote, has been over 15 minutes since last vote.
-		} else {
-			return new \WP_Error( 'voting_flood', __( 'You cannot vote again so soon on this comment, please wait ' . human_time_diff( $last_voted + $this->interval, $current_time ), 'comment-popularity' ) );
-		}
+		// Vote is valid.
+		return true;
 
 	}
 
@@ -299,7 +252,7 @@ class HMN_CP_Visitor_Member extends HMN_CP_Visitor {
 	 */
 	public function log_vote( $comment_id, $action ) {
 
-		$comments_voted_on = get_user_option( 'hmn_comments_voted_on', $this->visitor_id );
+		$comments_voted_on = $this->retrieve_logged_votes();
 
 		$comments_voted_on[ 'comment_id_' . $comment_id ]['vote_time'] = current_time( 'timestamp' );
 		$comments_voted_on[ 'comment_id_' . $comment_id ]['last_action'] = $action;
@@ -317,18 +270,36 @@ class HMN_CP_Visitor_Member extends HMN_CP_Visitor {
 		 * @param int   $comment_id
 		 * @param array $updated
 		 */
-		do_action( 'hmn_cp_update_comments_voted_on_for_user', $this->visitor_id, $comment_id, $updated );
+		do_action( 'hmn_cp_update_comments_voted_on_for_user', $this->get_id(), $comment_id, $updated );
 
 		return $updated;
 	}
 
 	/**
+	 * Delete vote.
+	 *
+	 * @param $comment_id
+	 */
+	public function unlog_vote( $comment_id ) {
+
+		$logged_votes = $this->retrieve_logged_votes();
+
+		unset( $logged_votes[ 'comment_id_' . $comment_id ] );
+
+		update_user_option( $this->get_id(), 'hmn_comments_voted_on', $comments_voted_on );
+
+	}
+
+	/**
 	 * Retrieves the list of comments the user has voted on.
 	 *
-	 * @return mixed
+	 * @return array Votes.
 	 */
-	public function retrieve_user_votes() {
-		return get_user_option( 'hmn_comments_voted_on', $this->get_id() );
+	public function retrieve_logged_votes() {
+
+		$votes = get_user_option( 'hmn_comments_voted_on', $this->get_id() );
+
+		return ! empty( $votes ) ? $votes : array();
 	}
 
 }
