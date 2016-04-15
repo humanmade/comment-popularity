@@ -119,25 +119,11 @@ class Test_HMN_Comment_Popularity extends \WP_UnitTestCase {
 
 		$this->plugin->comment_vote( $this->test_voter_id,  $this->test_comment_id, 'upvote' );
 
-		$ret = $this->plugin->comment_vote( $this->test_voter_id, $this->test_comment_id, 'downvote' );
+		$ret = $this->plugin->comment_vote( $this->test_voter_id, $this->test_comment_id, 'upvote' );
 
 		$this->assertArrayHasKey( 'error_code', $ret );
 
 		$this->assertEquals( 'voting_flood', $ret['error_code'] );
-
-	}
-
-	public function test_prevent_same_vote_twice() {
-
-		$this->plugin->comment_vote( $this->test_voter_id, $this->test_comment_id, 'upvote' );
-
-		$ret = $this->plugin->comment_vote( $this->test_voter_id, $this->test_comment_id, 'upvote' );
-
-		sleep( 7 );
-
-		$this->assertArrayHasKey( 'error_code', $ret );
-
-		$this->assertEquals( 'same_action', $ret['error_code'] );
 
 	}
 
@@ -225,7 +211,6 @@ class Test_HMN_Comment_Popularity extends \WP_UnitTestCase {
 
 		$comment_arr = get_comment( $this->test_comment_id, ARRAY_A );
 
-
 		$comment_arr['comment_karma'] = 2;
 
 		$ret = wp_update_comment( $comment_arr );
@@ -255,5 +240,13 @@ class Test_HMN_Comment_Popularity extends \WP_UnitTestCase {
 		$this->assertEquals( $current_value, $new_value );
 		$this->assertEquals( 0, $new_value );
 	}
+
+	public function test_undo_vote() {
+		 // do an upvote
+		// do a second upvote
+		// check that comment weight is same as it was before
+		// check user karma is same as before
+		// ex
+   }
 
 }

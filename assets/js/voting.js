@@ -6,14 +6,18 @@
 		var clicked = false;
 
 		// catch the upvote/downvote action
-		$( 'div.comment-weight-container' ).on( 'click', 'span > a', function( e ){
+		$( 'div.comment-weight-container' ).on( 'click', 'span > a', _.throttle( function( e ){
 			e.preventDefault();
-			var value = 0;
-			var comment_id = $(this).data('commentId');
-			if ( $(this).hasClass( 'vote-up' ) ) {
+			var value = 0,
+				comment_id = $(this).data( 'commentId' ),
+				containerClass = $(this).closest( 'span' ).attr( 'class' );
+
+			if ( containerClass !== 'upvote' && $(this).hasClass( 'vote-up' ) ) {
 				value = 'upvote';
-			} else if( $(this).hasClass( 'vote-down' ) ) {
+			} else if( containerClass !== 'downvote' && $(this).hasClass( 'vote-down' ) ) {
 				value = 'downvote';
+			} else if ( containerClass === 'downvote' && $(this).hasClass( 'vote-down' ) || containerClass === 'upvote' && $(this).hasClass( 'vote-up' ) ) {
+				value = 'undo';
 			}
 
 			if ( false === clicked ) {
@@ -27,36 +31,41 @@
 					}
 				);
 
-			post.done( function( data ) {
-				var commentWeightContainer = $( '#comment-weight-value-' + data.data.comment_id );
-				if ( data.success === false ) {
-					$.growl.error({ message: data.data.error_message });
-				} else {
-					// update karma
-					commentWeightContainer.text( data.data.weight );
+				post.done( function( data ) {
+					var commentWeightContainer = $( '#comment-weight-value-' + data.data.comment_id );
+					if ( data.success === false ) {
+						$.growl.error({ message: data.data.error_message });
+					} else {
+						// update karma
+						commentWeightContainer.text( data.data.weight );
 
-					commentWeightContainer.closest( '.comment-weight-container ' ).children().removeClass();
+						// clear all classes
+						commentWeightContainer.closest( '.comment-weight-container ' ).children().removeClass();
 
-					commentWeightContainer.addClass( data.data.vote_type );
-					switch ( data.data.vote_type ) {
-						case 'upvote':
-							commentWeightContainer.prev().addClass( data.data.vote_type );
-							break;
-						case 'downvote':
-							commentWeightContainer.next().addClass( data.data.vote_type );
-							break;
-						default:
-							break;
+						if ( data.data.vote_type !== 'undo' ) {
+
+							commentWeightContainer.addClass(data.data.vote_type);
+							switch (data.data.vote_type) {
+								case 'upvote':
+									commentWeightContainer.prev().addClass(data.data.vote_type);
+									break;
+								case 'downvote':
+									commentWeightContainer.next().addClass(data.data.vote_type);
+									break;
+								default:
+									break;
+							}
+
+
+						}
+						$.growl.notice({ message: data.data.success_message });
 					}
 
-					$.growl.notice({ message: data.data.success_message });
-				}
-
-				clicked = false;
-			});
+					clicked = false;
+				});
 
 			}
-		});
+		}, 500));
 
 	});
 

@@ -181,6 +181,7 @@ class HMN_Comment_Popularity {
 		return array(
 			'upvote'   => _x( 'upvote', 'verb', 'comment-popularity' ),
 			'downvote' => _x( 'downvote', 'verb', 'comment-popularity' ),
+			'undo'     => _x( 'undo', 'verb', 'comment-popularity' ),
 		);
 	}
 
@@ -288,7 +289,7 @@ class HMN_Comment_Popularity {
 		wp_enqueue_script( 'growl', plugins_url( '../assets/js/modules/growl/javascripts/jquery.growl.min.js', __FILE__ ), array( 'jquery' ), self::HMN_CP_PLUGIN_VERSION, true );
 
 		$js_file = ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ? '../assets/js/voting.js' : '../assets/js/voting.min.js';
-		wp_register_script( 'comment-popularity', plugins_url( $js_file, __FILE__ ), array( 'jquery', 'growl' ), self::HMN_CP_PLUGIN_VERSION );
+		wp_register_script( 'comment-popularity', plugins_url( $js_file, __FILE__ ), array( 'jquery', 'underscore', 'growl' ), self::HMN_CP_PLUGIN_VERSION );
 
 		$args = array(
 			'hmn_vote_nonce' => wp_create_nonce( 'hmn_vote_submit' ),
@@ -346,9 +347,10 @@ class HMN_Comment_Popularity {
 		if ( ! $this->visitor ) {
 			return;
 		}
-		$votes = $this->visitor->retrieve_user_votes();
+		$votes = $this->visitor->retrieve_logged_votes();
 
 		$comment_ids_voted_on = array();
+
 		foreach ( $votes as $key => $vote ) {
 			$comment_ids_voted_on[ str_replace( 'comment_id_', '', $key ) ] = $vote['last_action'];
 		}
@@ -497,7 +499,7 @@ class HMN_Comment_Popularity {
 
 		$vote = $_POST['vote'];
 
-		if ( ! in_array( $vote, array( 'upvote', 'downvote' ) ) ) {
+		if ( ! in_array( $vote, array( 'upvote', 'downvote', 'undo' ) ) ) {
 
 			$return = array(
 				'error_code'    => 'invalid_action',
@@ -549,6 +551,11 @@ class HMN_Comment_Popularity {
 
 		$user_karma = $this->get_comment_author_karma( $commenter_id );
 
+		// Do not allow negative karma
+		if ( $user_karma === 0 && $value < 0 ) {
+			return $user_karma;
+		}
+
 		$user_karma += $value;
 
 		update_user_option( $commenter_id, 'hmn_user_karma', $user_karma );
@@ -582,6 +589,8 @@ class HMN_Comment_Popularity {
 
 		$vote_is_valid = $this->get_visitor()->is_vote_valid( $comment_id, $labels[ $vote ] );
 
+		$vote_value = $this->get_vote_value( $vote );
+
 		if ( is_wp_error( $vote_is_valid ) ) {
 
 			$error_code = $vote_is_valid->get_error_code();
@@ -591,13 +600,27 @@ class HMN_Comment_Popularity {
 				'error_code'    => $error_code,
 				'error_message' => $error_msg,
 				'comment_id'    => $comment_id,
+				'vote_type'     => '',
 			);
 
 			return $return;
 
 		}
 
-		$this->update_comment_weight( $comment_id, $this->get_vote_value( $vote ) );
+		// see if user has already voted
+		$logged_votes = $this->get_visitor()->retrieve_logged_votes();
+		if ( array_key_exists( 'comment_id_' . $comment_id, $logged_votes ) ) {
+			$last_action = $logged_votes[ 'comment_id_' . $comment_id ]['last_action'];
+
+			if ( 'undo' === $labels [ $vote ] ) {
+				// undo the previous action
+				$this->get_visitor()->unlog_vote( $comment_id, $last_action );
+
+				$vote_value = ( 'upvote' === $last_action ) ? $this->get_vote_value( 'downvote' ) : $this->get_vote_value( 'upvote' );
+			}
+		}
+
+		$this->update_comment_weight( $comment_id, $vote_value );
 
 		// Get the comment author object.
 		$email = get_comment_author_email( $comment_id );
@@ -605,7 +628,7 @@ class HMN_Comment_Popularity {
 
 		// update comment author karma if registered user.
 		if ( false !== $author ) {
-			$this->update_comment_author_karma( $author->ID, $this->get_vote_value( $vote ) );
+			$this->update_comment_author_karma( $author->ID, $vote_value );
 		}
 
 		$this->get_visitor()->log_vote( $comment_id, $vote );
