@@ -609,7 +609,7 @@ class HMN_Comment_Popularity {
 
 		// see if user has already voted
 		$logged_votes = $this->get_visitor()->retrieve_logged_votes();
-		if ( array_key_exists( 'comment_id_' . $comment_id, $logged_votes ) ) {
+		if ( is_array( $logged_votes ) && array_key_exists( 'comment_id_' . $comment_id, $logged_votes ) ) {
 			$last_action = $logged_votes[ 'comment_id_' . $comment_id ]['last_action'];
 
 			if ( 'undo' === $labels [ $vote ] ) {
