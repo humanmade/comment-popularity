@@ -6,4 +6,5 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname(dirname($vendorDir));
 
 return array(
+    'PHPCompatibility\\' => array($vendorDir . '/wimg/php-compatibility'),
 );

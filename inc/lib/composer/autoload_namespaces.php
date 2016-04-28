@@ -7,4 +7,5 @@ $baseDir = dirname(dirname($vendorDir));
 
 return array(
     'Twig_' => array($vendorDir . '/twig/twig/lib'),
+    'SimplyAdmire\\ComposerPlugins' => array($vendorDir . '/simplyadmire/composer-plugins'),
 );

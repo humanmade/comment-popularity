@@ -27,5 +27,5 @@
 		"squizlabs/php_codesniffer": "*",
 		"wimg/php-compatibility": "dev-master",
 		"simplyadmire/composer-plugins" : "@dev"
-	},
+	}
 }
