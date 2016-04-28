@@ -24,8 +24,6 @@
 		"twig/twig": "1.*"
 	},
 	"require-dev": {
-		"squizlabs/php_codesniffer": "*",
-		"wimg/php-compatibility": "dev-master",
-		"simplyadmire/composer-plugins" : "@dev"
+		"squizlabs/php_codesniffer": "*"
 	}
 }

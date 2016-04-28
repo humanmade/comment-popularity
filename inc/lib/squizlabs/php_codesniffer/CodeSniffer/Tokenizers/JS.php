@@ -28,6 +28,13 @@ class PHP_CodeSniffer_Tokenizers_JS
 {
 
     /**
+     * If TRUE, files that appear to be minified will not be processed.
+     *
+     * @var boolean
+     */
+    public $skipMinified = true;
+
+    /**
      * A list of tokens that are allowed to open a scope.
      *
      * This array also contains information about what kind of token the scope
@@ -421,7 +428,7 @@ class PHP_CodeSniffer_Tokenizers_JS
 
             // Special case for T_DIVIDE which can actually be
             // the start of a regular expression.
-            if ($buffer === $char && $char === '/') {
+            if ($buffer === $char && $char === '/' && $chars[($i + 1)] !== '*') {
                 $regex = $this->getRegexToken(
                     $i,
                     $string,
@@ -676,6 +683,7 @@ class PHP_CodeSniffer_Tokenizers_JS
                 $cleanBuffer = false;
             }
         }//end for
+
         if (empty($buffer) === false) {
             // Buffer contains whitespace from the end of the file.
             $tokens[] = array(
@@ -813,20 +821,38 @@ class PHP_CodeSniffer_Tokenizers_JS
                 if ($newContent !== '' && $newContent !== '.') {
                     $finalTokens[($newStackPtr - 1)]['content'] = $newContent;
                     if (ctype_digit($newContent) === true) {
-                        $finalTokens[($newStackPtr - 1)]['code']
-                            = constant('T_LNUMBER');
+                        $finalTokens[($newStackPtr - 1)]['code'] = constant('T_LNUMBER');
                         $finalTokens[($newStackPtr - 1)]['type'] = 'T_LNUMBER';
                     } else {
-                        $finalTokens[($newStackPtr - 1)]['code']
-                            = constant('T_DNUMBER');
+                        $finalTokens[($newStackPtr - 1)]['code'] = constant('T_DNUMBER');
                         $finalTokens[($newStackPtr - 1)]['type'] = 'T_DNUMBER';
                     }
 
                     $stackPtr--;
+                    continue;
                 } else {
                     $stackPtr = $oldStackPtr;
                 }
             }//end if
+
+            // Convert the token after an object operator into a string, in most cases.
+            if ($token['code'] === T_OBJECT_OPERATOR) {
+                for ($i = ($stackPtr + 1); $i < $numTokens; $i++) {
+                    if (isset(PHP_CodeSniffer_Tokens::$emptyTokens[$tokens[$i]['code']]) === true) {
+                        continue;
+                    }
+
+                    if ($tokens[$i]['code'] !== T_PROTOTYPE
+                        && $tokens[$i]['code'] !== T_LNUMBER
+                        && $tokens[$i]['code'] !== T_DNUMBER
+                    ) {
+                        $tokens[$i]['code'] = T_STRING;
+                        $tokens[$i]['type'] = 'T_STRING';
+                    }
+
+                    break;
+                }
+            }
         }//end for
 
         if (PHP_CODESNIFFER_VERBOSITY > 1) {
@@ -865,6 +891,8 @@ class PHP_CodeSniffer_Tokenizers_JS
                          T_COMMA               => true,
                          T_COLON               => true,
                          T_TYPEOF              => true,
+                         T_INLINE_THEN         => true,
+                         T_INLINE_ELSE         => true,
                         );
 
         $afterTokens = array(
@@ -874,6 +902,7 @@ class PHP_CodeSniffer_Tokenizers_JS
                         ';'      => true,
                         ' '      => true,
                         '.'      => true,
+                        ':'      => true,
                         $eolChar => true,
                        );
 
