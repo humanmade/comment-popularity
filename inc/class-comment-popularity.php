@@ -46,9 +46,10 @@ class HMN_Comment_Popularity {
 	protected $allow_guest_voting = false;
 
 	/**
+	 * CAUTION: if this is false "double-spending" is possible with zero-weight comments
 	 * @var bool
 	 */
-	protected $allow_negative_comment_weight = false;
+	protected $allow_negative_comment_weight = true;
 
 	/**
 	 * @var HMN_CP_Visitor
@@ -612,11 +613,17 @@ class HMN_Comment_Popularity {
 		if ( is_array( $logged_votes ) && array_key_exists( 'comment_id_' . $comment_id, $logged_votes ) ) {
 			$last_action = $logged_votes[ 'comment_id_' . $comment_id ]['last_action'];
 
-			if ( 'undo' === $labels [ $vote ] ) {
-				// undo the previous action
-				$this->get_visitor()->unlog_vote( $comment_id, $last_action );
+			// undo the previous action
+			$this->get_visitor()->unlog_vote( $comment_id );
 
-				$vote_value = ( 'upvote' === $last_action ) ? $this->get_vote_value( 'downvote' ) : $this->get_vote_value( 'upvote' );
+			$vote_value = ( 'upvote' == $last_action ) ?
+				$this->get_vote_value( 'downvote' ) : $this->get_vote_value( 'upvote' );
+
+			if (
+				$vote == 'upvote' && $last_action == 'downvote'
+				|| $vote == 'downvote' && $last_action == 'upvote'
+			) {
+				$vote_value *= 2;
 			}
 		}
 
@@ -632,7 +639,7 @@ class HMN_Comment_Popularity {
 		}
 
 		// log if not an undo
-		if ( 'undo' !== $labels [ $vote ] ) {
+		if ( $vote !== 'undo' ) {
 			$this->get_visitor()->log_vote( $comment_id, $vote );
 		}
 

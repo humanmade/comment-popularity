@@ -284,7 +284,13 @@ class HMN_CP_Visitor_Member extends HMN_CP_Visitor {
 
 		$comments_voted_on = $this->retrieve_logged_votes();
 		unset( $comments_voted_on[ 'comment_id_' . $comment_id ] );
-		update_user_option( $this->get_id(), 'hmn_comments_voted_on', $comments_voted_on );
+
+		if ( !empty( $comments_voted_on ) ) {
+			update_user_option( $this->get_id(), 'hmn_comments_voted_on', $comments_voted_on );
+		} else {
+			delete_user_option( $this->get_id(), 'hmn_comments_voted_on' );
+		}
+
 	}
 
 	/**
