@@ -631,7 +631,10 @@ class HMN_Comment_Popularity {
 			$this->update_comment_author_karma( $author->ID, $vote_value );
 		}
 
-		$this->get_visitor()->log_vote( $comment_id, $vote );
+		// log if not an undo
+		if ( 'undo' !== $labels [ $vote ] ) {
+			$this->get_visitor()->log_vote( $comment_id, $vote );
+		}
 
 		do_action( 'hmn_cp_comment_vote', $user_id, $comment_id, $labels[ $vote ] );
 
