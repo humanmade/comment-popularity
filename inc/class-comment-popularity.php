@@ -205,6 +205,15 @@ class HMN_Comment_Popularity {
 		}
 
 		self::set_permissions();
+
+		// Get actual plugin version.
+		$current_version = self::HMN_CP_PLUGIN_VERSION;
+
+		// Get latest version stored in DB option.
+		$plugin_version_db = get_option( 'hmn_cp_plugin_version' );
+		if ( ! $plugin_version_db ) {
+			add_option( 'hmn_cp_plugin_version', $current_version );
+		}
 	}
 
 	/**
