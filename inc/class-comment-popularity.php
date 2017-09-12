@@ -46,9 +46,10 @@ class HMN_Comment_Popularity {
 	protected $allow_guest_voting = false;
 
 	/**
+	 * CAUTION: if this is false "double-spending" is possible with zero-weight comments
 	 * @var bool
 	 */
-	protected $allow_negative_comment_weight = false;
+	protected $allow_negative_comment_weight = true;
 
 	/**
 	 * @var HMN_CP_Visitor
@@ -204,6 +205,15 @@ class HMN_Comment_Popularity {
 		}
 
 		self::set_permissions();
+
+		// Get actual plugin version.
+		$current_version = self::HMN_CP_PLUGIN_VERSION;
+
+		// Get latest version stored in DB option.
+		$plugin_version_db = get_option( 'hmn_cp_plugin_version' );
+		if ( ! $plugin_version_db ) {
+			add_option( 'hmn_cp_plugin_version', $current_version );
+		}
 	}
 
 	/**
@@ -612,11 +622,17 @@ class HMN_Comment_Popularity {
 		if ( is_array( $logged_votes ) && array_key_exists( 'comment_id_' . $comment_id, $logged_votes ) ) {
 			$last_action = $logged_votes[ 'comment_id_' . $comment_id ]['last_action'];
 
-			if ( 'undo' === $labels [ $vote ] ) {
-				// undo the previous action
-				$this->get_visitor()->unlog_vote( $comment_id, $last_action );
+			// undo the previous action
+			$this->get_visitor()->unlog_vote( $comment_id );
 
-				$vote_value = ( 'upvote' === $last_action ) ? $this->get_vote_value( 'downvote' ) : $this->get_vote_value( 'upvote' );
+			$vote_value = ( 'upvote' == $last_action ) ?
+				$this->get_vote_value( 'downvote' ) : $this->get_vote_value( 'upvote' );
+
+			if (
+				$vote == 'upvote' && $last_action == 'downvote'
+				|| $vote == 'downvote' && $last_action == 'upvote'
+			) {
+				$vote_value *= 2;
 			}
 		}
 
@@ -631,7 +647,10 @@ class HMN_Comment_Popularity {
 			$this->update_comment_author_karma( $author->ID, $vote_value );
 		}
 
-		$this->get_visitor()->log_vote( $comment_id, $vote );
+		// log if not an undo
+		if ( $vote !== 'undo' ) {
+			$this->get_visitor()->log_vote( $comment_id, $vote );
+		}
 
 		do_action( 'hmn_cp_comment_vote', $user_id, $comment_id, $labels[ $vote ] );
 

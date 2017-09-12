@@ -61,10 +61,11 @@ Yes, you can enable guest voting by adding this snippet to a mu-plugin:
 Please note that it uses cookies and IP addresses to identify a visitor. This is not as reliable as
 requiring a user to create an account. Cookies can be deleted, and IP addresses can be shared.
 
-### Can comment weight be negative? ###
+### Can I limit comment weight to positive values only? ###
 
-Yes, you can enable negative weight by adding this snippet to a mu-plugin:
-`add_filter( 'hmn_cp_allow_negative_comment_weight', '__return_true' );`
+Yes, you can enable non-negative weights only by adding this snippet to a mu-plugin:
+`add_filter( 'hmn_cp_allow_negative_comment_weight', '__return_false' );` 
+Bear in mind that this results in a [double-voting issue](https://github.com/humanmade/comment-popularity/issues/113) 
 
 ### Can I disable the sorting by comment weight? ###
 
