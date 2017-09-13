@@ -200,8 +200,9 @@ class HMN_CP_Visitor_Guest extends HMN_CP_Visitor {
 	 */
 	public function is_vote_valid( $comment_id, $action = '' ) {
 
-		// For now, all votes are valid.
-		return true;
+		return HMN_Comment_Popularity::get_instance()->is_guest_voting_allowed() ?
+			true :
+			new \WP_Error( 'insufficient_permissions', __( 'You must be logged in to vote on comments.', 'comment-popularity' ) );
 
 	}
 

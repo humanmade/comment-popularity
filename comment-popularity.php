@@ -33,10 +33,8 @@ function hmn_cp_init() {
 
 	if ( is_user_logged_in() ) {
 		$visitor = new CommentPopularity\HMN_CP_Visitor_Member( get_current_user_id() );
-	} elseif ( $comment_popularity->is_guest_voting_allowed() ) {
-		$visitor = new CommentPopularity\HMN_CP_Visitor_Guest( $_SERVER['REMOTE_ADDR'] );
 	} else {
-		return;
+		$visitor = new CommentPopularity\HMN_CP_Visitor_Guest( $_SERVER['REMOTE_ADDR'] );
 	}
 
 	if ( ! ( $comment_popularity->get_visitor() instanceof CommentPopularity\HMN_CP_Visitor ) ) {

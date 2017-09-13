@@ -71,7 +71,7 @@ msgid "You cannot %s your own comments."
 msgstr ""
 
 #: inc/class-visitor.php:260
-msgid "You must be logged in to vote on comments"
+msgid "You must be logged in to vote on comments."
 msgstr ""
 
 #: inc/templates/comment.php:10
