@@ -44,13 +44,13 @@ function hmn_cp_v121_upgrade( array $users ) {
 
 	foreach ( $users as $user ) {
 
-		$hmn_comments_voted_on = get_user_option( 'comments_voted_on', $user->ID );
+		$old_option = get_user_option( 'comments_voted_on', $user->ID );
 
-		if ( ! $hmn_comments_voted_on ) {
+		if ( ! $old_option ) {
 			continue;
 		}
 
-		update_user_option( $user->ID, 'hmn_comments_voted_on', $hmn_comments_voted_on );
+		update_user_option( $user->ID, 'hmn_comments_voted_on', $old_option );
 		delete_user_option( $user->ID, 'comments_voted_on', true );
 
 	}
