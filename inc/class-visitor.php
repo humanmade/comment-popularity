@@ -9,6 +9,8 @@
  * @package CommentPopularity
  */
 abstract class HMN_CP_Visitor {
+	const LOGGED_VOTES_ACTION_KEY = 0;
+	const LOGGED_VOTES_TIMESTAMP_KEY = 1;
 
 	protected $visitor_id;
 
@@ -115,14 +117,14 @@ class HMN_CP_Visitor_Guest extends HMN_CP_Visitor {
 
 		$logged_votes = $this->retrieve_logged_votes();
 
-		$logged_votes[ 'comment_id_' . $comment_id ]['vote_time'] = current_time( 'timestamp' );
-		$logged_votes[ 'comment_id_' . $comment_id ]['last_action'] = $action;
+		$logged_votes[ $comment_id ][parent::LOGGED_VOTES_ACTION_KEY] = $action;
+		$logged_votes[ $comment_id ][parent::LOGGED_VOTES_TIMESTAMP_KEY] = current_time( 'timestamp' );
 
 		$this->save_logged_votes( $logged_votes );
 
 		$logged_votes = $this->retrieve_logged_votes();
 
-		$updated = $logged_votes[ 'comment_id_' . $comment_id ];
+		$updated = $logged_votes[ $comment_id ];
 
 		/**
 		 * Fires once the user meta has been updated.
@@ -144,7 +146,7 @@ class HMN_CP_Visitor_Guest extends HMN_CP_Visitor {
 	 */
 	public function unlog_vote( $comment_id ) {
 		$logged_votes = $this->retrieve_logged_votes();
-		unset( $logged_votes[ 'comment_id_' . $comment_id ] );
+		unset( $logged_votes[ $comment_id ] );
 		$this->save_logged_votes( $logged_votes );
 	}
 
@@ -255,14 +257,14 @@ class HMN_CP_Visitor_Member extends HMN_CP_Visitor {
 
 		$comments_voted_on = $this->retrieve_logged_votes();
 
-		$comments_voted_on[ 'comment_id_' . $comment_id ]['vote_time'] = current_time( 'timestamp' );
-		$comments_voted_on[ 'comment_id_' . $comment_id ]['last_action'] = $action;
+		$comments_voted_on[ $comment_id ][parent::LOGGED_VOTES_ACTION_KEY] = $action;
+		$comments_voted_on[ $comment_id ][parent::LOGGED_VOTES_TIMESTAMP_KEY] = current_time( 'timestamp' );
 
 		update_user_option( $this->visitor_id, 'hmn_comments_voted_on', $comments_voted_on );
 
 		$comments_voted_on = get_user_option( 'hmn_comments_voted_on', $this->visitor_id );
 
-		$updated = $comments_voted_on[ 'comment_id_' . $comment_id ];
+		$updated = $comments_voted_on[ $comment_id ];
 
 		/**
 		 * Fires once the user meta has been updated.
@@ -284,7 +286,7 @@ class HMN_CP_Visitor_Member extends HMN_CP_Visitor {
 	public function unlog_vote( $comment_id ) {
 
 		$comments_voted_on = $this->retrieve_logged_votes();
-		unset( $comments_voted_on[ 'comment_id_' . $comment_id ] );
+		unset( $comments_voted_on[ $comment_id ] );
 
 		if ( !empty( $comments_voted_on ) ) {
 			update_user_option( $this->get_id(), 'hmn_comments_voted_on', $comments_voted_on );

@@ -362,7 +362,7 @@ class HMN_Comment_Popularity {
 		$comment_ids_voted_on = array();
 
 		foreach ( $votes as $key => $vote ) {
-			$comment_ids_voted_on[ str_replace( 'comment_id_', '', $key ) ] = $vote['last_action'];
+			$comment_ids_voted_on[ $key ] = $vote[ self::LOGGED_VOTES_ACTION_KEY ];
 		}
 
 		$vars = array(
@@ -619,8 +619,8 @@ class HMN_Comment_Popularity {
 
 		// see if user has already voted
 		$logged_votes = $this->get_visitor()->retrieve_logged_votes();
-		if ( is_array( $logged_votes ) && array_key_exists( 'comment_id_' . $comment_id, $logged_votes ) ) {
-			$last_action = $logged_votes[ 'comment_id_' . $comment_id ]['last_action'];
+		if ( is_array( $logged_votes ) && array_key_exists( $comment_id, $logged_votes ) ) {
+			$last_action = $logged_votes[ $comment_id ][self::LOGGED_VOTES_ACTION_KEY];
 
 			// undo the previous action
 			$this->get_visitor()->unlog_vote( $comment_id );
