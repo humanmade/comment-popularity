@@ -1,5 +1,7 @@
 <?php namespace CommentPopularity;
 
+use Wp_Error;
+
 /**
  * Class HMN_Comment_Popularity
  * @package CommentPopularity
@@ -167,7 +169,7 @@ class HMN_Comment_Popularity {
 				break;
 
 			default:
-				$value = new \WP_Error( 'invalid_vote_type', __( 'Sorry, invalid vote type', 'comment-popularity' ) );
+				$value = new WP_Error( 'invalid_vote_type', __( 'Sorry, invalid vote type', 'comment-popularity' ) );
 				break;
 
 		}
@@ -191,7 +193,7 @@ class HMN_Comment_Popularity {
 	 */
 	public static function activate() {
 
-		global $wp_version;
+		global $wp_version, $wpdb;
 
 		if ( version_compare( $wp_version, self::HMN_CP_REQUIRED_WP_VERSION, '<' ) ) {
 
@@ -213,6 +215,16 @@ class HMN_Comment_Popularity {
 		$plugin_version_db = get_option( 'hmn_cp_plugin_version' );
 		if ( ! $plugin_version_db ) {
 			add_option( 'hmn_cp_plugin_version', $current_version );
+		}
+
+		// vote count field
+		if(!$wpdb->get_var( "SHOW COLUMNS FROM {$wpdb->comments} LIKE 'vote_count'" )) {
+			$query = "ALTER TABLE {$wpdb->comments} "
+			         . "ADD `vote_count`  MEDIUMINT unsigned NOT NULL default '0' ";
+			if ($wpdb->query($query) === FALSE) {
+				echo "Couldn't add columns to comments table. Install aborted!";
+				return;
+			}
 		}
 	}
 
@@ -362,7 +374,7 @@ class HMN_Comment_Popularity {
 		$comment_ids_voted_on = array();
 
 		foreach ( $votes as $key => $vote ) {
-			$comment_ids_voted_on[ $key ] = $vote[ self::LOGGED_VOTES_ACTION_KEY ];
+			$comment_ids_voted_on[ $key ] = $vote[ HMN_CP_Visitor::LOGGED_VOTES_ACTION_KEY ];
 		}
 
 		$vars = array(
@@ -403,25 +415,35 @@ class HMN_Comment_Popularity {
 	/**
 	 * Updates the comment weight value in the database.
 	 *
-	 * @param $vote
-	 * @param $comment_id
+	 * @param int $comment_id
+	 * @param int $weight_value
+	 * @param int $vote_count can be -1, 0 or 1, depending on what kind of vote this is
 	 *
-	 * @return int
+	 * @return bool|int|Wp_Error
 	 */
-	public function update_comment_weight( $comment_id, $weight_value ) {
+	public function update_comment_weight( $comment_id, $weight_value, $vote_count=0 ) {
+		global $wpdb;
 
 		$comment_arr = get_comment( $comment_id, ARRAY_A );
-
-		$comment_arr['comment_karma'] += $weight_value;
 
 		// Prevent negative weight if not allowed.
-		if ( ( ! $this->is_negative_comment_weight_allowed() ) && 0 >= $comment_arr['comment_karma'] ) {
-			$comment_arr['comment_karma'] = 0;
+		if (
+			! $this->is_negative_comment_weight_allowed()
+			&& 0 > $comment_arr['comment_karma'] + $weight_value
+		) {
+			return false;
 		}
 
-		wp_update_comment( $comment_arr );
+		$to_update = [
+			'comment_karma' => $comment_arr['comment_karma'] + $weight_value,
+			'vote_count'    => $comment_arr['vote_count'] + $vote_count,
+		];
 
-		$comment_arr = get_comment( $comment_id, ARRAY_A );
+		if ( false === $wpdb->update( $wpdb->comments, $to_update, ['comment_ID' => $comment_id] ) ) {
+			return WP_Error( 'db_error' );
+		}
+
+		clean_comment_cache( $comment_id );
 
 		/**
 		 * Fires once a comment has been updated.
@@ -598,8 +620,8 @@ class HMN_Comment_Popularity {
 		$labels = $this->get_vote_labels();
 
 		$vote_is_valid = $this->get_visitor()->is_vote_valid( $comment_id, $labels[ $vote ] );
-
 		$vote_value = $this->get_vote_value( $vote );
+		$vote_count = 1;
 
 		if ( is_wp_error( $vote_is_valid ) ) {
 
@@ -620,10 +642,7 @@ class HMN_Comment_Popularity {
 		// see if user has already voted
 		$logged_votes = $this->get_visitor()->retrieve_logged_votes();
 		if ( is_array( $logged_votes ) && array_key_exists( $comment_id, $logged_votes ) ) {
-			$last_action = $logged_votes[ $comment_id ][self::LOGGED_VOTES_ACTION_KEY];
-
-			// undo the previous action
-			$this->get_visitor()->unlog_vote( $comment_id );
+			$last_action = $logged_votes[ $comment_id ][HMN_CP_Visitor::LOGGED_VOTES_ACTION_KEY];
 
 			$vote_value = ( 'upvote' == $last_action ) ?
 				$this->get_vote_value( 'downvote' ) : $this->get_vote_value( 'upvote' );
@@ -633,10 +652,31 @@ class HMN_Comment_Popularity {
 				|| $vote == 'downvote' && $last_action == 'upvote'
 			) {
 				$vote_value *= 2;
+				$vote_count = 0;
 			}
 		}
 
-		$this->update_comment_weight( $comment_id, $vote_value );
+		if ($vote == 'undo') {
+			$vote_count = -1;
+		}
+
+		if ( false === $this->update_comment_weight( $comment_id, $vote_value, $vote_count ) ) {
+			$return = array(
+				'error_code'    => 'negative_comment_karma_disabled',
+				'error_message' => __( 'Negative comment score is not allowed', 'comment-popularity' ),
+				'comment_id'    => $comment_id,
+				'vote_type'     => '',
+			);
+
+			return $return;
+		}
+
+		if ( $vote !== 'undo' ) {
+			$this->get_visitor()->log_vote( $comment_id, $vote );
+		} else {
+			// unlog vote
+			$this->get_visitor()->unlog_vote( $comment_id );
+		}
 
 		// Get the comment author object.
 		$email = get_comment_author_email( $comment_id );
@@ -645,11 +685,6 @@ class HMN_Comment_Popularity {
 		// update comment author karma if registered user.
 		if ( false !== $author ) {
 			$this->update_comment_author_karma( $author->ID, $vote_value );
-		}
-
-		// log if not an undo
-		if ( $vote !== 'undo' ) {
-			$this->get_visitor()->log_vote( $comment_id, $vote );
 		}
 
 		do_action( 'hmn_cp_comment_vote', $user_id, $comment_id, $labels[ $vote ] );
