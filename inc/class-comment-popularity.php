@@ -162,7 +162,11 @@ class HMN_Comment_Popularity {
 				break;
 
 			case 'downvote':
-				$value = apply_filters( 'hmn_cp_downvote_value', -1 );
+				$value = apply_filters( 'hmn_cp_downvote_value', - 1 );
+				break;
+
+			case 'undo':
+				$value = 0;
 				break;
 
 			default:
@@ -217,7 +221,7 @@ class HMN_Comment_Popularity {
 
 			if ( ! empty( $role_obj ) ) {
 
-				if ( in_array( 'manage_user_karma_settings', $role_obj->capabilities) ) {
+				if ( in_array( 'manage_user_karma_settings', $role_obj->capabilities ) ) {
 					$role_obj->remove_cap( 'manage_user_karma_settings' );
 				}
 
@@ -238,7 +242,7 @@ class HMN_Comment_Popularity {
 
 		$template_path = apply_filters( 'hmn_cp_template_path', plugin_dir_path( __FILE__ ) . '/templates' );
 
-		$loader = new \Twig_Loader_Filesystem( $template_path );
+		$loader     = new \Twig_Loader_Filesystem( $template_path );
 		$this->twig = new \Twig_Environment( $loader );
 
 	}
@@ -277,7 +281,8 @@ class HMN_Comment_Popularity {
 	/**
 	 * Disallow object cloning
 	 */
-	private function __clone() {}
+	private function __clone() {
+	}
 
 	/**
 	 * Load the Javascripts
@@ -289,7 +294,11 @@ class HMN_Comment_Popularity {
 		wp_enqueue_script( 'growl', plugins_url( '../assets/js/modules/growl/javascripts/jquery.growl.min.js', __FILE__ ), array( 'jquery' ), self::HMN_CP_PLUGIN_VERSION, true );
 
 		$js_file = ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ? '../assets/js/voting.js' : '../assets/js/voting.min.js';
-		wp_register_script( 'comment-popularity', plugins_url( $js_file, __FILE__ ), array( 'jquery', 'underscore', 'growl' ), self::HMN_CP_PLUGIN_VERSION );
+		wp_register_script( 'comment-popularity', plugins_url( $js_file, __FILE__ ), array(
+			'jquery',
+			'underscore',
+			'growl'
+		), self::HMN_CP_PLUGIN_VERSION );
 
 		$args = array(
 			'hmn_vote_nonce' => wp_create_nonce( 'hmn_vote_submit' ),
@@ -431,11 +440,13 @@ class HMN_Comment_Popularity {
 	 */
 	public function insert_comment_callback( $comment_id, $comment ) {
 
-		if ( ! $comment->user_id )
+		if ( ! $comment->user_id ) {
 			return;
+		}
 
-		if ( ! $user = get_userdata( $comment->user_id ) )
+		if ( ! $user = get_userdata( $comment->user_id ) ) {
 			return;
+		}
 
 		$is_expert = $this->get_comment_author_expert_status( $user->ID );
 
@@ -469,21 +480,22 @@ class HMN_Comment_Popularity {
 	public function get_comments_sorted_by_weight( $html = false, $args = array() ) {
 
 		// WP_Comment_Query arguments
-		$defaults = array (
-			'status'         => 'approve',
-			'type'           => 'comment',
-			'order'          => 'DESC',
-			'orderby'        => 'comment_karma',
+		$defaults = array(
+			'status'  => 'approve',
+			'type'    => 'comment',
+			'order'   => 'DESC',
+			'orderby' => 'comment_karma',
 		);
 
 		$get_comments_args = wp_parse_args( $args, $defaults );
 
 		// The Comment Query
 		$comment_query = new \WP_Comment_Query;
-		$comments = $comment_query->query( $get_comments_args );
+		$comments      = $comment_query->query( $get_comments_args );
 
-		if ( $html )
+		if ( $html ) {
 			return wp_list_comments( $args, $comments );
+		}
 
 		return $comments;
 	}
@@ -536,7 +548,7 @@ class HMN_Comment_Popularity {
 		// get user meta for karma
 		$user_karma = get_user_option( 'hmn_user_karma', $user_id );
 
-		return ( '' !== $user_karma ) ? (int)$user_karma : 0;
+		return ( '' !== $user_karma ) ? (int) $user_karma : 0;
 	}
 
 	/**
@@ -587,24 +599,11 @@ class HMN_Comment_Popularity {
 
 		$labels = $this->get_vote_labels();
 
-		$vote_is_valid = $this->get_visitor()->is_vote_valid( $comment_id, $labels[ $vote ] );
-
 		$vote_value = $this->get_vote_value( $vote );
 
-		if ( is_wp_error( $vote_is_valid ) ) {
-
-			$error_code = $vote_is_valid->get_error_code();
-			$error_msg = $vote_is_valid->get_error_message( $error_code );
-
-			$return = array(
-				'error_code'    => $error_code,
-				'error_message' => $error_msg,
-				'comment_id'    => $comment_id,
-				'vote_type'     => '',
-			);
-
-			return $return;
-
+		$result = $this->is_vote_valid( $comment_id, $labels, $vote );
+		if (  is_array( $result ) ) {
+			return $this->send_error( $result['error_code'], $result['error_msg'], $comment_id );
 		}
 
 		// see if user has already voted
@@ -623,7 +622,7 @@ class HMN_Comment_Popularity {
 		$this->update_comment_weight( $comment_id, $vote_value );
 
 		// Get the comment author object.
-		$email = get_comment_author_email( $comment_id );
+		$email  = get_comment_author_email( $comment_id );
 		$author = get_user_by( 'email', $email );
 
 		// update comment author karma if registered user.
@@ -636,10 +635,49 @@ class HMN_Comment_Popularity {
 		do_action( 'hmn_cp_comment_vote', $user_id, $comment_id, $labels[ $vote ] );
 
 		$return = array(
-			'success_message'    => __( 'Thanks for voting!', 'comment-popularity' ),
-			'weight'     => $this->get_comment_weight( $comment_id ),
-			'comment_id' => $comment_id,
-			'vote_type'  => $labels[ $vote ],
+			'success_message' => __( 'Thanks for voting!', 'comment-popularity' ),
+			'weight'          => $this->get_comment_weight( $comment_id ),
+			'comment_id'      => $comment_id,
+			'vote_type'       => $labels[ $vote ],
+		);
+
+		return $return;
+	}
+
+	/**
+	 * @return array|bool
+	 */
+	protected function is_vote_valid( $comment_id, $labels, $action ) {
+		$user_can_vote = $this->get_visitor()->is_vote_valid( $comment_id, $labels[ $vote ] );
+		if ( is_wp_error( $user_can_vote ) ) {
+
+			return [
+				'error_code' => $error->get_error_code(),
+				'error_msg'  => $error->get_error_message( $error_code ),
+			];
+		}
+
+		// Prevent negative weight if not allowed.
+		$comment = get_comment( $comment_id );
+		if ( ( $action === 'downvote' && ! $this->is_negative_comment_weight_allowed() ) && 0 >= $comment->comment_karma ) {
+			$error_code = 'downvote_zero_karma';
+			$error_msg  = __( 'Unable to downvote a comment with no karma', 'comment-popularity' );
+
+			return [
+				'error_code' => $error_code,
+				'error_msg'  => $error_msg,
+			];
+		}
+
+		return true;
+	}
+
+	protected function send_error( $error_code, $error_msg, $comment_id ) {
+		$return = array(
+			'error_code'    => $error_code,
+			'error_message' => $error_msg,
+			'comment_id'    => $comment_id,
+			'vote_type'     => '',
 		);
 
 		return $return;
@@ -657,8 +695,8 @@ class HMN_Comment_Popularity {
 		$hmn_cp_lang_dir = apply_filters( 'hmn_cp_languages_directory', $hmn_cp_lang_dir );
 
 		// Traditional WordPress plugin locale filter
-		$locale        = apply_filters( 'plugin_locale',  get_locale(), 'comment-popularity' );
-		$mofile        = sprintf( '%1$s-%2$s.mo', 'comment-popularity', $locale );
+		$locale = apply_filters( 'plugin_locale', get_locale(), 'comment-popularity' );
+		$mofile = sprintf( '%1$s-%2$s.mo', 'comment-popularity', $locale );
 
 		// Setup paths to current locale file
 		$mofile_local  = $hmn_cp_lang_dir . $mofile;
