@@ -4,7 +4,7 @@ Contributors: pauldewouters,mattheu,humanmade,cfo-publishing
 Tags: comments,vote,upvote,karma,widget
 Requires at least: 3.9
 Tested up to: 4.5
-Stable tag: 1.4.1
+Stable tag: 1.4.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -129,6 +129,12 @@ To display the comment author karma:
 * Fixes a bug which prevented the user karma to appear in the single comment template.
 
 == Changelog ==
+
+= 1.4.2 =
+
+* Fix a bug in voting logic to prevent voting more than once.
+* Fix a bug in voting to prevent logging a downvote on a comment with no karma
+* Fix upgrade routine, which could cause memory error when large number of users.
 
 = 1.4.1 =
 
