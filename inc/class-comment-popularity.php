@@ -9,7 +9,7 @@ class HMN_Comment_Popularity {
 	/**
 	 * Plugin version number.
 	 */
-	const HMN_CP_PLUGIN_VERSION = '1.4.2';
+	const HMN_CP_PLUGIN_VERSION = '1.4.3';
 
 	/**
 	 * The minimum PHP version compatibility.
@@ -289,11 +289,11 @@ class HMN_Comment_Popularity {
 	 */
 	public function enqueue_scripts() {
 
-		wp_enqueue_style( 'growl', plugins_url( '../assets/js/modules/growl/stylesheets/jquery.growl.min.css', __FILE__ ), array(), self::HMN_CP_PLUGIN_VERSION );
+		wp_enqueue_style( 'growl', plugins_url( '../js/modules/growl/stylesheets/jquery.growl.min.css', __FILE__ ), array(), self::HMN_CP_PLUGIN_VERSION );
 
-		wp_enqueue_script( 'growl', plugins_url( '../assets/js/modules/growl/javascripts/jquery.growl.min.js', __FILE__ ), array( 'jquery' ), self::HMN_CP_PLUGIN_VERSION, true );
+		wp_enqueue_script( 'growl', plugins_url( '../js/modules/growl/javascripts/jquery.growl.min.js', __FILE__ ), array( 'jquery' ), self::HMN_CP_PLUGIN_VERSION, true );
 
-		$js_file = ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ? '../assets/js/voting.js' : '../assets/js/voting.min.js';
+		$js_file = ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ? '../js/voting.js' : '../assets/js/voting.min.js';
 		wp_register_script( 'comment-popularity', plugins_url( $js_file, __FILE__ ), array(
 			'jquery',
 			'underscore',
