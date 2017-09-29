@@ -293,7 +293,7 @@ class HMN_Comment_Popularity {
 
 		wp_enqueue_script( 'growl', plugins_url( '../js/modules/growl/javascripts/jquery.growl.min.js', __FILE__ ), array( 'jquery' ), self::HMN_CP_PLUGIN_VERSION, true );
 
-		$js_file = ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ? '../js/voting.js' : '../assets/js/voting.min.js';
+		$js_file = ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ? '../js/voting.js' : '../js/voting.min.js';
 		wp_register_script( 'comment-popularity', plugins_url( $js_file, __FILE__ ), array(
 			'jquery',
 			'underscore',
