@@ -130,6 +130,10 @@ To display the comment author karma:
 
 == Changelog ==
 
+= 1.4.3.1 =
+
+* Fix path to minified JS file.
+
 = 1.4.3 =
 
 * Fix bug caused by deploy script which moved the assets folder out of plugin path.
