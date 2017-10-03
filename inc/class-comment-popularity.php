@@ -663,10 +663,10 @@ class HMN_Comment_Popularity {
 			$error_code = 'downvote_zero_karma';
 			$error_msg  = __( 'Unable to downvote a comment with no karma', 'comment-popularity' );
 
-			return [
+			return array(
 				'error_code' => $error_code,
 				'error_msg'  => $error_msg,
-			];
+			);
 		}
 
 		return true;
