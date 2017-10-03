@@ -9,7 +9,7 @@ class HMN_Comment_Popularity {
 	/**
 	 * Plugin version number.
 	 */
-	const HMN_CP_PLUGIN_VERSION = '1.4.3.1';
+	const HMN_CP_PLUGIN_VERSION = '1.4.3.2';
 
 	/**
 	 * The minimum PHP version compatibility.
@@ -651,10 +651,10 @@ class HMN_Comment_Popularity {
 		$user_can_vote = $this->get_visitor()->is_vote_valid( $comment_id, $labels[ $vote ] );
 		if ( is_wp_error( $user_can_vote ) ) {
 
-			return [
+			return array(
 				'error_code' => $error->get_error_code(),
 				'error_msg'  => $error->get_error_message( $error_code ),
-			];
+			);
 		}
 
 		// Prevent negative weight if not allowed.

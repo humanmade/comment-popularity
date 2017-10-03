@@ -4,7 +4,8 @@ Contributors: pauldewouters,mattheu,humanmade,cfo-publishing
 Tags: comments,vote,upvote,karma,widget
 Requires at least: 3.9
 Tested up to: 4.8.1
-Stable tag: 1.4.3.1
+Stable tag: 1.4.3.2
+Requires PHP: 5.3.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -129,6 +130,10 @@ To display the comment author karma:
 * Fixes a bug which prevented the user karma to appear in the single comment template.
 
 == Changelog ==
+
+= 1.4.3.2 =
+
+* Fix a PHP compatibility issue that caused a fatal error on versions that don't support short array syntax.
 
 = 1.4.3.1 =
 
