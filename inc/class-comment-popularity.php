@@ -100,6 +100,11 @@ class HMN_Comment_Popularity {
 	}
 
 	public function styles() {
+		wp_enqueue_style(
+			'cp-material-ui',
+			'https://fonts.googleapis.com/icon?family=Material+Icons'
+		);
+
 		$styles = '<style>.comment-weight-container .upvote a, .comment-weight-container .downvote a, .comment-weight-container span.upvote, .comment-weight-container span.downvote {color:red !important;}</style>';
 		echo apply_filters( 'hmn_cp_inline_styles', $styles );
 	}
@@ -383,6 +388,7 @@ class HMN_Comment_Popularity {
 			'comment_weight'    => $this->get_comment_weight( $comment_id ),
 			'enable_voting'     => $this->visitor_can_vote(),
 			'vote_type'         => in_array( $comment_id, array_keys( $comment_ids_voted_on ) ) ? $comment_ids_voted_on[ $comment_id ] : '',
+			'login_url'         => get_site_url(null, 'login'),
 		);
 
 		echo $this->twig->render( 'voting-system.html', $vars );
@@ -429,7 +435,7 @@ class HMN_Comment_Popularity {
 		// Prevent negative weight if not allowed.
 		if (
 			! $this->is_negative_comment_weight_allowed()
-			&& 0 > $comment_arr['comment_karma'] + $weight_value
+		    && 0 > $comment_arr['comment_karma'] + $weight_value
 		) {
 			return false;
 		}

@@ -7,7 +7,7 @@
 		{% else %}
 			<span>
 		{% endif %}
-				<a data-comment-id="{{ comment_id }}" class="vote-up" href="#">&#9650;</a>
+				<a data-comment-id="{{ comment_id }}" class="vote-up" href="#"><i class="material-icons">thumb_up</i></a>
 			</span>
 
 		<span id="comment-weight-value-{{ comment_id }}"  class="{{ vote_type }}">{{ comment_weight }}</span>
@@ -17,14 +17,13 @@
 		{% else %}
 			<span>
 		{% endif %}
-				<a data-comment-id="{{ comment_id }}" class="vote-down" href="#">&#9660;</a>
+				<a data-comment-id="{{ comment_id }}" class="vote-down" href="#"><i class="material-icons">thumb_down</i></a>
 			</span>
 
 	{% else %}
-
-		<span>&#9650;</span>
+		<a href="{{ login_url }}"><i class="material-icons">thumb_up</i></a>
 		<span id="comment-weight-value-{{ comment_id }}">{{ comment_weight }}</span>
-		<span>&#9660;</span>
+		<a href="{{ login_url }}"><i class="material-icons">thumb_down</i></a>
 
 	{% endif %}
 
