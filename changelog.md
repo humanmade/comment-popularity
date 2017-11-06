@@ -1,3 +1,14 @@
+1.4.2 / 2017-11-06
+==================
+
+  * Use Material UI Icons
+  
+1.4.1 / 2017-10-01
+==================
+
+  * SlavicD's fork: fixes some voting logic bugs and more
+
+
 1.3.5 / 2016-03-16
 ==================
 
