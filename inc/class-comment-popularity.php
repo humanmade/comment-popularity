@@ -378,11 +378,12 @@ class HMN_Comment_Popularity {
 
 		$comment_ids_voted_on = array();
 
-		if (is_array($votes)) {
-			foreach ( $votes as $key => $vote ) {
-				$comment_ids_voted_on[ $key ] = $vote[ HMN_CP_Visitor::LOGGED_VOTES_ACTION_KEY ];
-			}
+		foreach ( $votes as $key => $vote ) {
+			$comment_ids_voted_on[ $key ] = $vote[ HMN_CP_Visitor::LOGGED_VOTES_ACTION_KEY ];
 		}
+
+		$login_url = home_url('login');
+		$redirect_to = home_url($_SERVER['REQUEST_URI']);
 
 		$vars = array(
 			'container_classes' => $container_classes,
@@ -390,7 +391,7 @@ class HMN_Comment_Popularity {
 			'comment_weight'    => $this->get_comment_weight( $comment_id ),
 			'enable_voting'     => $this->visitor_can_vote(),
 			'vote_type'         => in_array( $comment_id, array_keys( $comment_ids_voted_on ) ) ? $comment_ids_voted_on[ $comment_id ] : '',
-			'login_url'         => get_site_url(null, 'login'),
+			'login_url'         => add_query_arg('redirect_to', $redirect_to, $login_url),
 		);
 
 		echo $this->twig->render( 'voting-system.html', $vars );
@@ -772,3 +773,4 @@ class HMN_Comment_Popularity {
 	}
 
 }
+
