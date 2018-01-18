@@ -3,7 +3,7 @@
 Plugin Name: Comment Popularity (SlavicD's Fork)
 Plugin URI: https://github.com/slavicd/comment-popularity
 Description: Allow visitors to vote on comments.
-Version: 1.4.2
+Version: 1.4.3
 Author: Human Made Limited
 Author URI: http://humanmade.co.uk
 Text Domain: comment-popularity
