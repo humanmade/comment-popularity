@@ -378,8 +378,10 @@ class HMN_Comment_Popularity {
 
 		$comment_ids_voted_on = array();
 
-		foreach ( $votes as $key => $vote ) {
-			$comment_ids_voted_on[ $key ] = $vote[ HMN_CP_Visitor::LOGGED_VOTES_ACTION_KEY ];
+		if (is_array($comment_ids_voted_on)) {
+			foreach ( $votes as $key => $vote ) {
+				$comment_ids_voted_on[ $key ] = $vote[ HMN_CP_Visitor::LOGGED_VOTES_ACTION_KEY ];
+			}
 		}
 
 		$login_url = home_url('login');
