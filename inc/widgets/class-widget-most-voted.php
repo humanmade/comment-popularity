@@ -87,16 +87,16 @@ class HMN_CP_Widget_Most_Voted extends \WP_Widget {
 
 		$output = '';
 
-		$title = ( ! empty( $instance['title'] ) ) ? $instance['title'] : __( 'Most voted Comments', 'comment-popularity' );
+		$title = ! empty( $instance['title'] ) ? $instance['title'] : __( 'Most voted Comments', 'comment-popularity' );
 
 		/** This filter is documented in wp-includes/default-widgets.php */
 		$title = apply_filters( 'widget_title', $title, $instance, $this->id_base );
 
-		$number = ( ! empty( $instance['number'] ) ) ? absint( $instance['number'] ) : 5;
+		$number = ! empty( $instance['number'] ) ? absint( $instance['number'] ) : 5;
 		if ( ! $number ) {
 			$number = 5;
 		}
-		
+
 		$hmn_cp_plugin = HMN_Comment_Popularity::get_instance();
 		$comments = $hmn_cp_plugin->get_comments_sorted_by_weight( false, array( 'number' => $number, 'echo' => false ) );
 

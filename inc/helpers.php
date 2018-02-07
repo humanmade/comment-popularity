@@ -30,7 +30,7 @@ function hmn_cp_the_comment_author_karma() {
 
 		$author_karma = $hmn_cp_obj->get_comment_author_karma( get_comment_author_email( get_comment_ID() ) );
 
-		if ( isset( $author_karma ) ) {
+		if ( null !== $author_karma ) {
 			echo '<small class="user-karma">(User Karma: ' . esc_html( $author_karma ) . ')</small>';
 		}
 
@@ -43,7 +43,7 @@ function hmn_cp_the_comment_author_karma() {
  *
  * @param array $args
  */
-function hmn_cp_the_sorted_comments( $args = array() ) {
+function hmn_cp_the_sorted_comments( array $args ) {
 
 	if ( class_exists( 'CommentPopularity\HMN_Comment_Popularity' ) ) {
 

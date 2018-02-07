@@ -2,14 +2,21 @@
 
 /**
  * Class HMN_CP_Visitor
+ *
  * @package CommentPopularity
  */
 /**
  * Class HMN_CP_Visitor
+ *
  * @package CommentPopularity
  */
 abstract class HMN_CP_Visitor {
 
+	/**
+	 * The ID of the visitor.
+	 *
+	 * @var int
+	 */
 	protected $visitor_id;
 
 	/**
@@ -21,21 +28,20 @@ abstract class HMN_CP_Visitor {
 
 	/**
 	 * Creates a new HMN_CP_Visitor object.
+	 *
+	 * @param int $visitor_id The visitor ID.
 	 */
 	public function __construct( $visitor_id ) {
-
 		$this->visitor_id = $visitor_id;
-
-		$this->interval = apply_filters( 'hmn_cp_interval', 15 * MINUTE_IN_SECONDS );
-
+		$this->interval   = apply_filters( 'hmn_cp_interval', 15 * MINUTE_IN_SECONDS );
 	}
 
 	/**
 	 * @return mixed
 	 */
-	abstract function log_vote( $comment_id, $action );
+	abstract public function log_vote( $comment_id, $action );
 
-	abstract function is_vote_valid( $comment_id, $action = '' );
+	abstract public function is_vote_valid( $comment_id, $action = '' );
 
 	/**
 	 * @return string
@@ -85,14 +91,14 @@ class HMN_CP_Visitor_Guest extends HMN_CP_Visitor {
 		$secure = ( 'https' === parse_url( site_url(), PHP_URL_SCHEME ) && 'https' === parse_url( home_url(), PHP_URL_SCHEME ) );
 
 		setcookie( 'hmn_cp_visitor', $this->visitor_id, $expiry, COOKIEPATH, COOKIE_DOMAIN, $secure );
-		if ( SITECOOKIEPATH != COOKIEPATH ) {
+		if ( SITECOOKIEPATH !== COOKIEPATH ) {
 			setcookie( 'hmn_cp_visitor', $this->visitor_id, $expiry, SITECOOKIEPATH, COOKIE_DOMAIN, $secure );
 		}
 
 		// Make cookie available immediately by setting value manually.
 		$_COOKIE['hmn_cp_visitor'] = $this->visitor_id;
 
-		$this->cookie = $_COOKIE['hmn_cp_visitor'];
+		$this->cookie = sanitize_text_field( wp_unslash( $_COOKIE['hmn_cp_visitor'] ) );
 	}
 
 	/**
@@ -115,7 +121,7 @@ class HMN_CP_Visitor_Guest extends HMN_CP_Visitor {
 
 		$logged_votes = $this->retrieve_logged_votes();
 
-		$logged_votes[ 'comment_id_' . $comment_id ]['vote_time'] = current_time( 'timestamp' );
+		$logged_votes[ 'comment_id_' . $comment_id ]['vote_time']   = current_time( 'timestamp' );
 		$logged_votes[ 'comment_id_' . $comment_id ]['last_action'] = $action;
 
 		$this->save_logged_votes( $logged_votes );
@@ -180,8 +186,8 @@ class HMN_CP_Visitor_Guest extends HMN_CP_Visitor {
 		$logged_votes = array();
 
 		if ( is_multisite() ) {
-			$blog_id = get_current_blog_id();
-			$logged_votes = get_blog_option( $blog_id, 'hmn_cp_guests_logged_votes' );
+			$blog_id                           = get_current_blog_id();
+			$logged_votes                      = get_blog_option( $blog_id, 'hmn_cp_guests_logged_votes' );
 			$logged_votes[ $this->visitor_id ] = $votes;
 			update_blog_option( $blog_id, 'hmn_cp_guests_logged_votes', $logged_votes );
 		} else {
@@ -193,7 +199,7 @@ class HMN_CP_Visitor_Guest extends HMN_CP_Visitor {
 	/**
 	 * Determine if the guest visitor can vote.
 	 *
-	 * @param        $comment_id
+	 * @param int    $comment_id
 	 * @param string $action
 	 *
 	 * @return bool|WP_Error
@@ -209,6 +215,7 @@ class HMN_CP_Visitor_Guest extends HMN_CP_Visitor {
 
 /**
  * Class HMN_CP_Visitor_Member
+ *
  * @package CommentPopularity
  */
 class HMN_CP_Visitor_Member extends HMN_CP_Visitor {
@@ -230,6 +237,7 @@ class HMN_CP_Visitor_Member extends HMN_CP_Visitor {
 		}
 
 		if ( $comment->user_id && ( $this->get_id() === (int) $comment->user_id ) ) {
+			// translators: the action performed: upvote or downvote.
 			return new \WP_Error( 'upvote_own_comment', sprintf( __( 'You cannot %s your own comments.', 'comment-popularity' ), $action ) );
 		}
 
@@ -253,8 +261,7 @@ class HMN_CP_Visitor_Member extends HMN_CP_Visitor {
 	public function log_vote( $comment_id, $action ) {
 
 		$comments_voted_on = $this->retrieve_logged_votes();
-
-		$comments_voted_on[ 'comment_id_' . $comment_id ]['vote_time'] = current_time( 'timestamp' );
+		$comments_voted_on[ 'comment_id_' . $comment_id ]['vote_time']   = current_time( 'timestamp' );
 		$comments_voted_on[ 'comment_id_' . $comment_id ]['last_action'] = $action;
 
 		update_user_option( $this->visitor_id, 'hmn_comments_voted_on', $comments_voted_on );

@@ -3,7 +3,7 @@ use CommentPopularity\HMN_Comment_Popularity;
 
 $GLOBALS['comment'] = $comment;
 
-if ( 'pingback' == $comment->comment_type || 'trackback' == $comment->comment_type ) : ?>
+if ( 'pingback' === $comment->comment_type || 'trackback' === $comment->comment_type ) : ?>
 
 <li id="comment-<?php comment_ID(); ?>" <?php comment_class(); ?>>
 	<div class="comment-body">
@@ -17,7 +17,7 @@ if ( 'pingback' == $comment->comment_type || 'trackback' == $comment->comment_ty
 		<header class="comment-header">
 			<?php $hmn_cp_plugin = HMN_Comment_Popularity::get_instance(); $hmn_cp_plugin->render_ui( get_comment_ID() ); ?>
 			<?php // Avatar
-			if ( 0 != $args['avatar_size'] ) :
+			if ( 0 !== $args['avatar_size'] ) :
 			echo get_avatar( $comment, $args['avatar_size'] );
 			endif;
 

@@ -62,8 +62,8 @@ class HMN_Comment_Popularity {
 	 */
 	public static function get_instance() {
 
-		if ( ! self::$instance instanceof HMN_Comment_Popularity ) {
-			self::$instance = new HMN_Comment_Popularity();
+		if ( ! self::$instance instanceof self ) {
+			self::$instance = new self();
 
 		}
 
@@ -196,15 +196,10 @@ class HMN_Comment_Popularity {
 
 		global $wp_version;
 
-		if ( version_compare( $wp_version, self::HMN_CP_REQUIRED_WP_VERSION, '<' ) ) {
-
-			if ( current_user_can( 'activate_plugins' ) ) {
-
-				deactivate_plugins( plugin_basename( __FILE__ ) );
-				wp_die( sprintf( __( 'This plugin requires WordPress version %s. Sorry about that.', 'comment-popularity' ), self::HMN_CP_REQUIRED_WP_VERSION ), 'Comment Popularity', array( 'back_link' => true ) );
-
-			}
-
+		if ( ! current_user_can( 'activate_plugins' ) || version_compare( $wp_version, self::HMN_CP_REQUIRED_WP_VERSION, '<' ) ) {
+			deactivate_plugins( plugin_basename( __FILE__ ) );
+			/* translators: the plugin version number */
+			wp_die( sprintf( __( 'This plugin requires WordPress version %s. Sorry about that.', 'comment-popularity' ), self::HMN_CP_REQUIRED_WP_VERSION ), 'Comment Popularity', array( 'back_link' => true ) );
 		}
 
 		self::set_permissions();
@@ -221,16 +216,14 @@ class HMN_Comment_Popularity {
 
 			if ( ! empty( $role_obj ) ) {
 
-				if ( in_array( 'manage_user_karma_settings', $role_obj->capabilities ) ) {
+				if ( in_array( 'manage_user_karma_settings', $role_obj->capabilities, true ) ) {
 					$role_obj->remove_cap( 'manage_user_karma_settings' );
 				}
 
-				if ( in_array( 'vote_on_comments', $role_obj->capabilities ) ) {
+				if ( in_array( 'vote_on_comments', $role_obj->capabilities, true ) ) {
 					$role_obj->remove_cap( 'vote_on_comments' );
 				}
-
 			}
-
 		}
 
 	}
@@ -289,15 +282,15 @@ class HMN_Comment_Popularity {
 	 */
 	public function enqueue_scripts() {
 
-		wp_enqueue_style( 'growl', plugins_url( '../js/modules/growl/stylesheets/jquery.growl.min.css', __FILE__ ), array(), self::HMN_CP_PLUGIN_VERSION );
+		wp_enqueue_style( 'growl', plugins_url( '../css/jquery.growl.min.css', __FILE__ ), array(), self::HMN_CP_PLUGIN_VERSION );
 
-		wp_enqueue_script( 'growl', plugins_url( '../js/modules/growl/javascripts/jquery.growl.min.js', __FILE__ ), array( 'jquery' ), self::HMN_CP_PLUGIN_VERSION, true );
+		wp_enqueue_script( 'growl', plugins_url( '../js/jquery.growl.min.js', __FILE__ ), array( 'jquery' ), self::HMN_CP_PLUGIN_VERSION, true );
 
 		$js_file = ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ? '../js/voting.js' : '../js/voting.min.js';
 		wp_register_script( 'comment-popularity', plugins_url( $js_file, __FILE__ ), array(
 			'jquery',
 			'underscore',
-			'growl'
+			'growl',
 		), self::HMN_CP_PLUGIN_VERSION );
 
 		$args = array(
@@ -320,7 +313,7 @@ class HMN_Comment_Popularity {
 
 		global $post;
 
-		if ( ! ( is_singular() && ( have_comments() || 'open' == $post->comment_status ) ) ) {
+		if ( ! ( is_singular() && ( have_comments() || 'open' === $post->comment_status ) ) ) {
 
 			return;
 
@@ -338,7 +331,7 @@ class HMN_Comment_Popularity {
 	 * @param $args
 	 * @param $depth
 	 */
-	function comment_callback( $comment, $args, $depth ) {
+	public function comment_callback( $comment, $args, $depth ) {
 
 		include apply_filters( 'hmn_cp_single_comment_template_path', plugin_dir_path( __FILE__ ) . 'templates/comment.php' );
 
@@ -347,7 +340,7 @@ class HMN_Comment_Popularity {
 	/**
 	 * Renders the HTML for voting on comments
 	 *
-	 * @param $comment_id
+	 * @param int $comment_id The comment ID.
 	 */
 	public function render_ui( $comment_id ) {
 
@@ -369,7 +362,7 @@ class HMN_Comment_Popularity {
 			'comment_id'        => $comment_id,
 			'comment_weight'    => $this->get_comment_weight( $comment_id ),
 			'enable_voting'     => $this->visitor_can_vote(),
-			'vote_type'         => in_array( $comment_id, array_keys( $comment_ids_voted_on ) ) ? $comment_ids_voted_on[ $comment_id ] : '',
+			'vote_type'         => array_key_exists( $comment_id, $comment_ids_voted_on ) ? $comment_ids_voted_on[ $comment_id ] : '',
 		);
 
 		echo $this->twig->render( 'voting-system.html', $vars );
@@ -381,7 +374,7 @@ class HMN_Comment_Popularity {
 	protected function visitor_can_vote() {
 
 		// Visitor can vote if guest voting is enabled, if user is logged in and has correct permission
-		return ( ! is_null( $this->visitor ) ) && ( $this->is_guest_voting_allowed() || ( is_user_logged_in() && current_user_can( 'vote_on_comments' ) ) );
+		return ( null !== $this->visitor  ) && ( $this->is_guest_voting_allowed() || ( is_user_logged_in() && current_user_can( 'vote_on_comments' ) ) );
 	}
 
 	/**
@@ -477,7 +470,7 @@ class HMN_Comment_Popularity {
 	 *
 	 * @return string
 	 */
-	public function get_comments_sorted_by_weight( $html = false, $args = array() ) {
+	public function get_comments_sorted_by_weight( $html = false, array $args ) {
 
 		// WP_Comment_Query arguments
 		$defaults = array(
@@ -602,7 +595,7 @@ class HMN_Comment_Popularity {
 		$vote_value = $this->get_vote_value( $vote );
 
 		$result = $this->is_vote_valid( $comment_id, $labels, $vote );
-		if (  is_array( $result ) ) {
+		if ( ! empty( $result ) ) {
 			return $this->send_error( $result['error_code'], $result['error_msg'], $comment_id );
 		}
 
@@ -645,15 +638,21 @@ class HMN_Comment_Popularity {
 	}
 
 	/**
-	 * @return array|bool
+	 * Verify if vote is valid.
+	 *
+	 * @param int    $comment_id The comment ID.
+	 * @param array  $labels The voting labels.
+	 * @param string $action What voting action.
+	 *
+	 * @return array
 	 */
 	protected function is_vote_valid( $comment_id, $labels, $action ) {
-		$user_can_vote = $this->get_visitor()->is_vote_valid( $comment_id, $labels[ $vote ] );
+		$user_can_vote = $this->get_visitor()->is_vote_valid( $comment_id, $labels[ $action ] );
 		if ( is_wp_error( $user_can_vote ) ) {
 
 			return array(
-				'error_code' => $error->get_error_code(),
-				'error_msg'  => $error->get_error_message( $error_code ),
+				'error_code' => $user_can_vote->get_error_code(),
+				'error_msg'  => $user_can_vote->get_error_message(),
 			);
 		}
 
@@ -669,7 +668,7 @@ class HMN_Comment_Popularity {
 			);
 		}
 
-		return true;
+		return array();
 	}
 
 	protected function send_error( $error_code, $error_msg, $comment_id ) {

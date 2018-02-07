@@ -31,8 +31,8 @@ class HMN_Comment_Popularity_Admin {
 
 	public static function get_instance() {
 
-		if ( ! self::$instance instanceof HMN_Comment_Popularity_Admin ) {
-			self::$instance = new HMN_Comment_Popularity_Admin();
+		if ( ! self::$instance instanceof self ) {
+			self::$instance = new self();
 
 		}
 
@@ -107,7 +107,7 @@ class HMN_Comment_Popularity_Admin {
 
 		$current_karma = get_user_option( 'hmn_user_karma', $user->ID );
 
-		$user_karma = ( empty( $current_karma ) ) ? $default_karma : $current_karma;
+		$user_karma = empty( $current_karma ) ? $default_karma : $current_karma;
 
 		$user_expert_status = get_user_option( 'hmn_user_expert_status', $user->ID );
 
@@ -184,7 +184,7 @@ class HMN_Comment_Popularity_Admin {
 
 		$comment = get_comment( $comment_ID );
 
-		echo intval( $comment->comment_karma );
+		echo (int) $comment->comment_karma;
 	}
 
 	/**
@@ -217,10 +217,7 @@ class HMN_Comment_Popularity_Admin {
 			return $empty;
 		}
 
-		$user_karma = get_user_option( 'hmn_user_karma', $user_id );
-
-		return $user_karma;
-
+		return get_user_option( 'hmn_user_karma', $user_id );
 	}
 
 	/**

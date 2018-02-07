@@ -178,14 +178,19 @@ class HMN_CP_Widget_Experts extends \WP_Widget {
 		);
 
 		// Display the admin form
-		include( plugin_dir_path( __FILE__ ) . 'views/admin.php' );
+		include plugin_dir_path( __FILE__ . 'views/admin.php' );
 
 	} // end form
 
-	protected function get_experts( $args = array() ) {
+	/**
+	 * @param array $args
+	 *
+	 * @return mixed
+	 */
+	protected function get_experts() {
 
 		/* Get the experts list. */
-		$args = array (
+		$args = array(
 			'number'         => '5',
 			'meta_query'     => array(
 				array(
