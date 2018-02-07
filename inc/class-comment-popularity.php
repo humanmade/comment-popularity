@@ -106,7 +106,7 @@ class HMN_Comment_Popularity {
 	 *
 	 * @param HMN_CP_Visitor $visitor
 	 */
-	public function set_visitor( $visitor ) {
+	public function set_visitor( HMN_CP_Visitor $visitor ) {
 		$this->visitor = $visitor;
 	}
 
