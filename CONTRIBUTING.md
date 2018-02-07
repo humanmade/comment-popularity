@@ -16,19 +16,11 @@ Releasing a new version
 
 Obviously you'll need contributor access to the WordPress.org repository.
 
-- Run `grunt bumpto:[patch|minor|major]` ( changes version number in plugin and readme )
-- Run `grunt makepot` and commit if necessary
-- Run `git changelog` ( requires git-extras ) and copy changelog.md to the README.txt
-- Run `grunt wp_readme_to_markdown`
-- Run `grunt shell`
-- Run `git push && git push --tags`
-- Run `grunt copy:build`
-- Test plugin from build
-- Run `grunt wp_deploy`
-- Delete build folder ( `grunt clean:build` )
+Install and run [the deployment script as per instructions](https://github.com/GaryJones/wordpress-plugin-svn-deploy)
 
 Available Grunt tasks
 ---------------------
 
 Linting: `grunt lint`
-Minifying: `grunt minify`
+Minifying JS: `grunt minify`
+Minify CSS: `cssmin`
