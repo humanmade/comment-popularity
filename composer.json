@@ -21,7 +21,7 @@
 		"classmap": ["comment-popularity.php"]
 	},
 	"require": {
-		"twig/twig": "1.*"
+		"twig/twig": "2.*"
 	},
 	"require-dev": {
 		"squizlabs/php_codesniffer": "*"
