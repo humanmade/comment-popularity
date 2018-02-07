@@ -2,9 +2,9 @@
 
 Contributors: pauldewouters,mattheu,humanmade,cfo-publishing
 Tags: comments,vote,upvote,karma,widget
-Requires at least: 3.9
-Tested up to: 4.8.1
-Stable tag: 1.4.3.3
+Requires at least: 4.9
+Tested up to: 4.9.3
+Stable tag: 1.5
 Requires PHP: 5.3.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -130,6 +130,11 @@ To display the comment author karma:
 * Fixes a bug which prevented the user karma to appear in the single comment template.
 
 == Changelog ==
+
+= 1.5 =
+
+* Fix a number of PHP warnings.
+* Change path to CSS/JS assets.
 
 = 1.4.3.3 =
 
@@ -370,7 +375,7 @@ To display the comment author karma:
 * Update readme
 * Add readme to markdown task
 * Documentation for how to remove the built in comment template
- 
+
 = 1.0.1 =
 
 * Fix contributors

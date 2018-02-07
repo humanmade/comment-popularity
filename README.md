@@ -2,13 +2,14 @@
 
 **Contributors:** pauldewouters,mattheu,humanmade,cfo-publishing  
 **Tags:** comments,vote,upvote,karma,widget  
-**Requires at least:** 3.9  
-**Tested up to:** 4.2-alpha  
-**Stable tag:** 1.3.4  
+**Requires at least:** 4.9  
+**Tested up to:** 4.9.3  
+**Stable tag:** 1.5  
+**Requires PHP:** 5.3.2  
 **License:** GPLv2 or later  
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html  
 
-Comment Popularity adds the ability for logged in users to vote on comments.
+Comment Popularity adds the ability for visitors to vote on comments.
 
 ## Description ##
 
@@ -135,6 +136,48 @@ To display the comment author karma:
 * Fixes a bug which prevented the user karma to appear in the single comment template.
 
 ## Changelog ##
+
+### 1.5 ###
+
+* Fix a number of PHP warnings.
+* Change path to CSS/JS assets.
+
+### 1.4.3.3 ###
+
+* Fix another PHP compatibility issue that caused a fatal error on versions that don't support short array syntax.
+
+### 1.4.3.2 ###
+
+* Fix a PHP compatibility issue that caused a fatal error on versions that don't support short array syntax.
+
+### 1.4.3.1 ###
+
+* Fix path to minified JS file.
+
+### 1.4.3 ###
+
+* Fix bug caused by deploy script which moved the assets folder out of plugin path.
+
+### 1.4.2 ###
+
+* Fix a bug in voting logic to prevent voting more than once.
+* Fix a bug in voting to prevent logging a downvote on a comment with no karma
+* Fix upgrade routine, which could cause memory error when large number of users.
+
+### 1.4.1 ###
+
+* Fix a PHP notice
+
+### 1.4.0 / 2016-04-15
+
+* Clicking the up or down arrow now cancels your vote if you had already voted the same way.
+* Add JS throttling to prevent too many ajax requests.
+###
+### 1.3.5 / 2016-03-16 ###
+
+* Fix a bug which updated all comment columns with karma value.
+* Now visually shows upvotes/downvotes
+* Global plugin variable
 
 ### 1.3.4 / 2015-02-12 ###
 
@@ -338,7 +381,7 @@ To display the comment author karma:
 * Update readme
 * Add readme to markdown task
 * Documentation for how to remove the built in comment template
- 
+
 ### 1.0.1 ###
 
 * Fix contributors
