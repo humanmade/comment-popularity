@@ -9,7 +9,7 @@ class HMN_Comment_Popularity {
 	/**
 	 * Plugin version number.
 	 */
-	const HMN_CP_PLUGIN_VERSION = '1.4.3.3';
+	const HMN_CP_PLUGIN_VERSION = '1.5';
 
 	/**
 	 * The minimum PHP version compatibility.
@@ -19,7 +19,7 @@ class HMN_Comment_Popularity {
 	/**
 	 *
 	 */
-	const HMN_CP_REQUIRED_WP_VERSION = '3.8.4';
+	const HMN_CP_REQUIRED_WP_VERSION = '4.9';
 
 	/**
 	 * The instance of HMN_Comment_Popularity.
