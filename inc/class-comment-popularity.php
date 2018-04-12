@@ -378,7 +378,7 @@ class HMN_Comment_Popularity {
 
 		$comment_ids_voted_on = array();
 
-		if (is_array($comment_ids_voted_on)) {
+		if (is_array($votes)) {
 			foreach ( $votes as $key => $vote ) {
 				$comment_ids_voted_on[ $key ] = $vote[ HMN_CP_Visitor::LOGGED_VOTES_ACTION_KEY ];
 			}
