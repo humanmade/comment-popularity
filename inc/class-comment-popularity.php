@@ -100,13 +100,14 @@ class HMN_Comment_Popularity {
 	}
 
 	public function styles() {
-		wp_enqueue_style(
-			'cp-material-ui',
-			'https://fonts.googleapis.com/icon?family=Material+Icons'
-		);
+	  $file = '../assets/css/icons.css';
+    wp_enqueue_style(
+        'cp-material-ui',
+        plugins_url( $file, __FILE__ )
+    );
 
-		$styles = '<style>.comment-weight-container .upvote a, .comment-weight-container .downvote a, .comment-weight-container span.upvote, .comment-weight-container span.downvote {color:red !important;}</style>';
-		echo apply_filters( 'hmn_cp_inline_styles', $styles );
+    $styles = '<style>.comment-weight-container .upvote a, .comment-weight-container .downvote a, .comment-weight-container span.upvote, .comment-weight-container span.downvote {color:red !important;}</style>';
+    echo apply_filters( 'hmn_cp_inline_styles', $styles );
 	}
 
 	/**
