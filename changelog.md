@@ -6,7 +6,8 @@
 1.4.1 / 2017-10-01
 ==================
 
-  * SlavicD's fork: fixes some voting logic bugs and more
+  * SlavicD's fork: fixes some voting logic bugs
+  * couples the implementation to SankakuComplex platform
 
 
 1.3.5 / 2016-03-16

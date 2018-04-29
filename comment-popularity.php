@@ -1,10 +1,10 @@
 <?php
 /*
-Plugin Name: Comment Popularity (SlavicD's Fork)
+Plugin Name: Sankaku Comment Popularity
 Plugin URI: https://github.com/slavicd/comment-popularity
-Description: Allow visitors to vote on comments.
+Description: A fork of Human Made Limited's Comment Popularity plugin
 Version: 1.4.5
-Author: Slavic Dragovtev
+Author: Slavic Dragovtev,  Human Made Limited
 Text Domain: comment-popularity
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
