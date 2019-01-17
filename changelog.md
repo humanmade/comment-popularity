@@ -1,3 +1,8 @@
+1.4.3 / 2019-01-17
+==================
+
+  * Changed the handle name for material UI assets
+
 1.4.2 / 2017-11-06
 ==================
 

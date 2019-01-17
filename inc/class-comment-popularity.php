@@ -102,7 +102,7 @@ class HMN_Comment_Popularity {
 	public function styles() {
 	    $file = '../assets/css/icons.css';
         wp_enqueue_style(
-            'cp-material-ui',
+            'material-ui-icons',
             plugins_url( $file, __FILE__ )
         );
 
