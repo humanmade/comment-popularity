@@ -1,4 +1,4 @@
-1.4.4 / 2019-02-06
+1.5 / 2019-02-06
 ==================
 
   * No longer providing material fonts
