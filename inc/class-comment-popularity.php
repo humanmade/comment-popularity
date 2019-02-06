@@ -100,12 +100,6 @@ class HMN_Comment_Popularity {
 	}
 
 	public function styles() {
-	    $file = '../assets/css/icons.css';
-        wp_enqueue_style(
-            'material-ui-icons',
-            plugins_url( $file, __FILE__ )
-        );
-
         $styles = '<style>.comment-weight-container .upvote a, .comment-weight-container .downvote a, .comment-weight-container span.upvote, .comment-weight-container span.downvote {color:red !important;}</style>';
         echo apply_filters( 'hmn_cp_inline_styles', $styles );
 	}
