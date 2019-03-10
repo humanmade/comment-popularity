@@ -6,7 +6,7 @@
 		var clicked = false;
 
 		// catch the upvote/downvote action
-		$( 'div.comment-weight-container' ).on( 'click', 'span > a', _.throttle( function( e ){
+		$( '.comments-main' ).on( 'click', 'div.comment-weight-container span > a', _.throttle( function( e ){
 			e.preventDefault();
 			var value = 0,
 				comment_id = $(this).data( 'commentId' ),

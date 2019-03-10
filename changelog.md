@@ -1,19 +1,24 @@
-1.5 / 2019-02-06
+1.3.5+slavicd.0.4.1 / 2019-03-10
+==================
+
+  * Added compatibility with ajax-pages comments
+
+1.3.5+slavicd.0.4.0 / 2019-02-06
 ==================
 
   * No longer providing material fonts
 
-1.4.3 / 2019-01-17
+1.3.5+slavicd.0.3.0 / 2019-01-17
 ==================
 
   * Changed the handle name for material UI assets
 
-1.4.2 / 2017-11-06
+1.3.5+slavicd.0.2.0 / 2017-11-06
 ==================
 
   * Use Material UI Icons
   
-1.4.1 / 2017-10-01
+1.3.5+slavicd.0.1.0 / 2017-10-01
 ==================
 
   * SlavicD's fork: fixes some voting logic bugs

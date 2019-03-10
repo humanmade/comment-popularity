@@ -8,10 +8,6 @@ defined( 'ABSPATH' ) || exit;
  * Main controller for version upgrade routines.
  */
 function hmn_cp_trigger_upgrades() {
-
-	// Get actual plugin version.
-	$current_version = HMN_Comment_Popularity::HMN_CP_PLUGIN_VERSION;
-
 	// Get latest version stored in DB option.
 	$hmn_cp_plugin_version = get_option( 'hmn_cp_plugin_version' );
 
@@ -24,7 +20,7 @@ function hmn_cp_trigger_upgrades() {
 	}
 
 	// Determine if we need to run upgrade routine for versions earlier than 1.2.1
-	if ( version_compare( $hmn_cp_plugin_version, $current_version, '<' ) ) {
+	if ( version_compare( $hmn_cp_plugin_version, '1.2.1', '<' ) ) {
 		hmn_cp_v121_upgrade();
 	}
 

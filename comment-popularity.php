@@ -3,8 +3,9 @@
 Plugin Name: Sankaku Comment Popularity
 Plugin URI: https://github.com/slavicd/comment-popularity
 Description: A fork of Human Made Limited's Comment Popularity plugin
-Version: 1.5
+Version: 1.3.5+slavicd.0.4.2
 Author: Slavic Dragovtev,  Human Made Limited
+Author URI: https://wordpress.org/plugins/comment-popularity/
 Text Domain: comment-popularity
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
