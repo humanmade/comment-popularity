@@ -37,7 +37,7 @@ abstract class HMN_CP_Visitor {
 	 */
 	abstract function log_vote( $comment_id, $action );
 
-	abstract function is_vote_valid( $comment_id, $action = '' );
+	abstract function is_vote_valid( $comment_id, $action = '', $action_key = '' );
 
 	/**
 	 * @return string
@@ -197,10 +197,11 @@ class HMN_CP_Visitor_Guest extends HMN_CP_Visitor {
 	 *
 	 * @param        $comment_id
 	 * @param string $action
+	 * @param string $action_key
 	 *
 	 * @return bool|WP_Error
 	 */
-	public function is_vote_valid( $comment_id, $action = '' ) {
+	public function is_vote_valid( $comment_id, $action = '', $action_key = '' ) {
 
 		return HMN_Comment_Popularity::get_instance()->is_guest_voting_allowed() ?
 			true :
@@ -221,10 +222,11 @@ class HMN_CP_Visitor_Member extends HMN_CP_Visitor {
 	 *
 	 * @param        $comment_id
 	 * @param string $action
+	 * @param string $action_key
 	 *
 	 * @return bool|WP_Error
 	 */
-	public function is_vote_valid( $comment_id, $action = '' ) {
+	public function is_vote_valid( $comment_id, $action = '', $action_key = '' ) {
 
 		$comment = get_comment( $comment_id );
 
@@ -241,8 +243,7 @@ class HMN_CP_Visitor_Member extends HMN_CP_Visitor {
 		}
 
 		// Vote is valid.
-		return true;
-
+		return apply_filters('hmn_cp_is_vote_valid', true, $comment_id, $this, $action_key);
 	}
 
 	/**

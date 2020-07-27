@@ -1,3 +1,8 @@
+1.3.5+slavicd.0.5.0 / 2020-07-27
+==================
+
+  * Added compatibility with ajax-pages comments
+
 1.3.5+slavicd.0.4.1 / 2019-03-10
 ==================
 

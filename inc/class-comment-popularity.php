@@ -379,8 +379,7 @@ class HMN_Comment_Popularity {
 			}
 		}
 
-		$login_url = home_url('login');
-		$redirect_to = home_url($_SERVER['REQUEST_URI']);
+		$login_url = wp_login_url(home_url($_SERVER['REQUEST_URI']));
 
 		$vars = array(
 			'container_classes' => $container_classes,
@@ -388,7 +387,7 @@ class HMN_Comment_Popularity {
 			'comment_weight'    => $this->get_comment_weight( $comment_id ),
 			'enable_voting'     => $this->visitor_can_vote(),
 			'vote_type'         => in_array( $comment_id, array_keys( $comment_ids_voted_on ) ) ? $comment_ids_voted_on[ $comment_id ] : '',
-			'login_url'         => add_query_arg('redirect_to', $redirect_to, $login_url),
+			'login_url'         => $login_url,
 		);
 
 		echo $this->twig->render( 'voting-system.html', $vars );
@@ -625,7 +624,7 @@ class HMN_Comment_Popularity {
 
 		$labels = $this->get_vote_labels();
 
-		$vote_is_valid = $this->get_visitor()->is_vote_valid( $comment_id, $labels[ $vote ] );
+		$vote_is_valid = $this->get_visitor()->is_vote_valid( $comment_id, $labels[ $vote ], $vote );
 		$vote_value = $this->get_vote_value( $vote );
 		$vote_count = 1;
 
@@ -696,7 +695,7 @@ class HMN_Comment_Popularity {
 		do_action( 'hmn_cp_comment_vote', $user_id, $comment_id, $labels[ $vote ] );
 
 		$return = array(
-			'success_message'    => __( 'Thanks for voting!', 'comment-popularity' ),
+			'success_message' => apply_filters( 'hmn_cp_comment_vote_success_message', __( 'Thanks for voting!', 'comment-popularity' ), $this->get_visitor(), $comment_id ),
 			'weight'     => $this->get_comment_weight( $comment_id ),
 			'comment_id' => $comment_id,
 			'vote_type'  => $labels[ $vote ],
